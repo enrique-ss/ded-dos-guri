@@ -200,33 +200,8 @@ input, button, textarea, select { font-family: inherit; border: none; outline: n
 .large-textarea { width: 100%; min-height: 250px; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 12px; padding: 1rem; line-height: 1.6; resize: vertical; }
 .rp-textarea { width: 100%; min-height: 80px; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 10px; padding: 1rem; line-height: 1.5; resize: vertical; font-size: 0.95rem; margin-bottom: 0.5rem;}
 
-/* MASTER LOCK */
-.master-unlock-btn {
-    position: fixed; bottom: 30px; right: 30px;
-    width: 60px; height: 60px; border-radius: 50%;
-    background: var(--gold); color: #000; font-size: 1.8rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; box-shadow: 0 8px 25px var(--gold-glow);
-    z-index: 500; transition: transform 0.2s;
-}
-.master-unlock-btn:hover { transform: scale(1.1); }
-.master-unlock-btn.hidden { display: none !important; }
-
-/* DICE MODAL */
-.dice-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-    z-index: 2000; display: flex; justify-content: center; align-items: center;
-}
-.dice-card {
-    background: var(--panel); border: 2px solid var(--gold); border-radius: 20px;
-    padding: 3rem; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    min-width: 300px;
-}
-.dice-result-text { font-size: 6rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 30px var(--gold-glow); line-height: 1; margin-bottom: 1rem; }
-.dice-label-text { color: var(--txt-muted); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; }
-
 /* READ-ONLY & HOVERS */
 .read-only input, .read-only textarea { pointer-events: none; border-color: transparent !important; background: transparent !important; }
-.read-only .hp-btn, .read-only #add-attack, .read-only #btn-reset-char { display: none !important; }
-.read-only .attr-block, .read-only .skill-row { cursor: pointer; transition: background 0.2s; }
-.read-only .attr-block:hover, .read-only .skill-row:hover { background: rgba(255,255,255,0.08); border-color: var(--gold); }
+.read-only .hp-btn, .read-only #add-attack { display: none !important; }
+.read-only .attr-block, .read-only .skill-row { cursor: default; }
+.read-only .attr-block:hover, .read-only .skill-row:hover { background: rgba(0,0,0,0.2); border-color: var(--panel-border); }

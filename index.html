@@ -18,12 +18,10 @@
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Bem-vindo, Viajante</h2>
                 <div class="selection-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
                     <div class="choice-card" data-role="mestre" style="padding: 3rem 1.5rem;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🧙‍♂️</span>
                         <strong>MESTRE</strong>
                         <small>Guia da Narrativa</small>
                     </div>
                     <div class="choice-card" data-role="jogador" style="padding: 3rem 1.5rem;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">⚔️</span>
                         <strong>JOGADOR</strong>
                         <small>Forje seu Legado</small>
                     </div>
@@ -71,12 +69,26 @@
                     <div id="class-desc-box" class="desc-box"></div>
                     <div class="wizard-nav">
                         <button class="btn-ghost" id="btn-back-1">Voltar</button>
-                        <button class="btn-primary" id="btn-step-3">Distribuir Atributos</button>
+                        <button class="btn-primary" id="btn-step-3">Escolher Perícias</button>
                     </div>
                 </div>
 
-                <!-- Step 3: Atributos -->
+                <!-- Step 3: Perícias (Especialidades) -->
                 <div id="step-3" class="wizard-step">
+                    <h2 class="cinzel">Especialidades</h2>
+                    <p class="subtitle" id="skills-limit-text" style="color: var(--gold); font-weight: 700; margin-bottom: 2rem;">...</p>
+                    
+                    <div id="skills-selection-grid" class="selection-grid">
+                    </div>
+
+                    <div class="wizard-nav">
+                        <button class="btn-ghost" id="btn-back-2">Voltar</button>
+                        <button class="btn-primary" id="btn-step-4">Distribuir Atributos</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Atributos -->
+                <div id="step-4" class="wizard-step">
                     <h2 class="cinzel">Forje seu Poder</h2>
                     <p class="subtitle">Distribua livremente o Array Padrão: <strong>15, 14, 13, 12, 10, 8</strong></p>
                     
@@ -90,7 +102,7 @@
                     </div>
 
                     <div class="wizard-nav">
-                        <button class="btn-ghost" id="btn-back-2">Voltar</button>
+                        <button class="btn-ghost" id="btn-back-3">Voltar</button>
                         <button class="btn-primary" id="btn-finish">DESPERTAR HERÓI</button>
                     </div>
                 </div>
@@ -112,33 +124,34 @@
                     </div>
                     <div class="header-details">
                         <div class="detail-item">
-                            <label class="label-tiny">📜 Antecedente</label>
+                            <label class="label-tiny">Antecedente</label>
                             <input type="text" id="display-bg" value="---" placeholder="Ex: Herói do Povo" readonly>
                         </div>
                         <div class="detail-item">
-                            <label class="label-tiny">🧭 Alinhamento</label>
+                            <label class="label-tiny">Alinhamento</label>
                             <input type="text" id="display-align" value="---" placeholder="A bússola moral" readonly>
                         </div>
                         <div class="detail-item flex-center">
-                            <label class="label-tiny">✨ Experiência (Das 5 Subquests)</label>
+                            <label class="label-tiny">Experiência</label>
                             <input type="number" id="display-xp" value="0" readonly class="xp-input">
                         </div>
                     </div>
-                    <button class="btn-ghost" id="btn-reset-char" style="height: 100%; border-color: var(--red); color: var(--red);" title="Resetar Ficha">🧹 Reset</button>
+                    <button class="btn-ghost" id="btn-reset-char" style="height: 100%; border-color: var(--red); color: var(--red);" title="Resetar Ficha">Redefinir</button>
                 </header>
 
                 <div class="sheet-body">
                     <!-- ================= COLUNA ESQUERDA ================= -->
                     <div class="sheet-col">
                         
-                        <!-- 2. ATRIBUTOS BASE (O "Motor") -->
+                        <!-- 2. ATRIBUTOS BASE -->
                         <div class="premium-card">
-                            <label class="label-tiny">2. Atributos Base (O "Motor")</label>
+                            <label class="label-tiny">2. Atributos Principais</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1rem;">Sempre que exigido um teste pelo mestre, o jogador deve rolar <b>1d20</b> e somar o Modificador indicado na caixa amarela do atributo correspondente.</p>
                             <div class="attributes-grid">
                                 <div class="attr-block" data-attr="for">
                                     <div class="attr-circle" id="val-for">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">💪 Força</label>
+                                        <label class="label-tiny attr-label">Força</label>
                                         <small>Poder físico e salto</small>
                                     </div>
                                     <div class="attr-mod" id="mod-for">+0</div>
@@ -146,7 +159,7 @@
                                 <div class="attr-block" data-attr="des">
                                     <div class="attr-circle" id="val-des">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">🏃 Destreza</label>
+                                        <label class="label-tiny attr-label">Destreza</label>
                                         <small>Agilidade e reflexos</small>
                                     </div>
                                     <div class="attr-mod" id="mod-des">+0</div>
@@ -154,7 +167,7 @@
                                 <div class="attr-block" data-attr="con">
                                     <div class="attr-circle" id="val-con">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">🛡️ Const.</label>
+                                        <label class="label-tiny attr-label">Const.</label>
                                         <small>Saúde e resistência</small>
                                     </div>
                                     <div class="attr-mod" id="mod-con">+0</div>
@@ -162,7 +175,7 @@
                                 <div class="attr-block" data-attr="int">
                                     <div class="attr-circle" id="val-int">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">🧠 Intelig.</label>
+                                        <label class="label-tiny attr-label">Intelig.</label>
                                         <small>Memória e lógica</small>
                                     </div>
                                     <div class="attr-mod" id="mod-int">+0</div>
@@ -170,7 +183,7 @@
                                 <div class="attr-block" data-attr="sab">
                                     <div class="attr-circle" id="val-sab">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">👁️ Sabedoria</label>
+                                        <label class="label-tiny attr-label">Sabedoria</label>
                                         <small>Intuição e percepção</small>
                                     </div>
                                     <div class="attr-mod" id="mod-sab">+0</div>
@@ -178,7 +191,7 @@
                                 <div class="attr-block" data-attr="car">
                                     <div class="attr-circle" id="val-car">10</div>
                                     <div class="attr-info">
-                                        <label class="label-tiny attr-label">🎭 Carisma</label>
+                                        <label class="label-tiny attr-label">Carisma</label>
                                         <small>Força de personalidade</small>
                                     </div>
                                     <div class="attr-mod" id="mod-car">+0</div>
@@ -191,30 +204,31 @@
                             <label class="label-tiny">3. Inspiração, Proficiência e Salvaguardas</label>
                             
                             <div class="sub-stats-grid">
-                                <div class="icon-box">
-                                    <div class="square-check" id="check-inspiration"></div>
-                                    <div class="info-text">
-                                        <strong>✨ Inspiração</strong>
-                                        <span>(Ganha após ação épica)</span>
+                                <div class="attr-block" style="cursor: default;">
+                                    <div class="square-check" id="check-inspiration" style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 8px;"></div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">Inspiração</label>
+                                        <small style="font-size: 0.65rem;">Gaste para ganhar Vantagem em 1 teste.</small>
                                     </div>
                                 </div>
-                                <div class="icon-box">
-                                    <div class="attr-mod" id="prof-bonus">+2</div>
-                                    <div class="info-text">
-                                        <strong>🎓 Bônus de Proficiência</strong>
-                                        <span>(Aumenta por nível)</span>
+                                <div class="attr-block" style="cursor: default;">
+                                    <div class="attr-circle" id="prof-bonus" style="flex-shrink: 0;">+2</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">Proficiência</label>
+                                        <small style="font-size: 0.65rem;">Aumenta por nível</small>
                                     </div>
                                 </div>
                             </div>
 
-                            <label class="label-tiny" style="margin-top: 1.5rem;">Salvaguardas (Resistir a Perigos)</label>
+                            <label class="label-tiny" style="margin-top: 1.5rem;">Salvaguardas</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 0.8rem;">Testes de resistência automáticos para desviar de armadilhas ou resistir a venenos e magias (1d20 + as bolinhas marcadas).</p>
                             <div class="skills-list saves-list" id="saves-list"></div>
                         </div>
 
                         <!-- 4. PERÍCIAS (SKILLS) -->
                         <div class="premium-card">
-                            <label class="label-tiny">4. Perícias (Testes do dia a dia)</label>
-                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1rem;">Soma Mod. Atributo + Proficiência (se marcado).</p>
+                            <label class="label-tiny">4. Perícias Práticas</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1rem;">Para resolver ações do cotidiano ou investigações. Ao tentar algo, o mestre indicará a perícia. Role <b>1d20</b> e some o número listado ao lado.</p>
                             <div class="skills-list" id="skills-list"></div>
                         </div>
 
@@ -225,48 +239,44 @@
                         
                         <!-- 5. BLOCO DE COMBATE -->
                         <div class="premium-card">
-                            <label class="label-tiny">5. Bloco de Combate (Onde o jogo acontece)</label>
+                            <label class="label-tiny">5. Estatus de Combate</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1rem;">Regras base passivas para estruturar a Batalha no grid contra os perigos de Oakhaven.</p>
                             
-                            <div class="combat-stats">
+                            <div class="combat-stats" style="grid-template-columns: 1fr; gap: 1.5rem;">
                                 <div class="combat-stat-item">
-                                    <label class="label-tiny">🛡️ CA</label>
-                                    <input type="number" id="display-ac" value="10" readonly title="Classe de Armadura (Depende de Oakhaven)">
+                                    <label class="label-tiny">Classe de Armadura</label>
+                                    <input type="number" id="display-ac" value="10" readonly title="Baseado na armadura">
+                                    <small class="muted-text" style="font-size: 0.75rem; margin-top: 0.5rem; text-transform: none;"><b>Defesa:</b> Inimigos precisam tirar nos dados um valor igual ou maior que este para acertar você fisicamente.</small>
                                 </div>
                                 <div class="combat-stat-item">
-                                    <label class="label-tiny">⚡ Iniciativa</label>
+                                    <label class="label-tiny">Iniciativa</label>
                                     <div id="display-initiative" class="stat-big">+0</div>
+                                    <small class="muted-text" style="font-size: 0.75rem; margin-top: 0.5rem; text-transform: none;"><b>Ordem:</b> Role um d20 no começo do embate e adicione este número para determinar de quem é o primeiro turno.</small>
                                 </div>
                                 <div class="combat-stat-item">
-                                    <label class="label-tiny">🏃 Deslocamento</label>
+                                    <label class="label-tiny">Deslocamento</label>
                                     <div id="display-speed" class="stat-big">9m</div>
+                                    <small class="muted-text" style="font-size: 0.75rem; margin-top: 0.5rem; text-transform: none;"><b>Movimentação:</b> Até quantos metros você pode caminhar livremente no grid durante o seu turno.</small>
                                 </div>
                             </div>
 
-                            <div class="hp-section">
-                                <div class="hp-header">
-                                    <label class="label-tiny">❤️ Pontos de Vida (PV)</label>
-                                    <span id="hp-text" class="highlight-text">10 / 10</span>
-                                </div>
-                                <div class="hp-track">
-                                    <div class="hp-fill" id="hp-fill-bar"></div>
-                                </div>
-                                <div class="hp-controls">
-                                    <button class="hp-btn" data-delta="-1">−</button>
-                                    <input type="number" id="hp-current" value="10" readonly>
-                                    <button class="hp-btn" data-delta="1">+</button>
-                                    <span class="hp-divider">/</span>
-                                    <input type="number" id="hp-max" value="10" readonly title="MÁX: Dado da classe + Mod. Constituição">
+                            <div class="combat-stats" style="margin-bottom: 1rem; grid-template-columns: 1fr;">
+                                <div class="combat-stat-item" style="grid-column: 1 / -1; align-items: center; padding: 1.5rem; background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3);">
+                                    <label class="label-tiny" style="font-size: 1rem; color: var(--red);">Pontos de Vida</label>
+                                    <div style="font-size: 3.5rem; font-weight: 900; color: var(--red); line-height: 1; margin: 0.5rem 0;" id="hp-text">10 / 10</div>
+                                    <p class="muted-text" style="font-size: 0.8rem;">As alterações em tempo real de Vida e Inventário são gerenciadas pela Interface do Mestre.</p>
                                 </div>
                             </div>
 
-                            <div class="combat-stats" style="grid-template-columns: 1fr 1.5fr;">
+                            <div class="combat-stats" style="grid-template-columns: 1fr; gap: 1.5rem;">
                                 <div class="combat-stat-item">
-                                    <label class="label-tiny">🎲 Dados de Vida</label>
-                                    <input type="text" id="display-hd" value="1d10" readonly title="Usados em descansos">
+                                    <label class="label-tiny">Dados de Vida</label>
+                                    <input type="text" id="display-hd" value="1d10" readonly title="Usados para cura">
+                                    <small class="muted-text" style="font-size: 0.75rem; margin-top: 0.5rem; text-transform: none;"><b>Cura Mágica Diária:</b> Durante descansos curtos (1 hora de jogo) de acampamento, descarte estas quantidades de dados nativos para restaurar sua vida.</small>
                                 </div>
                                 <div class="combat-stat-item">
-                                    <label class="label-tiny">💀 Salvaguarda contra Morte</label>
-                                    <p class="muted-text" style="font-size: 0.65rem; line-height: 1.2;">Até o Cen. 3 apenas desmaiam. A partir do 4 (3 suc = est / 3 falhas = morte)</p>
+                                    <label class="label-tiny">Resgate da Morte</label>
+                                    <p class="muted-text" style="font-size: 0.75rem; line-height: 1.3; margin-top: 0.5rem; text-transform: none;">Caso seus PV cheguem a zero, você sangra no chão. Em seu turno, jogue um d20 sem aditivos. Acertos (>=10) marcam Sucesso, menores marcam Falhas. Junte 3 Sucessos para estabilizar, ou 3 Falhas para morte incontestável.</p>
                                     <div class="death-saves">
                                         <div class="d-save-group">
                                             <div class="dot-check ds-success"></div>
@@ -285,10 +295,11 @@
 
                         <!-- 6. ATAQUES E CONJURAÇÃO -->
                         <div class="premium-card group-flex">
-                            <label class="label-tiny">6. Ataques e Conjuração</label>
+                            <label class="label-tiny">6. Arsenal e Ofensiva</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 0.5rem;">Armas cortantes ou magias. Na sua ação de atacar, jogue <b>1d20 + Bônus</b> para superar a Defesa do alvo. Acertando, role o Dano.</p>
                             
                             <div class="attacks-header">
-                                <span>🗡️ Nome</span>
+                                <span>Nome</span>
                                 <span class="txt-center">Bônus Ataque</span>
                                 <span class="txt-center">Dano/Tipo</span>
                             </div>
@@ -300,19 +311,18 @@
 
                         <!-- 7. EQUIPAMENTO E TESOURO -->
                         <div class="premium-card group-flex">
-                            <label class="label-tiny">7. Equipamento e Tesouro</label>
+                            <label class="label-tiny">7. Inventário Geral</label>
                             
-                            <div class="money-box">
-                                <span style="font-size: 1.5rem;">💰</span>
+                            <div class="money-box" style="margin-top: 1rem;">
                                 <div style="flex: 1;">
-                                    <label class="label-tiny" style="margin: 0;">Moedas (PO)</label>
-                                    <small class="muted-text">Conquistado nas 7 subquests</small>
+                                    <label class="label-tiny" style="margin: 0;">Moedas de Ouro (PO)</label>
+                                    <small class="muted-text">Tesouros conquistados</small>
                                 </div>
                                 <input type="number" id="gold-po" value="0" readonly class="money-input">
                             </div>
 
-                            <label class="label-tiny" style="margin-top: 1.5rem;">Inventário</label>
-                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 0.5rem;">Poções da Meira, armas do Grog, Moeda do Barqueiro...</p>
+                            <label class="label-tiny" style="margin-top: 1.5rem;">Carga do Personagem</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 0.5rem;">Armazenamento geral das suas posses materiais. Registrado pelo mestre em caso de itens mágicos importantes.</p>
                             <textarea id="inventory-list" class="large-textarea" placeholder="Suas posses..." readonly></textarea>
                         </div>
 
@@ -323,31 +333,31 @@
                         
                         <!-- 8. ROLEPLAY -->
                         <div class="premium-card group-flex">
-                            <label class="label-tiny">8. Roleplay (O Lado Direito da Ficha)</label>
-                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1.5rem;">Ajuda os jogadores a interpretarem o herói.</p>
+                            <label class="label-tiny">8. Personalidade</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1.5rem;">Siga estas diretrizes morais na mesa para interpretar seu personagem com exatidão e ganhar recompensa de Inspiração do narrador.</p>
 
                             <div class="detail-item">
-                                <label class="label-tiny">🎭 Traços de Personalidade</label>
+                                <label class="label-tiny">Traços de Personalidade</label>
                                 <textarea id="rp-traits" class="rp-textarea" readonly></textarea>
                             </div>
                             
                             <div class="detail-item">
-                                <label class="label-tiny">💡 Ideais</label>
+                                <label class="label-tiny">Ideais</label>
                                 <textarea id="rp-ideals" class="rp-textarea" readonly></textarea>
                             </div>
                             
                             <div class="detail-item">
-                                <label class="label-tiny">🔗 Vínculos</label>
+                                <label class="label-tiny">Vínculos</label>
                                 <textarea id="rp-bonds" class="rp-textarea" readonly></textarea>
                             </div>
                             
                             <div class="detail-item">
-                                <label class="label-tiny">⚠️ Fraquezas</label>
+                                <label class="label-tiny">Fraquezas</label>
                                 <textarea id="rp-flaws" class="rp-textarea" readonly></textarea>
                             </div>
 
                             <div class="detail-item" style="flex: 1;">
-                                <label class="label-tiny">🎖️ Características e Talentos</label>
+                                <label class="label-tiny">Características e Talentos</label>
                                 <p class="muted-text" style="font-size: 0.75rem; margin-bottom: 0.5rem;">Habilidades da classe (Ex: Ataque Furtivo, Fúria)</p>
                                 <textarea id="rp-feats" class="large-textarea" readonly></textarea>
                             </div>
@@ -356,20 +366,8 @@
                     </div>
                 </div>
 
-                <!-- MASTER MODE TOGGLE (Flutuante dento do Container) -->
-                <button id="master-toggle" class="master-unlock-btn" title="Modo Mestre">🔒</button>
-
             </div>
         </main>
-
-        <!-- ========== DICE MODAL (Sobrepõe tudo) ========== -->
-        <div id="dice-overlay" class="dice-overlay" style="display: none;">
-            <div class="dice-card fade-in">
-                <div id="dice-result" class="dice-result-text">20</div>
-                <p id="dice-label" class="dice-label-text">Resultado d20</p>
-                <button class="btn-primary" id="close-dice" style="width: 100%; margin-top: 1.5rem;">FECHAR</button>
-            </div>
-        </div>
 
     </div>
 

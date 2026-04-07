@@ -16,18 +16,19 @@ const RACES = {
 };
 
 const CLASSES = {
-    guerreiro: { name: 'Guerreiro', hp: 10, saves: ['for', 'con'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Acrobacia, Adestrar Animais, Atletismo, História, Intuição, Intimidação, Percepção e Sobrevivência.' },
-    ladino: { name: 'Ladino', hp: 8, saves: ['des', 'int'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas de mão, espadas curtas, rapieiras e espadas longas.', skillsDesc: 'Escolha 4: Acrobacia, Atletismo, Atuação, Enganação, Furtividade, Intimidação... +Ferramentas de Ladrão.' },
-    mago: { name: 'Mago', hp: 6, saves: ['int', 'sab'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves. (Nenhuma armadura).', skillsDesc: 'Escolha 2: Arcanismo, História, Investigação, Medicina e Religião.' },
-    clerigo: { name: 'Clérigo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e médias, escudos e armas simples.', skillsDesc: 'Escolha 2: História, Intuição, Medicina, Persuasão e Religião.' },
-    paladino: { name: 'Paladino', hp: 10, saves: ['sab', 'car'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Atletismo, Intuição, Intimidação, Medicina, Persuasão e Religião.' },
-    barbaro: { name: 'Bárbaro', hp: 12, saves: ['for', 'con'], hd: '1d12', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Adestrar Animais, Atletismo, Intimidação, Natureza, Percepção e Sobrevivência.' },
-    bardo: { name: 'Bardo', hp: 8, saves: ['des', 'car'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas, espadas. +3 Instrumentos.', skillsDesc: 'Escolha 3 quaisquer (O Bardo é o "pau para toda obra").' },
-    patrulheiro: { name: 'Patrulheiro', hp: 10, saves: ['for', 'des'], hd: '1d10', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 3: Adestrar Animais, Atletismo, Intuição, Investigação, Natureza... Furtividade.' },
-    feiticeiro: { name: 'Feiticeiro', hp: 6, saves: ['con', 'car'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, Intuição, Intimidação, Persuasão e Religião.' },
-    bruxo: { name: 'Bruxo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e armas simples.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, História, Intimidação, Investigação, Natureza e Religião.' },
-    druida: { name: 'Druida', hp: 8, saves: ['int', 'sab'], hd: '1d8', armor: 'Armaduras leves e médias (não usam metal!), escudos, clavas, lanças...', skillsDesc: 'Escolha 2: Adestrar Animais, Arcanismo, Intuição, Medicina, Natureza, Percepção, Religião e Sobrevivência.' }
+    guerreiro: { name: 'Guerreiro', hp: 10, saves: ['for', 'con'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Acrobacia, Adestrar Animais, Atletismo, História, Intuição, Intimidação, Percepção e Sobrevivência.', skillChoices: 2, allowSkills: ['acrobatics', 'animal', 'athletics', 'history', 'insight', 'intimidation', 'perception', 'survival'] },
+    ladino: { name: 'Ladino', hp: 8, saves: ['des', 'int'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas de mão, espadas curtas, rapieiras e espadas longas.', skillsDesc: 'Escolha 4: Acrobacia, Atletismo, Atuação, Enganação, Furtividade, Intimidação... +Ferramentas de Ladrão.', skillChoices: 4, allowSkills: ['acrobatics', 'athletics', 'performance', 'deception', 'stealth', 'intimidation', 'insight', 'investigation', 'perception', 'persuasion', 'sleight'] },
+    mago: { name: 'Mago', hp: 6, saves: ['int', 'sab'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves. (Nenhuma armadura).', skillsDesc: 'Escolha 2: Arcanismo, História, Investigação, Medicina e Religião.', skillChoices: 2, allowSkills: ['arcana', 'history', 'investigation', 'medicine', 'religion'] },
+    clerigo: { name: 'Clérigo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e médias, escudos e armas simples.', skillsDesc: 'Escolha 2: História, Intuição, Medicina, Persuasão e Religião.', skillChoices: 2, allowSkills: ['history', 'insight', 'medicine', 'persuasion', 'religion'] },
+    paladino: { name: 'Paladino', hp: 10, saves: ['sab', 'car'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Atletismo, Intuição, Intimidação, Medicina, Persuasão e Religião.', skillChoices: 2, allowSkills: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'] },
+    barbaro: { name: 'Bárbaro', hp: 12, saves: ['for', 'con'], hd: '1d12', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Adestrar Animais, Atletismo, Intimidação, Natureza, Percepção e Sobrevivência.', skillChoices: 2, allowSkills: ['animal', 'athletics', 'intimidation', 'nature', 'perception', 'survival'] },
+    bardo: { name: 'Bardo', hp: 8, saves: ['des', 'car'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas, espadas. +3 Instrumentos.', skillsDesc: 'Escolha 3 quaisquer (O Bardo é o "pau para toda obra").', skillChoices: 3, allowSkills: 'all' },
+    patrulheiro: { name: 'Patrulheiro', hp: 10, saves: ['for', 'des'], hd: '1d10', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 3: Adestrar Animais, Atletismo, Intuição, Investigação, Natureza... Furtividade.', skillChoices: 3, allowSkills: ['animal', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'survival', 'stealth'] },
+    feiticeiro: { name: 'Feiticeiro', hp: 6, saves: ['con', 'car'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, Intuição, Intimidação, Persuasão e Religião.', skillChoices: 2, allowSkills: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'] },
+    bruxo: { name: 'Bruxo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e armas simples.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, História, Intimidação, Investigação, Natureza e Religião.', skillChoices: 2, allowSkills: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'] },
+    druida: { name: 'Druida', hp: 8, saves: ['int', 'sab'], hd: '1d8', armor: 'Armaduras leves e médias (não usam metal!), escudos, clavas, lanças...', skillsDesc: 'Escolha 2: Adestrar Animais, Arcanismo, Intuição, Medicina, Natureza, Percepção, Religião e Sobrevivência.', skillChoices: 2, allowSkills: ['animal', 'arcana', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'] }
 };
+
 
 
 const SKILLS = [
@@ -56,14 +57,14 @@ const STORAGE_KEY = 'rpg_guri_v10';
 
 // ==================== STATE ====================
 let state = getDefaultState();
-let isMasterMode = false;
 
 // Temporal wizard state
 let wizardData = {
     active: false,
     name: '', race: '', cls: '', 
     bg: '', align: '', 
-    attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }
+    attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
+    skills: []
 };
 
 function getDefaultState() {
@@ -95,16 +96,6 @@ function getDefaultState() {
         deathSaves: { success: 0, fail: 0 }
     };
 }
-
-function rollDice(sides, bonus = 0, label = 'Resultado') {
-    const res = Math.floor(Math.random() * sides) + 1;
-    const overlay = document.getElementById('dice-overlay');
-    document.getElementById('dice-result').textContent = res + bonus;
-    document.getElementById('dice-label').textContent = `${label} (${res} + ${bonus})`;
-    overlay.style.display = 'flex';
-}
-
-// ==================== ENGINE ====================
 function init() {
     loadState();
     buildGrids();
@@ -127,13 +118,11 @@ function render() {
     const roleSel = document.getElementById('role-selection');
     const creation = document.getElementById('creation-screen');
     const sheet = document.getElementById('sheet-view');
-    const masterTgl = document.getElementById('master-toggle');
 
     // Hide everything first
     roleSel.classList.remove('active');
     creation.classList.remove('active');
     sheet.classList.remove('active');
-    masterTgl.classList.add('hidden');
 
     if (!state.isCreated) {
         if (wizardData.active) {
@@ -143,7 +132,6 @@ function render() {
         }
     } else {
         sheet.classList.add('active');
-        masterTgl.classList.remove('hidden');
         renderSheet();
     }
 }
@@ -222,10 +210,6 @@ function renderSheet() {
     $('display-initiative').textContent = (desMod >= 0 ? '+' : '') + desMod;
     $('display-speed').textContent = state.speed + 'm';
     $('hp-text').textContent = `${state.hp.current} / ${state.hp.max}`;
-    $('hp-current').value = state.hp.current;
-    $('hp-max').value = state.hp.max;
-    const hpPct = (state.hp.current / state.hp.max) * 100;
-    $('hp-fill-bar').style.width = hpPct + '%';
     $('display-hd').value = state.hd;
 
     // Death Saves
@@ -237,12 +221,13 @@ function renderSheet() {
     });
 
     // 6. Attacks
+    // Attacks list (read-only view)
     const attacksEl = $('attacks-list');
     attacksEl.innerHTML = state.attacks.map((atk, i) => `
         <div class="attack-row">
-            <input type="text" value="${atk.name}" data-atk-idx="${i}" data-field="name" ${isMasterMode ? '' : 'readonly'}>
-            <input type="text" value="${atk.bonus}" data-atk-idx="${i}" data-field="bonus" ${isMasterMode ? '' : 'readonly'} style="text-align:center;">
-            <input type="text" value="${atk.dmg}" data-atk-idx="${i}" data-field="dmg" ${isMasterMode ? '' : 'readonly'} style="text-align:center;">
+            <span>${atk.name}</span>
+            <span style="text-align:center;">${atk.bonus}</span>
+            <span style="text-align:center;">${atk.dmg}</span>
         </div>
     `).join('');
 
@@ -256,18 +241,6 @@ function renderSheet() {
     $('rp-bonds').value = state.rpBonds;
     $('rp-flaws').value = state.rpFlaws;
     $('rp-feats').value = state.rpFeats;
-
-    // Toggle Read-Only
-    const sheetContainer = $('sheet-container');
-    if (isMasterMode) {
-        sheetContainer.classList.remove('read-only');
-        document.querySelectorAll('#sheet-container input, #sheet-container textarea').forEach(el => el.removeAttribute('readonly'));
-        $('master-toggle').textContent = '🔓';
-    } else {
-        sheetContainer.classList.add('read-only');
-        document.querySelectorAll('#sheet-container input, #sheet-container textarea').forEach(el => el.setAttribute('readonly', true));
-        $('master-toggle').textContent = '🔒';
-    }
 }
 
 // ==================== WIZARD LOGIC ====================
@@ -316,8 +289,37 @@ function updateStandardArrayDisables() {
 }
 
 function goToStep(n) {
+    if (n === 3) {
+        if (!wizardData.cls || !wizardData.race) { alert("Escolha Raça e Classe primeiro."); return; }
+        loadSkillChoices();
+    }
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     document.getElementById('step-' + n).classList.add('active');
+}
+
+function loadSkillChoices() {
+    const cls = CLASSES[wizardData.cls];
+    let maxPicks = cls.skillChoices;
+    let allowed = cls.allowSkills;
+
+    if (wizardData.race === 'meio_elfo') {
+        maxPicks += 2;
+        allowed = 'all';
+    }
+
+    document.getElementById('skills-limit-text').textContent = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (Faltam ${maxPicks - wizardData.skills.length}):`;
+    document.getElementById('skills-limit-text').dataset.max = maxPicks;
+
+    const grid = document.getElementById('skills-selection-grid');
+    grid.innerHTML = SKILLS.map(s => {
+        if (allowed !== 'all' && !allowed.includes(s.id)) return '';
+        const isSelected = wizardData.skills.includes(s.id);
+        return `
+            <div class="choice-card choice-skill ${isSelected ? 'selected' : ''}" data-skill="${s.id}">
+                <strong>${s.name}</strong> <small>(${s.attr.toUpperCase()})</small>
+            </div>
+        `;
+    }).join('');
 }
 
 function finishCreation() {
@@ -350,6 +352,7 @@ function finishCreation() {
     state.bg = bg;
     state.align = align;
     state.attr = { ...wizardData.attr };
+    state.profs = [...wizardData.skills];
 
     const race = RACES[state.race];
     const cls = CLASSES[state.cls];
@@ -418,80 +421,37 @@ function setupEvents() {
         // Wizard Nav
         if (t.id === 'btn-step-2') goToStep(2);
         if (t.id === 'btn-step-3') goToStep(3);
+        if (t.id === 'btn-step-4') {
+            const max = parseInt(document.getElementById('skills-limit-text')?.dataset.max || 0);
+            if (wizardData.skills.length < max) {
+                alert(`Você precisa escolher exatamente ${max} perícias antes de continuar!`);
+                return;
+            }
+            goToStep(4);
+            return;
+        }
         if (t.id === 'btn-back-0') goToStep(0);
         if (t.id === 'btn-back-1') goToStep(1);
         if (t.id === 'btn-back-2') goToStep(2);
+        if (t.id === 'btn-back-3') goToStep(3);
         if (t.id === 'btn-finish') finishCreation();
 
-        // Master Toggle
-        if (t.id === 'master-toggle') {
-            isMasterMode = !isMasterMode;
-            render();
+        // Skill Selection
+        const sCard = t.closest('.choice-skill');
+        if (sCard) {
+            const sid = sCard.dataset.skill;
+            const max = parseInt(document.getElementById('skills-limit-text').dataset.max || 0);
+            if (wizardData.skills.includes(sid)) {
+                wizardData.skills = wizardData.skills.filter(id => id !== sid);
+            } else {
+                if (wizardData.skills.length >= max) {
+                    alert('Você já escolheu o máximo de perícias para sua classe!');
+                    return;
+                }
+                wizardData.skills.push(sid);
+            }
+            loadSkillChoices();
             return;
-        }
-
-        // Dice Roll from Attributes/Skills
-        const rollAttr = t.closest('.attr-block');
-        if (rollAttr && !isMasterMode) {
-            const attr = rollAttr.dataset.attr;
-            const mod = Math.floor((state.attr[attr] - 10) / 2);
-            rollDice(20, mod, `Teste de ${attr.toUpperCase()}`);
-            return;
-        }
-
-        const rollSkill = t.closest('.skill-row');
-        if (rollSkill && !isMasterMode) {
-            const val = parseInt(rollSkill.querySelector('.skill-val').textContent);
-            const name = rollSkill.querySelector('.skill-name').textContent;
-            rollDice(20, val, `Teste de ${name}`);
-            return;
-        }
-
-        // Checkboxes (Only in master mode or specific interactions)
-        if (t.classList.contains('dot-check') || t.classList.contains('square-check')) {
-            if (!isMasterMode && !t.id.includes('ds-')) return; // Allow death saves if player is dying? Maybe.
-
-            if (t.id === 'check-inspiration') state.inspiration = !state.inspiration;
-            if (t.dataset.profSkill) {
-                const sid = t.dataset.profSkill;
-                if (state.profs.includes(sid)) state.profs = state.profs.filter(x => x !== sid);
-                else state.profs.push(sid);
-            }
-            if (t.dataset.profSave) {
-                const aid = t.dataset.profSave;
-                if (state.saves.includes(aid)) state.saves = state.saves.filter(x => x !== aid);
-                else state.saves.push(aid);
-            }
-            if (t.classList.contains('ds-success')) {
-                state.deathSaves.success = (state.deathSaves.success + 1) % 4;
-            }
-            if (t.classList.contains('ds-fail')) {
-                state.deathSaves.fail = (state.deathSaves.fail + 1) % 4;
-            }
-
-            saveState();
-            render();
-        }
-
-        // HP Controls
-        if (t.classList.contains('hp-control')) {
-            const delta = parseInt(t.dataset.delta);
-            state.hp.current = Math.max(0, Math.min(state.hp.max, state.hp.current + delta));
-            saveState();
-            render();
-        }
-
-        // Add Attack
-        if (t.id === 'add-attack') {
-            if (!isMasterMode) return;
-            state.attacks.push({ name: 'Nova Arma', bonus: '+0', dmg: '1d6' });
-            saveState();
-            render();
-        }
-
-        // Close Dice
-        if (t.id === 'close-dice' || t.id === 'dice-overlay') {
-            document.getElementById('dice-overlay').style.display = 'none';
         }
 
         // Reset
@@ -503,38 +463,8 @@ function setupEvents() {
         }
     });
 
-    // Input Sync
-    document.addEventListener('input', e => {
-        if (!isMasterMode) return;
-        const t = e.target;
-        if (t.id === 'display-name') state.name = t.value;
-        if (t.id === 'display-bg') state.bg = t.value;
-        if (t.id === 'display-align') state.align = t.value;
-        if (t.id === 'display-xp') state.xp = parseInt(t.value) || 0;
-        if (t.id === 'hp-current') state.hp.current = parseInt(t.value) || 0;
-        if (t.id === 'hp-max') state.hp.max = parseInt(t.value) || 0;
-        if (t.id === 'display-ac') state.ac = parseInt(t.value) || 10;
-        if (t.id === 'display-hd') state.hd = t.value;
-        if (t.id === 'inventory-list') state.inventory = t.value;
-        if (t.id === 'gold-po') state.gold = parseInt(t.value) || 0;
-        if (t.id === 'rp-traits') state.rpTraits = t.value;
-        if (t.id === 'rp-ideals') state.rpIdeals = t.value;
-        if (t.id === 'rp-bonds') state.rpBonds = t.value;
-        if (t.id === 'rp-flaws') state.rpFlaws = t.value;
-        if (t.id === 'rp-feats') state.rpFeats = t.value;
-
-        // Attacks dynamic sync
-        if (t.dataset.atkIdx !== undefined) {
-            const idx = t.dataset.atkIdx;
-            const field = t.dataset.field;
-            state.attacks[idx][field] = t.value;
-        }
-
-        saveState();
-        // We don't render on every input keydown to avoid losing focus, 
-        // but we might need to update dependent values like Modifiers if Attributes change.
-        // For simplicity in this demo, attributes are only changed in the wizard or if I add controls here.
-    });
+    // Input Sync is completely removed since it's a fixed sheet after creation
 }
+
 
 init();
