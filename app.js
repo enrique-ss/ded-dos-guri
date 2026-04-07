@@ -61,8 +61,10 @@ let state = getDefaultState();
 // Temporal wizard state
 let wizardData = {
     active: false,
+    active: false,
     name: '', race: '', cls: '', 
-    bg: '', align: '', 
+    bg: '', align: '', photo: '', 
+    personality: { traits: '', ideals: '', bonds: '', flaws: '' },
     attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
     skills: []
 };
@@ -81,6 +83,7 @@ function getDefaultState() {
         ac: 10,
         speed: 9,
         hd: '1d10',
+        photo: '',
         attr: { for: 10, des: 10, con: 10, int: 10, sab: 10, car: 10 },
         profs: [], // Skills IDs
         saves: [], // Attr keys like 'for', 'des'
@@ -143,8 +146,19 @@ function renderSheet() {
     $('display-name').value = state.name;
     const raceName = RACES[state.race]?.name || '---';
     const clsName = CLASSES[state.cls]?.name || '---';
-    $('display-class-lvl').textContent = `${clsName} Nível ${state.level}`;
+    
+    if ($('display-class')) $('display-class').textContent = clsName;
+    if ($('display-level')) $('display-level').textContent = `Nível ${state.level}`;
     $('display-race').textContent = raceName;
+    
+    if (state.photo) {
+        $('display-photo').src = state.photo;
+        $('display-photo').style.display = 'block';
+    } else {
+        $('display-photo').style.display = 'none';
+        $('display-photo').src = '';
+    }
+
     $('display-bg').value = state.bg;
     $('display-align').value = state.align;
     $('display-xp').value = state.xp;
@@ -170,7 +184,10 @@ function renderSheet() {
     });
 
     // 3. Insp/Prof/Saves
-    $('check-inspiration').className = 'square-check' + (state.inspiration ? ' active' : '');
+    const inspEl = $('check-inspiration');
+    if (inspEl) {
+        inspEl.className = 'attr-circle' + (state.inspiration ? ' active' : '');
+    }
     const profBonus = Math.ceil(state.level / 4) + 1;
     $('prof-bonus').textContent = '+' + profBonus;
 
@@ -293,6 +310,28 @@ function goToStep(n) {
         if (!wizardData.cls || !wizardData.race) { alert("Escolha Raça e Classe primeiro."); return; }
         loadSkillChoices();
     }
+    if (n === 5) {
+        const selects = document.querySelectorAll('.dist-select');
+        let currentValues = [];
+        selects.forEach(s => {
+            const val = parseInt(s.value);
+            if (!isNaN(val)) {
+                wizardData.attr[s.dataset.attr] = val;
+                currentValues.push(val);
+            }
+        });
+
+        let missing = [];
+        for (let a of STANDARD_ARRAY) {
+            if (!currentValues.includes(a)) {
+                missing.push(a);
+            }
+        }
+        if (missing.length > 0) {
+            alert(`Distribua todos os atributos! Valores faltantes: ${missing.join(', ')}`);
+            return;
+        }
+    }
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     document.getElementById('step-' + n).classList.add('active');
 }
@@ -323,9 +362,26 @@ function loadSkillChoices() {
 }
 
 function finishCreation() {
+    const fileInput = document.getElementById('create-photo');
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            finalizeWizardState(e.target.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        finalizeWizardState('');
+    }
+}
+
+function finalizeWizardState(photoBase64) {
     const name = document.getElementById('create-name').value.trim();
     const bg = document.getElementById('create-bg').value.trim();
     const align = document.getElementById('create-align').value.trim();
+    const tr = document.getElementById('create-traits').value.trim();
+    const id = document.getElementById('create-ideals').value.trim();
+    const bo = document.getElementById('create-bonds').value.trim();
+    const fl = document.getElementById('create-flaws').value.trim();
     
     if (!name || !wizardData.race || !wizardData.cls) {
         alert('Complete o registro primeiro!');
@@ -351,6 +407,11 @@ function finishCreation() {
     state.cls = wizardData.cls;
     state.bg = bg;
     state.align = align;
+    state.photo = photoBase64;
+    state.rpTraits = tr;
+    state.rpIdeals = id;
+    state.rpBonds = bo;
+    state.rpFlaws = fl;
     state.attr = { ...wizardData.attr };
     state.profs = [...wizardData.skills];
 
@@ -421,20 +482,22 @@ function setupEvents() {
         // Wizard Nav
         if (t.id === 'btn-step-2') goToStep(2);
         if (t.id === 'btn-step-3') goToStep(3);
-        if (t.id === 'btn-step-4') {
+        if (t.id === 'btn-step-4') goToStep(4);
+        if (t.id === 'btn-step-5') goToStep(5);
+        if (t.id === 'btn-finish') {
             const max = parseInt(document.getElementById('skills-limit-text')?.dataset.max || 0);
             if (wizardData.skills.length < max) {
                 alert(`Você precisa escolher exatamente ${max} perícias antes de continuar!`);
                 return;
             }
-            goToStep(4);
-            return;
+            finishCreation();
         }
+        
         if (t.id === 'btn-back-0') goToStep(0);
         if (t.id === 'btn-back-1') goToStep(1);
         if (t.id === 'btn-back-2') goToStep(2);
         if (t.id === 'btn-back-3') goToStep(3);
-        if (t.id === 'btn-finish') finishCreation();
+        if (t.id === 'btn-back-4') goToStep(4);
 
         // Skill Selection
         const sCard = t.closest('.choice-skill');
