@@ -3,339 +3,374 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RPG dos Guri</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RPG dos Guri – Ficha de Personagem</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div id="app">
 
-        <!-- ========== WIZARD DE CRIAÇÃO ========== -->
-        <section id="creation-screen" class="full-screen-modal active">
-            <div class="creation-wizard">
-                <h1 class="pocket-logo">RPG dos <span>Guri</span></h1>
-
-                <!-- Step 0: Role Selection -->
-                <div id="step-0" class="wizard-step active">
-                    <h2>Bem-vindo, Viajante</h2>
-                    <p class="step-desc">Como você deseja ingressar nesta jornada?</p>
-                    <div class="role-grid">
-                        <div class="choice-card role-card" data-role="mestre">
-                            <strong>MESTRE</strong>
-                            <small>Guia da Narrativa (Em breve)</small>
-                        </div>
-                        <div class="choice-card role-card" data-role="jogador">
-                            <strong>JOGADOR</strong>
-                            <small>Forje seu Legado</small>
-                        </div>
+        <!-- ========== TELA 1: SELEÇÃO DE PAPEL ========== -->
+        <section id="role-selection" class="full-screen-modal active">
+            <div class="creation-wizard fade-in">
+                <h1 class="pocket-logo cinzel">RPG dos <span>Guri</span></h1>
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Bem-vindo, Viajante</h2>
+                <div class="selection-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="choice-card" data-role="mestre" style="padding: 3rem 1.5rem;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🧙‍♂️</span>
+                        <strong>MESTRE</strong>
+                        <small>Guia da Narrativa</small>
                     </div>
-                </div>
-
-                <!-- Step 1: Nome + Raça -->
-                <div id="step-1" class="wizard-step">
-                    <h2>Seu Destino</h2>
-                    <div class="input-group">
-                        <label>Como você se chama?</label>
-                        <input type="text" id="create-name" placeholder="Ex: Galadrius">
-                    </div>
-                    <label class="section-label">Escolha sua Raça</label>
-                    <div id="race-grid" class="selection-grid"></div>
-                    
-                    <!-- Bonus choice for Human/Half-Elf -->
-                    <div id="racial-choice-area" class="input-group hidden">
-                        <label id="racial-choice-label">Escolha seus bônus (+1 cada):</label>
-                        <div id="racial-choice-grid" class="selection-grid cols-3 small-cards">
-                            <div class="choice-card mini" data-racial-attr="for">FOR</div>
-                            <div class="choice-card mini" data-racial-attr="des">DES</div>
-                            <div class="choice-card mini" data-racial-attr="con">CON</div>
-                            <div class="choice-card mini" data-racial-attr="int">INT</div>
-                            <div class="choice-card mini" data-racial-attr="sab">SAB</div>
-                            <div class="choice-card mini" data-racial-attr="car">CAR</div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-0">⬅ Voltar</button>
-                        <button class="btn-primary" id="btn-step-2">Continuar ⮕</button>
-                    </div>
-                </div>
-
-                <!-- Step 2: Classe -->
-                <div id="step-2" class="wizard-step">
-                    <h2>Caminho Heroico</h2>
-                    <label class="section-label">Escolha sua Classe</label>
-                    <div id="class-grid" class="selection-grid"></div>
-                    <div id="class-info-box" class="info-box hidden">
-                        <p id="class-saves"></p>
-                        <p id="class-profs"></p>
-                    </div>
-                    <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
-                        <button class="btn-primary" id="btn-step-3">Perícias ⮕</button>
-                    </div>
-                </div>
-
-                <!-- Step 3: Perícias -->
-                <div id="step-3" class="wizard-step">
-                    <h2>Especialização</h2>
-                    <p class="step-desc">Selecione <strong id="skill-count">0</strong> perícias para seu herói.</p>
-                    <div id="skill-grid" class="selection-grid cols-2"></div>
-                    <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-2">⬅ Voltar</button>
-                        <button class="btn-primary" id="btn-step-4">Atributos ⮕</button>
-                    </div>
-                </div>
-
-                <!-- Step 4: Atributos -->
-                <div id="step-4" class="wizard-step">
-                    <h2>Forje seu Poder</h2>
-                    <p class="step-desc">Distribua os valores do Array Padrão: <strong>15, 14, 13, 12, 10 e 8</strong>.</p>
-
-                    <div class="dist-grid">
-                        <div class="dist-row">
-                            <span class="dist-label" title="Força">FOR</span>
-                            <select class="dist-select" data-attr="for"></select>
-                        </div>
-                        <div class="dist-row">
-                            <span class="dist-label" title="Destreza">DES</span>
-                            <select class="dist-select" data-attr="des"></select>
-                        </div>
-                        <div class="dist-row">
-                            <span class="dist-label" title="Constituição">CON</span>
-                            <select class="dist-select" data-attr="con"></select>
-                        </div>
-                        <div class="dist-row">
-                            <span class="dist-label" title="Inteligência">INT</span>
-                            <select class="dist-select" data-attr="int"></select>
-                        </div>
-                        <div class="dist-row">
-                            <span class="dist-label" title="Sabedoria">SAB</span>
-                            <select class="dist-select" data-attr="sab"></select>
-                        </div>
-                        <div class="dist-row">
-                            <span class="dist-label" title="Carisma">CAR</span>
-                            <select class="dist-select" data-attr="car"></select>
-                        </div>
-                    </div>
-
-                    <div class="gold-reveal">
-                        <span>💰 Ouro Inicial:</span>
-                        <strong id="create-gold">???</strong>
-                        <button class="btn-roll-gold" id="btn-roll-gold">🎲 Gerar Ouro</button>
-                    </div>
-
-                    <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-3">⬅ Voltar</button>
-                        <button class="btn-primary shine" id="btn-finish">DESPERTAR HERÓI</button>
+                    <div class="choice-card" data-role="jogador" style="padding: 3rem 1.5rem;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">⚔️</span>
+                        <strong>JOGADOR</strong>
+                        <small>Forje seu Legado</small>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ========== MESTRE VIEW (EM BREVE) ========== -->
-        <div id="mestre-view" class="full-screen-modal">
-            <div class="creation-wizard">
-                <h1 class="pocket-logo">RPG dos <span>Guri</span></h1>
-                <h2>Painel do Mestre</h2>
-                <p class="step-desc">O Mestre ainda não mexe por enquanto. Esta funcionalidade está sendo forjada nos fogos de Isengard.</p>
-                <div class="wizard-nav">
-                    <button class="btn-secondary" id="btn-mestre-back">⬅ Voltar ao Menu</button>
+        <!-- ========== TELA 2: CRIAÇÃO DE PERSONAGEM ========== -->
+        <section id="creation-screen" class="full-screen-modal">
+            <div class="creation-wizard fade-in">
+                <h1 class="pocket-logo cinzel">Ficha do <span>Herói</span></h1>
+
+                <!-- Step 1: Identidade -->
+                <div id="step-1" class="wizard-step active">
+                    <h2 class="cinzel">O Registro</h2>
+                    <div class="premium-card form-group">
+                        <div class="detail-item">
+                            <label class="label-tiny">Nome do Personagem</label>
+                            <input type="text" id="create-name" placeholder="Ex: Galadrius" class="char-name-input">
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Antecedente</label>
+                            <input type="text" id="create-bg" placeholder="O que faziam antes de Oakhaven (Ex: Criminoso, Acólito)">
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Alinhamento</label>
+                            <input type="text" id="create-align" placeholder="A bússola moral (Ex: Leal e Bom)">
+                        </div>
+                    </div>
+                    
+                    <label class="label-tiny" style="margin-top: 2rem;">Escolha sua Raça</label>
+                    <div id="race-grid" class="selection-grid"></div>
+                    <div id="race-desc-box" class="desc-box"></div>
+
+                    <div class="wizard-nav">
+                        <button class="btn-ghost" id="btn-back-to-role">Voltar ao Início</button>
+                        <button class="btn-primary" id="btn-step-2">Escolher Classe</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Classe -->
+                <div id="step-2" class="wizard-step">
+                    <h2 class="cinzel">Caminho Heroico</h2>
+                    <div id="class-grid" class="selection-grid"></div>
+                    <div id="class-desc-box" class="desc-box"></div>
+                    <div class="wizard-nav">
+                        <button class="btn-ghost" id="btn-back-1">Voltar</button>
+                        <button class="btn-primary" id="btn-step-3">Distribuir Atributos</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Atributos -->
+                <div id="step-3" class="wizard-step">
+                    <h2 class="cinzel">Forje seu Poder</h2>
+                    <p class="subtitle">Distribua livremente o Array Padrão: <strong>15, 14, 13, 12, 10, 8</strong></p>
+                    
+                    <div class="premium-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="detail-item"><label class="label-tiny">FOR</label><select class="dist-select" data-attr="for"></select></div>
+                        <div class="detail-item"><label class="label-tiny">DES</label><select class="dist-select" data-attr="des"></select></div>
+                        <div class="detail-item"><label class="label-tiny">CON</label><select class="dist-select" data-attr="con"></select></div>
+                        <div class="detail-item"><label class="label-tiny">INT</label><select class="dist-select" data-attr="int"></select></div>
+                        <div class="detail-item"><label class="label-tiny">SAB</label><select class="dist-select" data-attr="sab"></select></div>
+                        <div class="detail-item"><label class="label-tiny">CAR</label><select class="dist-select" data-attr="car"></select></div>
+                    </div>
+
+                    <div class="wizard-nav">
+                        <button class="btn-ghost" id="btn-back-2">Voltar</button>
+                        <button class="btn-primary" id="btn-finish">DESPERTAR HERÓI</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="sheet-view" class="hidden">
+        </section>
 
-            <header class="pocket-header">
-                <div class="header-main">
-                    <div class="header-info">
-                        <h2 id="display-name">---</h2>
-
-                        <div class="specs-chips">
-                            <span id="display-race" class="chip">---</span>
-                            <span id="display-class" class="chip">---</span>
-                            <span id="display-gold" class="chip chip-gold">💰 0</span>
+        <!-- ========== TELA 3: FICHA DE PERSONAGEM UNIFICADA ========== -->
+        <main id="sheet-view" class="full-screen-modal" style="padding: 2rem 1rem;">
+            <div id="sheet-container" class="sheet-container read-only fade-in">
+                
+                <!-- 1. CABEÇALHO (O REGISTRO) -->
+                <header class="sheet-header premium-card">
+                    <div class="header-identity">
+                        <input type="text" id="display-name" class="char-name-input" value="Nome do Herói" placeholder="Nome do Personagem" readonly>
+                        <div class="header-sub">
+                            <span id="display-class-lvl" class="highlight-text cinzel">Guerreiro 1</span>
+                            <span id="display-race" class="muted-text">Humano</span>
                         </div>
                     </div>
-                    <div class="level-box">
-                        <span>NVL</span>
-                        <strong id="display-level">1</strong>
-                        <div class="header-btns">
-                            <button id="btn-level-down" class="btn-lvl-minus">−</button>
-                            <button id="btn-level-up" class="btn-lvl-plus">+</button>
-                            <button id="btn-reset" class="btn-reset">🗑️</button>
+                    <div class="header-details">
+                        <div class="detail-item">
+                            <label class="label-tiny">📜 Antecedente</label>
+                            <input type="text" id="display-bg" value="---" placeholder="Ex: Herói do Povo" readonly>
                         </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">🧭 Alinhamento</label>
+                            <input type="text" id="display-align" value="---" placeholder="A bússola moral" readonly>
+                        </div>
+                        <div class="detail-item flex-center">
+                            <label class="label-tiny">✨ Experiência (Das 5 Subquests)</label>
+                            <input type="number" id="display-xp" value="0" readonly class="xp-input">
+                        </div>
+                    </div>
+                    <button class="btn-ghost" id="btn-reset-char" style="height: 100%; border-color: var(--red); color: var(--red);" title="Resetar Ficha">🧹 Reset</button>
+                </header>
+
+                <div class="sheet-body">
+                    <!-- ================= COLUNA ESQUERDA ================= -->
+                    <div class="sheet-col">
+                        
+                        <!-- 2. ATRIBUTOS BASE (O "Motor") -->
+                        <div class="premium-card">
+                            <label class="label-tiny">2. Atributos Base (O "Motor")</label>
+                            <div class="attributes-grid">
+                                <div class="attr-block" data-attr="for">
+                                    <div class="attr-circle" id="val-for">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">💪 Força</label>
+                                        <small>Poder físico e salto</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-for">+0</div>
+                                </div>
+                                <div class="attr-block" data-attr="des">
+                                    <div class="attr-circle" id="val-des">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">🏃 Destreza</label>
+                                        <small>Agilidade e reflexos</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-des">+0</div>
+                                </div>
+                                <div class="attr-block" data-attr="con">
+                                    <div class="attr-circle" id="val-con">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">🛡️ Const.</label>
+                                        <small>Saúde e resistência</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-con">+0</div>
+                                </div>
+                                <div class="attr-block" data-attr="int">
+                                    <div class="attr-circle" id="val-int">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">🧠 Intelig.</label>
+                                        <small>Memória e lógica</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-int">+0</div>
+                                </div>
+                                <div class="attr-block" data-attr="sab">
+                                    <div class="attr-circle" id="val-sab">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">👁️ Sabedoria</label>
+                                        <small>Intuição e percepção</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-sab">+0</div>
+                                </div>
+                                <div class="attr-block" data-attr="car">
+                                    <div class="attr-circle" id="val-car">10</div>
+                                    <div class="attr-info">
+                                        <label class="label-tiny attr-label">🎭 Carisma</label>
+                                        <small>Força de personalidade</small>
+                                    </div>
+                                    <div class="attr-mod" id="mod-car">+0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. INSPIRAÇÃO, PROFICIÊNCIA E SALVAGUARDAS -->
+                        <div class="premium-card">
+                            <label class="label-tiny">3. Inspiração, Proficiência e Salvaguardas</label>
+                            
+                            <div class="sub-stats-grid">
+                                <div class="icon-box">
+                                    <div class="square-check" id="check-inspiration"></div>
+                                    <div class="info-text">
+                                        <strong>✨ Inspiração</strong>
+                                        <span>(Ganha após ação épica)</span>
+                                    </div>
+                                </div>
+                                <div class="icon-box">
+                                    <div class="attr-mod" id="prof-bonus">+2</div>
+                                    <div class="info-text">
+                                        <strong>🎓 Bônus de Proficiência</strong>
+                                        <span>(Aumenta por nível)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="label-tiny" style="margin-top: 1.5rem;">Salvaguardas (Resistir a Perigos)</label>
+                            <div class="skills-list saves-list" id="saves-list"></div>
+                        </div>
+
+                        <!-- 4. PERÍCIAS (SKILLS) -->
+                        <div class="premium-card">
+                            <label class="label-tiny">4. Perícias (Testes do dia a dia)</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1rem;">Soma Mod. Atributo + Proficiência (se marcado).</p>
+                            <div class="skills-list" id="skills-list"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- ================= COLUNA CENTRAL ================= -->
+                    <div class="sheet-col">
+                        
+                        <!-- 5. BLOCO DE COMBATE -->
+                        <div class="premium-card">
+                            <label class="label-tiny">5. Bloco de Combate (Onde o jogo acontece)</label>
+                            
+                            <div class="combat-stats">
+                                <div class="combat-stat-item">
+                                    <label class="label-tiny">🛡️ CA</label>
+                                    <input type="number" id="display-ac" value="10" readonly title="Classe de Armadura (Depende de Oakhaven)">
+                                </div>
+                                <div class="combat-stat-item">
+                                    <label class="label-tiny">⚡ Iniciativa</label>
+                                    <div id="display-initiative" class="stat-big">+0</div>
+                                </div>
+                                <div class="combat-stat-item">
+                                    <label class="label-tiny">🏃 Deslocamento</label>
+                                    <div id="display-speed" class="stat-big">9m</div>
+                                </div>
+                            </div>
+
+                            <div class="hp-section">
+                                <div class="hp-header">
+                                    <label class="label-tiny">❤️ Pontos de Vida (PV)</label>
+                                    <span id="hp-text" class="highlight-text">10 / 10</span>
+                                </div>
+                                <div class="hp-track">
+                                    <div class="hp-fill" id="hp-fill-bar"></div>
+                                </div>
+                                <div class="hp-controls">
+                                    <button class="hp-btn" data-delta="-1">−</button>
+                                    <input type="number" id="hp-current" value="10" readonly>
+                                    <button class="hp-btn" data-delta="1">+</button>
+                                    <span class="hp-divider">/</span>
+                                    <input type="number" id="hp-max" value="10" readonly title="MÁX: Dado da classe + Mod. Constituição">
+                                </div>
+                            </div>
+
+                            <div class="combat-stats" style="grid-template-columns: 1fr 1.5fr;">
+                                <div class="combat-stat-item">
+                                    <label class="label-tiny">🎲 Dados de Vida</label>
+                                    <input type="text" id="display-hd" value="1d10" readonly title="Usados em descansos">
+                                </div>
+                                <div class="combat-stat-item">
+                                    <label class="label-tiny">💀 Salvaguarda contra Morte</label>
+                                    <p class="muted-text" style="font-size: 0.65rem; line-height: 1.2;">Até o Cen. 3 apenas desmaiam. A partir do 4 (3 suc = est / 3 falhas = morte)</p>
+                                    <div class="death-saves">
+                                        <div class="d-save-group">
+                                            <div class="dot-check ds-success"></div>
+                                            <div class="dot-check ds-success"></div>
+                                            <div class="dot-check ds-success"></div>
+                                        </div>
+                                        <div class="d-save-group">
+                                            <div class="dot-check ds-fail"></div>
+                                            <div class="dot-check ds-fail"></div>
+                                            <div class="dot-check ds-fail"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. ATAQUES E CONJURAÇÃO -->
+                        <div class="premium-card group-flex">
+                            <label class="label-tiny">6. Ataques e Conjuração</label>
+                            
+                            <div class="attacks-header">
+                                <span>🗡️ Nome</span>
+                                <span class="txt-center">Bônus Ataque</span>
+                                <span class="txt-center">Dano/Tipo</span>
+                            </div>
+                            
+                            <div id="attacks-list" class="attacks-list"></div>
+                            
+                            <button class="btn-ghost" id="add-attack" style="border-style: dashed; padding: 1rem;">+ Adicionar Arma/Magia</button>
+                        </div>
+
+                        <!-- 7. EQUIPAMENTO E TESOURO -->
+                        <div class="premium-card group-flex">
+                            <label class="label-tiny">7. Equipamento e Tesouro</label>
+                            
+                            <div class="money-box">
+                                <span style="font-size: 1.5rem;">💰</span>
+                                <div style="flex: 1;">
+                                    <label class="label-tiny" style="margin: 0;">Moedas (PO)</label>
+                                    <small class="muted-text">Conquistado nas 7 subquests</small>
+                                </div>
+                                <input type="number" id="gold-po" value="0" readonly class="money-input">
+                            </div>
+
+                            <label class="label-tiny" style="margin-top: 1.5rem;">Inventário</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 0.5rem;">Poções da Meira, armas do Grog, Moeda do Barqueiro...</p>
+                            <textarea id="inventory-list" class="large-textarea" placeholder="Suas posses..." readonly></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- ================= COLUNA DIREITA ================= -->
+                    <div class="sheet-col">
+                        
+                        <!-- 8. ROLEPLAY -->
+                        <div class="premium-card group-flex">
+                            <label class="label-tiny">8. Roleplay (O Lado Direito da Ficha)</label>
+                            <p class="muted-text" style="font-size: 0.8rem; margin-bottom: 1.5rem;">Ajuda os jogadores a interpretarem o herói.</p>
+
+                            <div class="detail-item">
+                                <label class="label-tiny">🎭 Traços de Personalidade</label>
+                                <textarea id="rp-traits" class="rp-textarea" readonly></textarea>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <label class="label-tiny">💡 Ideais</label>
+                                <textarea id="rp-ideals" class="rp-textarea" readonly></textarea>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <label class="label-tiny">🔗 Vínculos</label>
+                                <textarea id="rp-bonds" class="rp-textarea" readonly></textarea>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <label class="label-tiny">⚠️ Fraquezas</label>
+                                <textarea id="rp-flaws" class="rp-textarea" readonly></textarea>
+                            </div>
+
+                            <div class="detail-item" style="flex: 1;">
+                                <label class="label-tiny">🎖️ Características e Talentos</label>
+                                <p class="muted-text" style="font-size: 0.75rem; margin-bottom: 0.5rem;">Habilidades da classe (Ex: Ataque Furtivo, Fúria)</p>
+                                <textarea id="rp-feats" class="large-textarea" readonly></textarea>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="resource-bars">
-                    <div class="res-item hp">
-                        <div class="res-labels"><span>Vida</span><span id="hp-val">0/0</span></div>
-                        <div class="bar-track">
-                            <div id="hp-fill" class="bar-fill"></div>
-                        </div>
-                    </div>
-                    <div class="res-item mp">
-                        <div class="res-labels"><span>Mana</span><span id="mp-val">0/0</span></div>
-                        <div class="bar-track">
-                            <div id="mp-fill" class="bar-fill"></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+                <!-- MASTER MODE TOGGLE (Flutuante dento do Container) -->
+                <button id="master-toggle" class="master-unlock-btn" title="Modo Mestre">🔒</button>
 
-            <main class="pocket-content">
-                <!-- Tab: Status -->
-                <div id="tab-status" class="tab-pane active">
-                    <!-- Pontos livres -->
-                    <div class="free-points-bar">
-                        <span>⭐ Pontos Livres:</span>
-                        <strong id="display-free-points">0</strong>
-                    </div>
+            </div>
+        </main>
 
-                    <div class="stats-grid stats-grid-6">
-                        <div class="stat-block">
-                            <span class="stat-name">FOR</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="for" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-for">0</span>
-                                <button class="attr-btn" data-attr="for" data-dir="1">+</button>
-                            </div>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-name">DES</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="des" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-des">0</span>
-                                <button class="attr-btn" data-attr="des" data-dir="1">+</button>
-                            </div>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-name">CON</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="con" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-con">0</span>
-                                <button class="attr-btn" data-attr="con" data-dir="1">+</button>
-                            </div>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-name">INT</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="int" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-int">0</span>
-                                <button class="attr-btn" data-attr="int" data-dir="1">+</button>
-                            </div>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-name">SAB</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="sab" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-sab">0</span>
-                                <button class="attr-btn" data-attr="sab" data-dir="1">+</button>
-                            </div>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-name">CAR</span>
-                            <div class="stat-row">
-                                <button class="attr-btn" data-attr="car" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-car">0</span>
-                                <button class="attr-btn" data-attr="car" data-dir="1">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Ouro -->
-                    <div class="gold-control">
-                        <label>💰 Ouro</label>
-                        <div class="ctl-row">
-                            <button class="ctl-btn" data-gold="-1">−</button>
-                            <span id="gold-current" class="ctl-value gold-value">0</span>
-                            <button class="ctl-btn" data-gold="1">+</button>
-                        </div>
-                    </div>
-
-                    <div class="quick-controls">
-                        <div class="ctl-group">
-                            <label>PV</label>
-                            <div class="ctl-row">
-                                <button class="ctl-btn" data-stat="hp" data-delta="-1">−</button>
-                                <span id="hp-current" class="ctl-value">0</span>
-                                <button class="ctl-btn" data-stat="hp" data-delta="1">+</button>
-                            </div>
-                        </div>
-                        <div class="ctl-group">
-                            <label>PM</label>
-                            <div class="ctl-row">
-                                <button class="ctl-btn" data-stat="mp" data-delta="-1">−</button>
-                                <span id="mp-current" class="ctl-value">0</span>
-                                <button class="ctl-btn" data-stat="mp" data-delta="1">+</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botão Descanso -->
-                    <div class="rest-section">
-                        <button class="btn-rest" id="btn-rest">🏨 Descansar (Recuperar PV/PM)</button>
-                    </div>
-                </div>
-
-
-                <!-- Tab: Skills -->
-                <div id="tab-skills" class="tab-pane">
-                    <textarea id="abilities" placeholder="Suas habilidades e perícias..."></textarea>
-                </div>
-
-                <!-- Tab: Items -->
-                <div id="tab-items" class="tab-pane">
-                    <textarea id="inventory" placeholder="Equipamentos e itens na mochila..."></textarea>
-                </div>
-
-                <!-- Tab: Log -->
-                <div id="tab-log" class="tab-pane">
-                    <div id="history-log" class="log-scroll"></div>
-                </div>
-
-                <!-- Tab: Notas -->
-                <div id="tab-notes" class="tab-pane">
-                    <textarea id="notes" placeholder="Anotações rápidas da sessão..."></textarea>
-                </div>
-            </main>
-
-            <nav class="pocket-nav">
-                <button class="nav-btn active" data-tab="status">🛡️</button>
-                <button class="nav-btn" data-tab="skills">✨</button>
-                <button class="nav-btn" data-tab="items">🎒</button>
-                <button class="nav-btn" data-tab="log">📜</button>
-                <button class="nav-btn" data-tab="notes">📝</button>
-                <button class="nav-btn-dice" id="roll-dice">🎲</button>
-            </nav>
-
-        </div>
-
-        <!-- Dice Modal (Múltiplos Dados) -->
-        <div id="dice-overlay" class="dice-modal">
-            <div class="dice-box">
-                <span id="dice-result">--</span>
-                <span id="dice-type-label" class="dice-type-label">d20</span>
-                <div class="dice-buttons">
-                    <button class="dice-pick" data-sides="4">d4</button>
-                    <button class="dice-pick" data-sides="6">d6</button>
-                    <button class="dice-pick" data-sides="8">d8</button>
-                    <button class="dice-pick" data-sides="10">d10</button>
-                    <button class="dice-pick" data-sides="12">d12</button>
-                    <button class="dice-pick active" data-sides="20">d20</button>
-                </div>
-                <button id="btn-roll-now" class="btn-primary" style="margin-top:1rem;">ROLAR</button>
-                <button id="btn-close-dice" class="btn-secondary" style="margin-top:0.5rem;">FECHAR</button>
+        <!-- ========== DICE MODAL (Sobrepõe tudo) ========== -->
+        <div id="dice-overlay" class="dice-overlay" style="display: none;">
+            <div class="dice-card fade-in">
+                <div id="dice-result" class="dice-result-text">20</div>
+                <p id="dice-label" class="dice-label-text">Resultado d20</p>
+                <button class="btn-primary" id="close-dice" style="width: 100%; margin-top: 1.5rem;">FECHAR</button>
             </div>
         </div>
+
     </div>
 
     <script src="app.js"></script>
