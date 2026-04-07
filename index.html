@@ -129,8 +129,7 @@
                         </div>
 
                         <label class="label-tiny"
-                            style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;">Coração
-                            e Mente</label>
+                            style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;"></label>
 
                         <div class="detail-item">
                             <label class="label-tiny">Traços de Personalidade</label>
@@ -191,13 +190,18 @@
                             <div class="header-sub">
                                 <div class="badge-role cinzel" id="display-race">Humano</div>
                                 <div class="badge-role cinzel" id="display-class">Guerreiro</div>
-                                <div class="badge-role cinzel" id="display-level"
-                                    style="border-color: rgba(255,255,255,0.2); color: var(--txt-muted); background: transparent;">
-                                    Nível 1</div>
+                                <div style="display: flex; gap: 0.3rem; align-items: center;">
+                                    <div class="badge-role cinzel" id="display-level"
+                                        style="border-color: rgba(255,255,255,0.2); color: var(--txt-muted); background: transparent;">
+                                        Nível 1</div>
+                                    <div class="badge-role cinzel" id="display-xp"
+                                        style="border-color: rgba(255,255,255,0.2); color: var(--txt-muted); background: transparent;"
+                                        title="Experiência (0-5)">XP 0</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="header-details">
+                    <div class="header-details side-by-side">
                         <div class="detail-item">
                             <label class="label-tiny truncate-label">Antecedente</label>
                             <input type="text" id="display-bg" value="---" placeholder="A história base" readonly>
@@ -205,10 +209,6 @@
                         <div class="detail-item">
                             <label class="label-tiny truncate-label">Alinhamento</label>
                             <input type="text" id="display-align" value="---" placeholder="A bússola moral" readonly>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny truncate-label">Experiência</label>
-                            <input type="number" id="display-xp" value="0" readonly class="xp-input">
                         </div>
                     </div>
                 </header>

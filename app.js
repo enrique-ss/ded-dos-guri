@@ -161,7 +161,7 @@ function renderSheet() {
 
     $('display-bg').value = state.bg;
     $('display-align').value = state.align;
-    $('display-xp').value = state.xp;
+    if ($('display-xp')) $('display-xp').textContent = `XP ${state.xp}`;
 
     // 2. Attributes (Main & Sidebar)
     const attrs = ['for', 'des', 'con', 'int', 'sab', 'car'];
