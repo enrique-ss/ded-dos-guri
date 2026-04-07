@@ -16,6 +16,9 @@ app.use(express.static(path.join(__dirname, './')));
 
 io.on('connection', (socket) => {
     console.log('Novo aventureiro conectado:', socket.id);
+    
+    // Envia a lista atual de jogadores para quem acabou de conectar (útil para o Mestre)
+    socket.emit('updatePlayersList', gamePlayers);
 
     // Jogador se identifica e envia sua ficha atual
     socket.on('playerIdentify', (playerData) => {
