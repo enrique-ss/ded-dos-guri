@@ -83,6 +83,16 @@ select {
     display: block;
 }
 
+#sheet-view {
+    padding: 2rem 1rem;
+}
+
+@media (max-width: 400px) {
+    #sheet-view {
+        padding: 1rem 0.5rem;
+    }
+}
+
 /* For the sheet, we want block for full width scrolling */
 
 .fade-in {
@@ -317,6 +327,12 @@ select {
     position: relative;
 }
 
+@media (max-width: 600px) {
+    .premium-card {
+        padding: 1.2rem;
+    }
+}
+
 .label-tiny {
     font-size: 0.75rem;
     font-weight: 700;
@@ -471,22 +487,18 @@ select {
     width: 100%;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
     .header-details.side-by-side {
-        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
     }
-    /* Make the last item (gold) take full width on 2-col layout if needed or just fit */
-    .header-details.side-by-side .detail-item:last-child {
-        grid-column: span 2;
+    
+    .sheet-header .detail-item input {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.4rem;
     }
-}
 
-@media (max-width: 450px) {
-    .header-details.side-by-side {
-        grid-template-columns: 1fr;
-    }
-    .header-details.side-by-side .detail-item:last-child {
-        grid-column: span 1;
+    .label-tiny.truncate-label {
+        font-size: 0.55rem !important;
     }
 }
 
