@@ -132,7 +132,7 @@ select {
 
 .selection-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 1.2rem;
 }
 
@@ -269,6 +269,15 @@ select {
 .attr-slot.active-target {
     border-color: var(--gold);
     box-shadow: 0 0 15px var(--gold-glow);
+}
+
+.gold-input {
+    font-weight: 800 !important;
+    color: var(--gold) !important;
+    border: 1px solid rgba(255,190,11,0.3) !important;
+    background: rgba(0,0,0,0.2) !important;
+    height: 40px;
+    padding-left: 0.8rem !important;
 }
 
 /* ===== BUTTONS ===== */
@@ -455,17 +464,34 @@ select {
     letter-spacing: 1px;
 }
 
-.header-details {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.header-details.side-by-side {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr;
     gap: 0.8rem;
     width: 100%;
 }
 
+@media (max-width: 700px) {
+    .header-details.side-by-side {
+        grid-template-columns: 1fr 1fr;
+    }
+    /* Make the last item (gold) take full width on 2-col layout if needed or just fit */
+    .header-details.side-by-side .detail-item:last-child {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 450px) {
+    .header-details.side-by-side {
+        grid-template-columns: 1fr;
+    }
+    .header-details.side-by-side .detail-item:last-child {
+        grid-column: span 1;
+    }
+}
+
 .header-details.side-by-side .detail-item {
-    flex: 1;
-    min-width: 140px;
+    min-width: 0;
 }
 
 .detail-item {

@@ -19,7 +19,7 @@
                 <h1 class="pocket-logo cinzel">RPG dos <span>Guri</span></h1>
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Escolha sua
                     função</h2>
-                <div class="selection-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="selection-grid" style="gap: 2rem;">
                     <div class="choice-card" data-role="mestre" style="padding: 3rem 1.5rem;">
                         <strong>MESTRE</strong>
                     </div>
@@ -99,7 +99,7 @@
                     </div>
 
                     <!-- Slots de Atributo -->
-                    <div class="premium-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="premium-card selection-grid" style="gap: 1.5rem;">
                         <div class="attr-slot" data-attr="for">
                             <label class="label-tiny">FOR</label>
                             <div class="slot-display">---</div>
@@ -225,7 +225,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="header-details side-by-side" style="display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr; gap: 0.8rem;">
+                    <div class="header-details side-by-side">
                         <div class="detail-item">
                             <label class="label-tiny truncate-label">Antecedente</label>
                             <input type="text" id="display-bg" value="Criminoso" class="protected-field" readonly maxlength="20">
@@ -236,7 +236,7 @@
                         </div>
                         <div class="detail-item">
                             <label class="label-tiny truncate-label">Ouro (PO)</label>
-                            <input type="number" id="gold-po" value="0" readonly style="font-weight: 800; color: var(--gold); border: 1px solid rgba(255,190,11,0.3); background: rgba(0,0,0,0.2); height: 40px; padding-left: 0.8rem;">
+                            <input type="number" id="gold-po" value="0" readonly class="gold-input">
                         </div>
                     </div>
                 </header>
