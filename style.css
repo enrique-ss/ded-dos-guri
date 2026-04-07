@@ -268,21 +268,7 @@ select {
 
 .attr-slot.active-target {
     border-color: var(--gold);
-    animation: pulseBorder 1.5s infinite;
-}
-
-@keyframes pulseBorder {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 190, 11, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 190, 11, 0);
-    }
+    box-shadow: 0 0 15px var(--gold-glow);
 }
 
 /* ===== BUTTONS ===== */
@@ -786,17 +772,35 @@ select {
 
 .attack-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 40px; /* Added space for delete btn */
     gap: 1rem;
     background: rgba(0, 0, 0, 0.3);
     padding: 0.8rem;
     border-radius: 10px;
 }
 
-.attack-row input {
+.armor-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 40px;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.8rem;
+    border-radius: 10px;
+}
+
+.attack-row input, .armor-row input {
     font-size: 1rem;
     font-weight: 600;
     width: 100%;
+}
+
+.master-editable {
+    cursor: pointer !important;
+    transition: all 0.2s;
+}
+.master-editable:hover {
+    background: rgba(255, 190, 11, 0.15) !important;
+    box-shadow: 0 0 15px var(--gold-glow);
 }
 
 /* INVENTARIO E MOEDAS */
@@ -866,6 +870,47 @@ select {
 .read-only .skill-row:hover {
     background: rgba(0, 0, 0, 0.2);
     border-color: var(--panel-border);
+}
+
+/* MASTER PANEL & PLAYER CARDS */
+.player-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player-card:hover {
+    border-color: var(--gold);
+    background: rgba(255, 190, 11, 0.07);
+    transform: translateY(-10px);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.6),
+        0 0 25px var(--gold-glow);
+}
+
+.player-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.player-card:hover::after {
+    opacity: 1;
 }
 
 .btn-reset-discrete {

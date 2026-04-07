@@ -1,5 +1,5 @@
 /**
- * RPG dos Guri – Engine v10.0
+ * RPG dos Guri – Engine v11.0 (Multiusuário Real-time)
  * D&D 5e-style character sheet with Master Mode.
  */
 
@@ -29,7 +29,33 @@ const CLASSES = {
     druida: { name: 'Druida', hp: 8, saves: ['int', 'sab'], hd: '1d8', armor: 'Armaduras leves e médias (não usam metal!), escudos, clavas, lanças...', skillsDesc: 'Escolha 2: Adestrar Animais, Arcanismo, Intuição, Medicina, Natureza, Percepção, Religião e Sobrevivência.', skillChoices: 2, allowSkills: ['animal', 'arcana', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'] }
 };
 
+const BACKGROUNDS = {
+    acolito: { name: 'Acólito', desc: 'Você serviu em um templo e possui conhecimentos religiosos e rituais.' },
+    charlatao: { name: 'Charlatão', desc: 'Um mestre da manipulação e truques, viveu de enganar os outros.' },
+    criminoso: { name: 'Criminoso', desc: 'Você tem contatos no submundo e experiência em atividades ilegais.' },
+    animador: { name: 'Animador', desc: 'Ator, músico ou gladiador; você sabe como entreter uma plateia.' },
+    heroi: { name: 'Herói do Povo', desc: 'Você veio de uma origem humilde e se tornou um defensor dos plebeus.' },
+    artesao: { name: 'Artesão de Guilda', desc: 'Membro de uma guilda mercantil, perito em um ofício específico.' },
+    eremita: { name: 'Eremita', desc: 'Você viveu em isolamento e descobriu um segredo ou iluminação.' },
+    nobre: { name: 'Nobre', desc: 'Você nasceu em uma família influente e possui privilégios sociais.' },
+    forasteiro: { name: 'Forasteiro', desc: 'Um sobrevivente das terras selvagens, acostumado a ambientes rudes.' },
+    sabio: { name: 'Sábio', desc: 'Um estudioso dedicado à busca pelo conhecimento acadêmico.' },
+    marinheiro: { name: 'Marinheiro', desc: 'Um lobo do mar, experiente em navios e navegação.' },
+    soldado: { name: 'Soldado', desc: 'Você foi treinado para a guerra e serviu em um exército ou guarda.' },
+    orfao: { name: 'Órfão', desc: 'Você cresceu nas ruas, sobrevivendo apenas com sua esperteza.' }
+};
 
+const ALIGNMENTS = {
+    lb: { name: 'Leal/Bom', desc: 'Age com honra, compaixão e segue a lei.' },
+    nb: { name: 'Neutro/Bom', desc: 'Faz o melhor que pode para ajudar os outros.' },
+    cb: { name: 'Caótico/Bom', desc: 'Age conforme sua consciência, independente das leis.' },
+    ln: { name: 'Leal/Neutro', desc: 'Age conforme a lei, tradição ou código pessoal.' },
+    nn: { name: 'Neutro', desc: 'Afastado de dilemas morais; age com pragmatismo.' },
+    cn: { name: 'Caótico/Neutro', desc: 'Segue seus caprichos; preza a liberdade individual.' },
+    lm: { name: 'Leal/Mau', desc: 'Toma o que quer dentro dos limites de um código ou lei.' },
+    nm: { name: 'Neutro/Mau', desc: 'Faz qualquer coisa para conseguir o que quer, sem escrúpulos.' },
+    cm: { name: 'Caótico/Mau', desc: 'Age com violência impulsiva e sede de poder.' }
+};
 
 const SKILLS = [
     { id: 'acrobatics', name: 'Acrobacia', attr: 'des' },
@@ -55,19 +81,29 @@ const SKILLS = [
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
 const STORAGE_KEY = 'rpg_guri_v10';
 
+// ==================== REAL-TIME SETUP ====================
+let socket;
+try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
+
+let isMaster = false;
+let connectedPlayers = {}; // { socketId: state }
+let masterEditingId = null; // ID do jogador que o mestre está editando agora
+
 // ==================== STATE ====================
 let state = getDefaultState();
 
 // Temporal wizard state
 let wizardData = {
     active: false,
-    active: false,
+    step: 1,
     name: '', race: '', cls: '',
     bg: '', align: '', photo: '',
     personality: { traits: '', ideals: '', bonds: '', flaws: '' },
     attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
     skills: []
 };
+
+let wizardSelection = null; // Controle de seleção do array de atributos
 
 function getDefaultState() {
     return {
@@ -89,7 +125,8 @@ function getDefaultState() {
         saves: [], // Attr keys like 'for', 'des'
         inspiration: false,
         attacks: [],
-        inventory: '',
+        armors: [],
+        utility: [],
         gold: 0,
         rpTraits: '',
         rpIdeals: '',
@@ -99,11 +136,73 @@ function getDefaultState() {
         deathSaves: { success: 0, fail: 0 }
     };
 }
+
+// ==================== SYNC LOGIC ====================
+function broadcastChange() {
+    if (!socket) return;
+    if (isMaster && masterEditingId) {
+        socket.emit('masterUpdatePlayer', { targetId: masterEditingId, data: state });
+    } else if (!isMaster && state.isCreated) {
+        socket.emit('playerUpdate', state);
+    }
+}
+
+// Para não sobrecarregar o servidor com cada tecla digitada nos textareas
+const debounceSync = debounce(() => {
+    broadcastChange();
+    saveState();
+}, 800);
+
+function debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Escutas do Socket
+if (socket) {
+    // Mestre recebe lista de jogadores
+    socket.on('updatePlayersList', (players) => {
+        connectedPlayers = players;
+        if (isMaster) renderMasterPanel();
+    });
+
+    // Mestre recebe atualização de algum jogador
+    socket.on('playerChanged', ({ id, data }) => {
+        connectedPlayers[id] = data;
+        if (isMaster) {
+            renderMasterPanel();
+            // Se o mestre estiver vendo a ficha desse cara, atualiza a tela
+            if (masterEditingId === id) {
+                state = data;
+                renderSheet();
+            }
+        }
+    });
+
+    // Jogador recebe atualização vinda do Mestre
+    socket.on('serverUpdateSheet', (updatedData) => {
+        if (!isMaster) {
+            state = updatedData;
+            saveState();
+            renderSheet();
+        }
+    });
+}
+
+// ==================== APP LOGIC ====================
 function init() {
     loadState();
     buildGrids();
     setupEvents();
     render();
+
+    // Se já tiver ficha, identifica no servidor
+    if (socket && state.isCreated && !isMaster) {
+        socket.emit('playerIdentify', state);
+    }
 }
 
 function loadState() {
@@ -118,29 +217,86 @@ function saveState() {
 }
 
 function render() {
-    const roleSel = document.getElementById('role-selection');
-    const creation = document.getElementById('creation-screen');
-    const sheet = document.getElementById('sheet-view');
+    const $ = id => document.getElementById(id);
+    const roleSel = $('role-selection');
+    const creation = $('creation-screen');
+    const masterPanel = $('master-panel');
+    const sheet = $('sheet-view');
 
-    // Hide everything first
-    roleSel.classList.remove('active');
-    creation.classList.remove('active');
-    sheet.classList.remove('active');
+    // Hide everything
+    [roleSel, creation, masterPanel, sheet].forEach(el => {
+        if (el) el.classList.remove('active');
+    });
 
-    if (!state.isCreated) {
-        if (wizardData.active) {
-            creation.classList.add('active');
+    if (isMaster) {
+        if (masterEditingId) {
+            if (sheet) {
+                sheet.classList.add('active');
+                renderSheet();
+            }
         } else {
-            roleSel.classList.add('active');
+            if (masterPanel) {
+                masterPanel.classList.add('active');
+                renderMasterPanel();
+            }
+        }
+    } else if (!state.isCreated) {
+        if (wizardData.active) {
+            if (creation) creation.classList.add('active');
+        } else {
+            if (roleSel) roleSel.classList.add('active');
         }
     } else {
-        sheet.classList.add('active');
-        renderSheet();
+        if (sheet) {
+            sheet.classList.add('active');
+            renderSheet();
+        }
     }
 }
 
+function renderMasterPanel() {
+    const grid = document.getElementById('master-grid');
+    if (!grid) return;
+
+    const ids = Object.keys(connectedPlayers);
+    if (ids.length === 0) {
+        grid.innerHTML = '<div class="muted-text cinzel" style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aguardando jogadores entrarem...</div>';
+        return;
+    }
+
+    grid.innerHTML = ids.map(id => {
+        const p = connectedPlayers[id];
+        return `
+            <div class="choice-card player-card" onclick="openPlayerSheet('${id}')">
+                <div class="char-portrait-container" style="width: 60px; height: 60px; margin: 0 auto 1rem;">
+                    ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
+                </div>
+                <strong style="display:block; margin-bottom: 0.3rem;">${p.name || 'Sem Nome'}</strong>
+                <div class="muted-text" style="font-size: 0.7rem; text-transform: uppercase;">
+                    ${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}
+                </div>
+                <div style="margin-top: 1rem; font-weight: 900; color: var(--red);">
+                    HP: ${p.hp.current} / ${p.hp.max}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.openPlayerSheet = function(id) {
+    masterEditingId = id;
+    state = connectedPlayers[id];
+    
+    // Remove read-only para o mestre poder editar tudo
+    const container = document.getElementById('sheet-container');
+    if (container) container.classList.remove('read-only');
+    
+    render();
+};
+
 function renderSheet() {
     const $ = id => document.getElementById(id);
+    const isEditing = isMaster || !document.getElementById('sheet-container').classList.contains('read-only');
 
     // 1. Header
     $('display-name').value = state.name;
@@ -148,78 +304,70 @@ function renderSheet() {
     const clsName = CLASSES[state.cls]?.name || '---';
 
     if ($('display-class')) $('display-class').textContent = clsName;
+    if ($('display-race')) $('display-race').textContent = raceName;
     if ($('display-level')) $('display-level').textContent = `Nível ${state.level}`;
-    $('display-race').textContent = raceName;
 
-    if (state.photo) {
-        $('display-photo').src = state.photo;
-        $('display-photo').style.display = 'block';
-    } else {
-        $('display-photo').style.display = 'none';
-        $('display-photo').src = '';
+    const pImg = $('display-photo');
+    if (pImg) {
+        if (state.photo) {
+            pImg.src = state.photo;
+            pImg.style.display = 'block';
+        } else {
+            pImg.style.display = 'none';
+        }
     }
 
-    $('display-bg').value = state.bg;
-    $('display-align').value = state.align;
-    if ($('display-xp')) $('display-xp').textContent = `XP ${state.xp}`;
+    if ($('display-bg')) $('display-bg').value = state.bg || '---';
+    if ($('display-align')) $('display-align').value = state.align || '---';
 
-    // 2. Attributes (Main & Sidebar)
+    if ($('display-xp')) {
+        $('display-xp').textContent = `XP ${state.xp}`;
+        if (isMaster) $('display-xp').classList.add('master-editable');
+        else $('display-xp').classList.remove('master-editable');
+    }
+    if ($('display-level')) {
+        if (isMaster) $('display-level').classList.add('master-editable');
+        else $('display-level').classList.remove('master-editable');
+    }
+
+    // Unlock fields for Master (except protected)
+    document.querySelectorAll('#sheet-view input, #sheet-view textarea').forEach(el => {
+        if (isMaster && !el.classList.contains('protected-field')) {
+            el.removeAttribute('readonly');
+        } else if (!isMaster && !isEditing) {
+            el.setAttribute('readonly', true);
+        }
+    });
+
+    // 2. Attributes
     const attrs = ['for', 'des', 'con', 'int', 'sab', 'car'];
     attrs.forEach(a => {
         const valEl = $(`val-${a}`);
         const modEl = $(`mod-${a}`);
-        const sValEl = $(`s-val-${a}`);
-
+        const parent = valEl ? valEl.closest('.attr-block') : null;
+        
+        if (parent) {
+            if (isMaster) parent.classList.add('master-editable');
+            else parent.classList.remove('master-editable');
+        }
+        
         const val = state.attr[a];
         const mod = Math.floor((val - 10) / 2);
         const modStr = (mod >= 0 ? '+' : '') + mod;
 
         if (valEl) valEl.textContent = val;
         if (modEl) modEl.textContent = modStr;
-        if (sValEl) {
-            sValEl.textContent = val;
-            const sModEl = sValEl.parentElement.querySelector('.attr-mod');
-            if (sModEl) sModEl.textContent = modStr;
-        }
     });
 
-    // 3. Insp/Prof/Saves
+    // 3. Stats
     const inspEl = $('check-inspiration');
-    if (inspEl) {
-        inspEl.className = 'attr-circle' + (state.inspiration ? ' active' : '');
-    }
+    if (inspEl) inspEl.className = 'attr-circle' + (state.inspiration ? ' active' : '');
+    
     const profBonus = Math.ceil(state.level / 4) + 1;
     $('prof-bonus').textContent = '+' + profBonus;
 
-    // Saves list
-    const savesList = $('saves-list');
-    savesList.innerHTML = attrs.map(a => {
-        const isProf = state.saves.includes(a);
-        const mod = Math.floor((state.attr[a] - 10) / 2);
-        const total = mod + (isProf ? profBonus : 0);
-        return `
-            <div class="skill-row">
-                <div class="dot-check ${isProf ? 'active' : ''}" data-prof-save="${a}"></div>
-                <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${a.toUpperCase()}</span>
-            </div>
-        `;
-    }).join('');
-
-    // 4. Skills
-    const skillsList = $('skills-list');
-    skillsList.innerHTML = SKILLS.map(s => {
-        const isProf = state.profs.includes(s.id);
-        const mod = Math.floor((state.attr[s.attr] - 10) / 2);
-        const total = mod + (isProf ? profBonus : 0);
-        return `
-            <div class="skill-row">
-                <div class="dot-check ${isProf ? 'active' : ''}" data-prof-skill="${s.id}"></div>
-                <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${s.name} <small style="color:#555">(${s.attr.toUpperCase()})</small></span>
-            </div>
-        `;
-    }).join('');
+    renderSaves(profBonus);
+    renderSkills(profBonus);
 
     // 5. Combat
     $('display-ac').value = state.ac;
@@ -237,22 +385,71 @@ function renderSheet() {
         el.className = 'dot-check ds-fail' + (i < state.deathSaves.fail ? ' active' : '');
     });
 
-    // 6. Attacks
-    // Attacks list (read-only view)
+    // 6. Attacks & Armors & Utility Buttons
+    if ($('add-attack')) $('add-attack').style.display = isMaster ? 'block' : 'none';
+    if ($('add-armor')) $('add-armor').style.display = isMaster ? 'block' : 'none';
+    if ($('add-utility')) $('add-utility').style.display = isMaster ? 'block' : 'none';
+    if ($('btn-reset-char')) $('btn-reset-char').style.display = 'block'; // Liberado para todos
+
     const attacksEl = $('attacks-list');
-    attacksEl.innerHTML = state.attacks.map((atk, i) => `
-        <div class="attack-row">
-            <span>${atk.name}</span>
-            <span style="text-align:center;">${atk.bonus}</span>
-            <span style="text-align:center;">${atk.dmg}</span>
-        </div>
-    `).join('');
+    if (attacksEl) {
+        attacksEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 1fr 40px;">
+                <span>Nome</span>
+                <span class="txt-center">Bônus</span>
+                <span class="txt-center">Tipo</span>
+                <span></span>
+            </div>
+            ${(state.attacks || []).map((atk, i) => `
+                <div class="attack-row">
+                    <span style="flex: 2;">${atk.name}</span>
+                    <span style="text-align:center;">${atk.bonus}</span>
+                    <span style="text-align:center;">${atk.dmg}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeAttack(${i})">×</button>` : '<span></span>'}
+                </div>
+            `).join('')}
+        `;
+    }
 
-    // 7. Inventory
-    $('inventory-list').value = state.inventory;
+    // 6.1 Armors
+    const armorsEl = $('armors-list');
+    if (armorsEl) {
+        armorsEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 40px; padding: 0 1rem;">
+                <span style="flex: 2;">Nome</span>
+                <span class="txt-center">Bônus</span>
+                <span></span>
+            </div>
+            ${(state.armors || []).map((arm, i) => `
+                <div class="armor-row">
+                    <span style="flex: 2;">${arm.name}</span>
+                    <span style="text-align:center;">${arm.bonus}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeArmor(${i})">×</button>` : '<span></span>'}
+                </div>
+            `).join('')}
+        `;
+    }
+
+    // 6.2 Utility
+    const utilityEl = $('utility-list');
+    if (utilityEl) {
+        utilityEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 40px; padding: 0 1rem;">
+                <span style="flex: 2;">Nome</span>
+                <span class="txt-center">Bônus</span>
+                <span></span>
+            </div>
+            ${(state.utility || []).map((ut, i) => `
+                <div class="armor-row">
+                    <span style="flex: 2;">${ut.name}</span>
+                    <span style="text-align:center;">${ut.bonus}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeUtility(${i})">×</button>` : '<span></span>'}
+                </div>
+            `).join('')}
+        `;
+    }
+
     $('gold-po').value = state.gold;
-
-    // 8. Roleplay
     $('rp-traits').value = state.rpTraits;
     $('rp-ideals').value = state.rpIdeals;
     $('rp-bonds').value = state.rpBonds;
@@ -260,105 +457,123 @@ function renderSheet() {
     $('rp-feats').value = state.rpFeats;
 }
 
-// ==================== WIZARD LOGIC ====================
+function renderSaves(profBonus) {
+    const attrs = ['for', 'des', 'con', 'int', 'sab', 'car'];
+    document.getElementById('saves-list').innerHTML = attrs.map(a => {
+        const isProf = state.saves.includes(a);
+        const mod = Math.floor((state.attr[a] - 10) / 2);
+        const total = mod + (isProf ? profBonus : 0);
+        return `
+            <div class="skill-row" onclick="toggleSave('${a}')">
+                <div class="dot-check ${isProf ? 'active' : ''}"></div>
+                <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
+                <span class="skill-name">${a.toUpperCase()}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderSkills(profBonus) {
+    document.getElementById('skills-list').innerHTML = SKILLS.map(s => {
+        const isProf = state.profs.includes(s.id);
+        const mod = Math.floor((state.attr[s.attr] - 10) / 2);
+        const total = mod + (isProf ? profBonus : 0);
+        return `
+            <div class="skill-row" onclick="toggleSkill('${s.id}')">
+                <div class="dot-check ${isProf ? 'active' : ''}"></div>
+                <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
+                <span class="skill-name">${s.name} <small style="color:#555">(${s.attr.toUpperCase()})</small></span>
+            </div>
+        `;
+    }).join('');
+}
+
+// ==================== WIZARD & BUILDER ====================
 function buildGrids() {
-    const raceGrid = document.getElementById('race-grid');
-    raceGrid.innerHTML = Object.entries(RACES).map(([id, r]) => `
-        <div class="choice-card" data-key="race" data-id="${id}">
-            <strong>${r.name}</strong>
-        </div>
-    `).join('');
-
-    const classGrid = document.getElementById('class-grid');
-    classGrid.innerHTML = Object.entries(CLASSES).map(([id, c]) => `
-        <div class="choice-card" data-key="cls" data-id="${id}">
-            <strong>${c.name}</strong>
-        </div>
-    `).join('');
-
+    renderChoiceGrid('race-grid', RACES, wizardData.race, 'race');
+    renderChoiceGrid('class-grid', CLASSES, wizardData.cls, 'cls');
+    renderChoiceGrid('bg-grid', BACKGROUNDS, wizardData.bg, 'bg');
+    renderChoiceGrid('align-grid', ALIGNMENTS, wizardData.align, 'align');
     renderAttributeDrafter();
 }
 
-let wizardSelection = null; // Currently selected value from pool
+function renderChoiceGrid(containerId, data, selectedKey, type) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = Object.entries(data).map(([key, val]) => `
+        <div class="choice-card ${selectedKey === key ? 'selected' : ''}" data-key="${type}" data-id="${key}">
+            <strong>${val.name}</strong>
+        </div>
+    `).join('');
+}
 
 function renderAttributeDrafter() {
     const pool = document.getElementById('available-values-pool');
     if (!pool) return;
-
-    // 1. Render Pool
     const usedValues = Object.values(wizardData.attr).filter(v => v !== 0);
-    pool.innerHTML = STANDARD_ARRAY.map(v => {
-        const isUsed = usedValues.includes(v);
-        const isSelected = wizardSelection === v;
-        return `
-            <div class="array-chip ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}" 
-                 onclick="selectFromPool(${v})">
-                ${v}
-            </div>
-        `;
-    }).join('');
-
-    // 2. Render Slots
+    pool.innerHTML = STANDARD_ARRAY.map(v => `
+        <div class="array-chip ${usedValues.includes(v) ? 'used' : ''} ${wizardSelection === v ? 'selected' : ''}" 
+             onclick="selectFromPool(${v})">${v}</div>
+    `).join('');
     document.querySelectorAll('.attr-slot').forEach(slot => {
         const attr = slot.dataset.attr;
         const val = wizardData.attr[attr];
-        const isFilled = val !== 0;
-        
-        slot.className = `attr-slot ${isFilled ? 'filled' : ''} ${wizardSelection ? 'active-target' : ''}`;
-        slot.querySelector('.slot-display').textContent = isFilled ? val : '---';
-        
+        slot.className = `attr-slot ${val !== 0 ? 'filled' : ''} ${wizardSelection ? 'active-target' : ''}`;
+        slot.querySelector('.slot-display').textContent = val !== 0 ? val : '---';
         slot.onclick = () => assignToSlot(attr);
     });
 }
 
-window.selectFromPool = function(val) {
-    if (wizardSelection === val) {
-        wizardSelection = null;
-    } else {
-        wizardSelection = val;
-    }
-    renderAttributeDrafter();
+window.selectFromPool = (v) => { 
+    wizardSelection = (wizardSelection === v ? null : v); 
+    renderAttributeDrafter(); 
 };
 
-window.assignToSlot = function(attr) {
-    const currentVal = wizardData.attr[attr];
-
-    if (!wizardSelection) {
-        // If clicking a filled slot without a selection, clear it
-        if (currentVal !== 0) {
-            wizardData.attr[attr] = 0;
-        }
+window.assignToSlot = (a) => { 
+    // Se clicar no slot com um valor selecionado, atribui.
+    // Se clicar sem nada selecionado, "desatribui" (volta pro pool).
+    if (wizardSelection) {
+        wizardData.attr[a] = wizardSelection; 
+        wizardSelection = null; 
     } else {
-        // If we have a selection, assign it (and swap if needed)
-        wizardData.attr[attr] = wizardSelection;
-        wizardSelection = null;
+        wizardData.attr[a] = 0; 
     }
-    renderAttributeDrafter();
+    renderAttributeDrafter(); 
 };
 
 function goToStep(n) {
-    if (n === 3) {
-        if (!wizardData.cls || !wizardData.race) { alert("Escolha Raça e Classe primeiro."); return; }
-        loadSkillChoices();
-    }
-    if (n === 4) {
-        renderAttributeDrafter();
-    }
-    if (n === 5) {
-        let currentValues = Object.values(wizardData.attr).filter(v => v !== 0);
-        let missing = [];
-        for (let a of STANDARD_ARRAY) {
-            if (!currentValues.includes(a)) {
-                missing.push(a);
+    if (n > wizardData.step) {
+        // Validação ao avançar
+        if (wizardData.step === 1) {
+            const name = document.getElementById('create-name').value.trim();
+            if (!name) { alert("Dê um nome ao seu herói!"); return; }
+            if (!wizardData. race) { alert("Escolha uma Raça!"); return; }
+            if (!wizardData.bg) { alert("Escolha um Antecedente!"); return; }
+            if (!wizardData.align) { alert("Escolha um Alinhamento!"); return; }
+        }
+        if (wizardData.step === 2) {
+            if (!wizardData.cls) { alert("Escolha uma Classe!"); return; }
+        }
+        if (wizardData.step === 4) {
+            const unset = Object.entries(wizardData.attr).filter(([k, v]) => v === 0);
+            if (unset.length > 0) {
+                alert(`Distribua todos os valores! Faltam: ${unset.map(u => u[0].toUpperCase()).join(', ')}`);
+                return;
             }
         }
-        if (missing.length > 0 || currentValues.length < 6) {
-            alert(`Distribua todos os valores!`);
-            return;
-        }
+    }
+
+    wizardData.step = n;
+    if (n === 3) {
+        loadSkillChoices();
+    }
+    if (n === 4) renderAttributeDrafter();
+    if (n === 5) {
+        if (Object.values(wizardData.attr).filter(v => v !== 0).length < 6) { alert("Distribua todos os valores!"); return; }
     }
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step-' + n).classList.add('active');
+    const step = document.getElementById('step-' + n);
+    if (step) step.classList.add('active');
 }
 
 function loadSkillChoices() {
@@ -371,182 +586,281 @@ function loadSkillChoices() {
         allowed = 'all';
     }
 
-    document.getElementById('skills-limit-text').textContent = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (Faltam ${maxPicks - wizardData.skills.length}):`;
-    document.getElementById('skills-limit-text').dataset.max = maxPicks;
+    const limitText = document.getElementById('skills-limit-text');
+    if (limitText) {
+        limitText.textContent = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (Faltam ${maxPicks - wizardData.skills.length}):`;
+        limitText.dataset.max = maxPicks;
+    }
 
     const grid = document.getElementById('skills-selection-grid');
-    grid.innerHTML = SKILLS.map(s => {
-        if (allowed !== 'all' && !allowed.includes(s.id)) return '';
-        const isSelected = wizardData.skills.includes(s.id);
-        return `
-            <div class="choice-card choice-skill ${isSelected ? 'selected' : ''}" data-skill="${s.id}">
-                <strong>${s.name}</strong> <small>(${s.attr.toUpperCase()})</small>
-            </div>
-        `;
-    }).join('');
+    if (grid) {
+        grid.innerHTML = SKILLS.map(s => {
+            if (allowed !== 'all' && !allowed.includes(s.id)) return '';
+            const isSelected = wizardData.skills.includes(s.id);
+            return `
+                <div class="choice-card choice-skill ${isSelected ? 'selected' : ''}" data-skill="${s.id}">
+                    <strong>${s.name}</strong> <small>(${s.attr.toUpperCase()})</small>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 function finishCreation() {
+    const name = document.getElementById('create-name').value.trim();
+    if (!name || !wizardData.race || !wizardData.cls || !wizardData.bg || !wizardData.align) { 
+        alert('Complete todas as seleções do registro!'); 
+        return; 
+    }
+    
     const fileInput = document.getElementById('create-photo');
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            finalizeWizardState(e.target.result);
-        };
+        reader.onload = (e) => finalizeWizard(name, e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
-    } else {
-        finalizeWizardState('');
-    }
+    } else finalizeWizard(name, '');
 }
 
-function finalizeWizardState(photoBase64) {
-    const name = document.getElementById('create-name').value.trim();
-    const bg = document.getElementById('create-bg').value.trim();
-    const align = document.getElementById('create-align').value.trim();
-    const tr = document.getElementById('create-traits').value.trim();
-    const id = document.getElementById('create-ideals').value.trim();
-    const bo = document.getElementById('create-bonds').value.trim();
-    const fl = document.getElementById('create-flaws').value.trim();
-
-    if (!name || !wizardData.race || !wizardData.cls) {
-        alert('Complete o registro primeiro!');
-        return;
-    }
-
-    const attrValues = Object.values(wizardData.attr);
-    if (attrValues.some(v => v === 0) || attrValues.length < 6) {
-        alert('Distribua todos os valores antes de despertar o herói!');
-        return;
-    }
-
-    // Finalize State
+function finalizeWizard(name, photo) {
     state = getDefaultState();
+    state.isCreated = true;
     state.name = name;
     state.race = wizardData.race;
     state.cls = wizardData.cls;
-    state.bg = bg;
-    state.align = align;
-    state.photo = photoBase64;
-    state.rpTraits = tr;
-    state.rpIdeals = id;
-    state.rpBonds = bo;
-    state.rpFlaws = fl;
+    state.photo = photo;
     state.attr = { ...wizardData.attr };
     state.profs = [...wizardData.skills];
+    state.bg = BACKGROUNDS[wizardData.bg].name;
+    state.align = ALIGNMENTS[wizardData.align].name;
 
     const race = RACES[state.race];
     const cls = CLASSES[state.cls];
-
-    // Combine features into rpFeats string
-    state.rpFeats = `[RAÇA: ${race.name}]\n- ${race.modsDesc}\n- ${race.feature}\n\n[CLASSE: ${cls.name}]\n- Armaduras & Armas: ${cls.armor}\n- Perícias: ${cls.skillsDesc}`;
-
     state.speed = race.speed;
-
-    // Apply Class Base
-    const conMod = Math.floor((state.attr.con - 10) / 2);
-    state.hp.max = cls.hp + conMod;
+    state.hp.max = cls.hp + Math.floor((state.attr.con - 10) / 2);
     state.hp.current = state.hp.max;
-    state.hd = '1' + cls.hd.substring(1); // 1d10, etc.
+    state.hd = '1' + cls.hd.substring(1);
     state.saves = [...cls.saves];
-
-    state.isCreated = true;
+    state.rpFeats = `[RAÇA: ${race.name}]\n- ${race.modsDesc}\n- ${race.feature}\n\n[CLASSE: ${cls.name}]\n- Armaduras: ${cls.armor}`;
+    
     saveState();
+    if (socket) socket.emit('playerIdentify', state);
     render();
 }
 
-// ==================== EVENTS ====================
+// ==================== INTERACTIVE SHEET EVENTS ====================
 function setupEvents() {
     document.addEventListener('click', e => {
         const t = e.target;
 
-        // Role Card
+        // Role Choice
         const rCard = t.closest('.choice-card[data-role]');
         if (rCard) {
-            if (rCard.dataset.role === 'jogador') {
-                wizardData.active = true;
-                render();
+            console.log("Role selected:", rCard.dataset.role);
+            if (rCard.dataset.role === 'mestre') {
+                isMaster = true;
             } else {
-                alert('Modo Mestre em desenvolvimento. Por enquanto, crie um personagem como Jogador.');
+                wizardData.active = true;
             }
-            return;
-        }
-
-        // Back to Role Selection
-        if (t.id === 'btn-back-to-role') {
-            wizardData.active = false;
             render();
             return;
         }
 
-        // Choice Card (Race/Class)
-        const cCard = t.closest('.choice-card[data-id]');
-        if (cCard) {
-            const key = cCard.dataset.key;
-            wizardData[key] = cCard.dataset.id;
-            cCard.parentElement.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
-            cCard.classList.add('selected');
+        if (t.id === 'btn-master-exit' || t.id === 'btn-back-to-role') {
+            isMaster = false;
+            wizardData.active = false;
+            masterEditingId = null;
+            render();
+            return;
+        }
 
-            // Render Preview Text
-            if (key === 'race') {
-                const r = RACES[cCard.dataset.id];
-                const box = document.getElementById('race-desc-box');
-                if (box) box.innerHTML = `<strong>${r.name}</strong><br><span style="color:var(--gold);">${r.modsDesc}</span><br><em>${r.feature}</em>`;
-            } else if (key === 'cls') {
-                const c = CLASSES[cCard.dataset.id];
-                const box = document.getElementById('class-desc-box');
-                if (box) box.innerHTML = `<strong>${c.name}</strong><br><span style="color:var(--gold);">Armas e Armaduras:</span> ${c.armor}<br><span style="color:var(--gold);">Perícias:</span> ${c.skillsDesc}`;
+        // Sheet Logic (Click to update)
+        if (t.id === 'check-inspiration') {
+            state.inspiration = !state.inspiration;
+            renderSheet();
+            broadcastChange();
+        }
+
+        if (t.id === 'hp-text') {
+            const val = prompt("Alterar Atuais PV:", state.hp.current);
+            if (val !== null) {
+                state.hp.current = parseInt(val) || 0;
+                renderSheet();
+                broadcastChange();
+            }
+        }
+
+        if (t.id === 'btn-reset-char') {
+            if (confirm('Tem certeza que deseja resetar TUDO? Isso não pode ser desfeito.')) {
+                state = getDefaultState();
+                render();
+                broadcastChange();
+            }
+        }
+
+        if (t.id === 'add-attack') {
+            if (!isMaster) return;
+            const n = prompt("Nome da Arma/Magia:");
+            if (!n) return;
+            const b = prompt("Bônus:");
+            const d = prompt("Tipo (Dano/Efeito):");
+            state.attacks.push({ name: n, bonus: b, dmg: d });
+            renderSheet();
+            broadcastChange();
+        }
+
+        if (t.id === 'add-armor') {
+            if (!isMaster) return;
+            const n = prompt("Nome do Item:");
+            if (!n) return;
+            const b = prompt("Bônus:");
+            state.armors = state.armors || [];
+            state.armors.push({ name: n, bonus: b });
+            renderSheet();
+            broadcastChange();
+        }
+
+        if (t.id === 'add-utility') {
+            if (!isMaster) return;
+            const n = prompt("Nome do Item:");
+            if (!n) return;
+            const b = prompt("Bônus/Qtd:");
+            state.utility = state.utility || [];
+            state.utility.push({ name: n, bonus: b });
+            renderSheet();
+            broadcastChange();
+        }
+
+        // Master Prompts for Stats (since they are not inputs)
+        if (isMaster) {
+            if (t.closest('.attr-block[data-attr]')) {
+                const attrKey = t.closest('.attr-block').dataset.attr;
+                const val = prompt(`Mudar valor de ${attrKey.toUpperCase()}:`, state.attr[attrKey]);
+                if (val !== null) { state.attr[attrKey] = parseInt(val) || 0; renderSheet(); broadcastChange(); }
+            }
+            if (t.id === 'display-level') {
+                const val = prompt("Mudar Nível:", state.level);
+                if (val !== null) { state.level = parseInt(val) || 1; renderSheet(); broadcastChange(); }
+            }
+            if (t.id === 'display-xp') {
+                const val = prompt("Mudar XP (0 a 5):", state.xp);
+                if (val !== null) { state.xp = parseInt(val) || 0; renderSheet(); broadcastChange(); }
             }
         }
 
         // Wizard Nav
-        if (t.id === 'btn-step-2') goToStep(2);
-        if (t.id === 'btn-step-3') goToStep(3);
-        if (t.id === 'btn-step-4') goToStep(4);
-        if (t.id === 'btn-step-5') goToStep(5);
-        if (t.id === 'btn-finish') {
-            const max = parseInt(document.getElementById('skills-limit-text')?.dataset.max || 0);
-            if (wizardData.skills.length < max) {
-                alert(`Você precisa escolher exatamente ${max} perícias antes de continuar!`);
-                return;
+        if (t.id?.startsWith('btn-step-')) goToStep(parseInt(t.id.split('-')[2]));
+        if (t.id?.startsWith('btn-back-')) goToStep(parseInt(t.id.split('-')[2]));
+        if (t.id === 'btn-finish') finishCreation();
+
+        // Choice Cards (Race/Class/BG/Align/Skills)
+        const cCard = t.closest('.choice-card[data-id]');
+        if (cCard && !cCard.classList.contains('choice-skill')) {
+            const key = cCard.dataset.key; // 'race', 'cls', 'bg', 'align'
+            wizardData[key] = cCard.dataset.id;
+            cCard.parentElement.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+            cCard.classList.add('selected');
+
+            // Render Preview Text (Fixed!)
+            let boxId = '';
+            let content = '';
+            
+            if (key === 'race') {
+                const r = RACES[cCard.dataset.id];
+                boxId = 'race-desc-box';
+                content = `<strong>${r.name}</strong><br><span style="color:var(--gold); font-size:0.8rem;">${r.modsDesc}</span><br><em style="font-size:0.9rem;">${r.feature}</em>`;
+            } else if (key === 'cls') {
+                const c = CLASSES[cCard.dataset.id];
+                boxId = 'class-desc-box';
+                content = `<strong>${c.name} (d${c.hd.substring(2)})</strong><br><span style="color:var(--gold); font-size:0.8rem;">Perícias: ${c.skillsDesc}</span><br><em style="font-size:0.9rem;">Equipamento: ${c.armor}</em>`;
+            } else if (key === 'bg') {
+                const b = BACKGROUNDS[cCard.dataset.id];
+                boxId = 'bg-desc-box';
+                content = `<strong>${b.name}</strong><br><em style="font-size:0.9rem;">${b.desc}</em>`;
+            } else if (key === 'align') {
+                const a = ALIGNMENTS[cCard.dataset.id];
+                boxId = 'align-desc-box';
+                content = `<strong>${a.name}</strong><br><em style="font-size:0.9rem;">${a.desc}</em>`;
             }
-            finishCreation();
+
+            const box = document.getElementById(boxId);
+            if (box) box.innerHTML = content;
         }
 
-        if (t.id === 'btn-back-0') goToStep(0);
-        if (t.id === 'btn-back-1') goToStep(1);
-        if (t.id === 'btn-back-2') goToStep(2);
-        if (t.id === 'btn-back-3') goToStep(3);
-        if (t.id === 'btn-back-4') goToStep(4);
-
-        // Skill Selection
         const sCard = t.closest('.choice-skill');
         if (sCard) {
             const sid = sCard.dataset.skill;
-            const max = parseInt(document.getElementById('skills-limit-text').dataset.max || 0);
+            const limitText = document.getElementById('skills-limit-text');
+            const max = parseInt(limitText?.dataset.max || 0);
+
             if (wizardData.skills.includes(sid)) {
-                wizardData.skills = wizardData.skills.filter(id => id !== sid);
-            } else {
-                if (wizardData.skills.length >= max) {
-                    alert('Você já escolheu o máximo de perícias para sua classe!');
-                    return;
-                }
+                wizardData.skills = wizardData.skills.filter(i => i !== sid);
+            } else if (wizardData.skills.length < max) {
                 wizardData.skills.push(sid);
+            } else {
+                alert(`Você só pode escolher ${max} perícias!`);
+                return;
             }
-            loadSkillChoices();
-            return;
+            sCard.classList.toggle('selected');
+            if (limitText) {
+                limitText.textContent = `Escolha ${wizardData.skills.length} / ${max} perícias (Faltam ${max - wizardData.skills.length}):`;
+            }
         }
 
-        // Reset
-        if (t.id === 'btn-reset-char') {
-            if (confirm('REDEFINIR FICHA? Isso apagará tudo.')) {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
-            }
-        }
+        // Death Saves
+        if (t.classList.contains('ds-success')) { state.deathSaves.success = (state.deathSaves.success + 1) % 4; renderSheet(); broadcastChange(); }
+        if (t.classList.contains('ds-fail')) { state.deathSaves.fail = (state.deathSaves.fail + 1) % 4; renderSheet(); broadcastChange(); }
     });
 
-    // Input Sync is completely removed since it's a fixed sheet after creation
+    // Input Sync for text/numbers
+    document.addEventListener('input', e => {
+        const id = e.target.id;
+        const val = e.target.value;
+
+        if (id === 'display-name') state.name = val;
+        if (id === 'display-ac') state.ac = parseInt(val) || 10;
+        if (id === 'display-hd') state.hd = val;
+        if (id === 'display-bg') state.bg = val;
+        if (id === 'display-align') state.align = val;
+        if (id === 'gold-po') state.gold = parseInt(val) || 0;
+        if (id === 'inventory-list') state.inventory = val;
+        if (id?.startsWith('rp-')) {
+            if (id === 'rp-traits') state.rpTraits = val;
+            if (id === 'rp-ideals') state.rpIdeals = val;
+            if (id === 'rp-bonds') state.rpBonds = val;
+            if (id === 'rp-flaws') state.rpFlaws = val;
+            if (id === 'rp-feats') state.rpFeats = val;
+        }
+
+        debounceSync();
+    });
 }
 
+window.toggleSave = (a) => {
+    if (state.saves.includes(a)) state.saves = state.saves.filter(x => x !== a);
+    else state.saves.push(a);
+    renderSheet(); broadcastChange();
+};
 
-init();
+window.toggleSkill = (sid) => {
+    if (state.profs.includes(sid)) state.profs = state.profs.filter(x => x !== sid);
+    else state.profs.push(sid);
+    renderSheet(); broadcastChange();
+};
+
+window.removeAttack = (i) => {
+    state.attacks.splice(i, 1);
+    renderSheet(); broadcastChange();
+};
+
+window.removeArmor = (i) => {
+    state.armors.splice(i, 1);
+    renderSheet(); broadcastChange();
+};
+
+window.removeUtility = (i) => {
+    state.utility.splice(i, 1);
+    renderSheet(); broadcastChange();
+};
+
+// Start
+window.onload = init;
