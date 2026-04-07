@@ -374,11 +374,11 @@ select {
     text-align: center;
 }
 
-.header-details { 
-    display: flex; 
+.header-details {
+    display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.5rem; 
+    gap: 0.5rem;
     width: 100%;
 }
 

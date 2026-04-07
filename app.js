@@ -62,8 +62,8 @@ let state = getDefaultState();
 let wizardData = {
     active: false,
     active: false,
-    name: '', race: '', cls: '', 
-    bg: '', align: '', photo: '', 
+    name: '', race: '', cls: '',
+    bg: '', align: '', photo: '',
     personality: { traits: '', ideals: '', bonds: '', flaws: '' },
     attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
     skills: []
@@ -146,11 +146,11 @@ function renderSheet() {
     $('display-name').value = state.name;
     const raceName = RACES[state.race]?.name || '---';
     const clsName = CLASSES[state.cls]?.name || '---';
-    
+
     if ($('display-class')) $('display-class').textContent = clsName;
     if ($('display-level')) $('display-level').textContent = `Nível ${state.level}`;
     $('display-race').textContent = raceName;
-    
+
     if (state.photo) {
         $('display-photo').src = state.photo;
         $('display-photo').style.display = 'block';
@@ -169,7 +169,7 @@ function renderSheet() {
         const valEl = $(`val-${a}`);
         const modEl = $(`mod-${a}`);
         const sValEl = $(`s-val-${a}`);
-        
+
         const val = state.attr[a];
         const mod = Math.floor((val - 10) / 2);
         const modStr = (mod >= 0 ? '+' : '') + mod;
@@ -283,9 +283,9 @@ function renderStandardArraySelectors() {
     const selects = document.querySelectorAll('.dist-select');
     selects.forEach(sel => {
         const val = sel.value;
-        sel.innerHTML = '<option value="">---</option>' + 
+        sel.innerHTML = '<option value="">---</option>' +
             STANDARD_ARRAY.map(v => `<option value="${v}" ${val == v ? 'selected' : ''}>${v}</option>`).join('');
-        
+
         sel.onchange = () => updateStandardArrayDisables();
     });
     updateStandardArrayDisables();
@@ -294,7 +294,7 @@ function renderStandardArraySelectors() {
 function updateStandardArrayDisables() {
     const selects = document.querySelectorAll('.dist-select');
     const usedValues = Array.from(selects).map(s => s.value).filter(v => v !== "");
-    
+
     selects.forEach(sel => {
         const currentVal = sel.value;
         Array.from(sel.options).forEach(opt => {
@@ -382,7 +382,7 @@ function finalizeWizardState(photoBase64) {
     const id = document.getElementById('create-ideals').value.trim();
     const bo = document.getElementById('create-bonds').value.trim();
     const fl = document.getElementById('create-flaws').value.trim();
-    
+
     if (!name || !wizardData.race || !wizardData.cls) {
         alert('Complete o registro primeiro!');
         return;
@@ -492,7 +492,7 @@ function setupEvents() {
             }
             finishCreation();
         }
-        
+
         if (t.id === 'btn-back-0') goToStep(0);
         if (t.id === 'btn-back-1') goToStep(1);
         if (t.id === 'btn-back-2') goToStep(2);
