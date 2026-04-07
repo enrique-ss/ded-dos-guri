@@ -1,41 +1,44 @@
 /**
- * QuestPad Ultra – Engine v9.1
+ * RPG dos Guri – Engine v9.1
  * Ouro, pontos de atributo distribuíveis, nível máximo 10.
  */
 
 // ==================== SYSTEM DATA ====================
 const RACES = {
-    humano:    { name: 'Humano',     bonus: '+1 em Tudo',              mods: { for: 1, agi: 1, men: 1, soc: 1 } },
-    elfo:      { name: 'Elfo',       bonus: '+2 INT, +1 AGI, -1 FOR',  mods: { for:-1, agi: 1, men: 2, soc: 0 } },
-    anao:      { name: 'Anão',       bonus: '+2 FOR, +1 CON, -1 AGI',  mods: { for: 2, agi:-1, men: 0, soc: 0 } },
-    qareen:    { name: 'Qareen',     bonus: '+2 CAR, +1 INT',          mods: { for: 0, agi: 0, men: 1, soc: 2 } },
-    lefou:     { name: 'Lefou',      bonus: '+2 FOR, +1 AGI, -1 CAR',  mods: { for: 2, agi: 1, men: 0, soc:-1 } },
-    minotauro: { name: 'Minotauro',  bonus: '+2 FOR, +1 CON, -1 INT',  mods: { for: 2, agi: 0, men:-1, soc: 0 } },
-    golem:     { name: 'Golem',      bonus: '+2 FOR, -1 AGI, Imune',   mods: { for: 2, agi:-1, men: 0, soc: 0 } },
-    silfide:   { name: 'Sílfide',    bonus: '+2 CAR, +1 INT, -2 FOR',  mods: { for:-2, agi: 1, men: 1, soc: 2 } },
-    trog:      { name: 'Trog',       bonus: '+2 CON, +1 FOR, -1 INT',  mods: { for: 1, agi: 1, men:-1, soc:-1 } },
-    osteon:    { name: 'Osteon',     bonus: '+1 em 3 Atrib',           mods: { for: 0, agi: 1, men: 1, soc: 1 } }
+    humano: { name: 'Humano', bonus: '+1 em Tudo', mods: { for: 1, agi: 1, men: 1, soc: 1 } },
+    elfo: { name: 'Elfo', bonus: '+2 INT, +1 AGI, -1 FOR', mods: { for: -1, agi: 1, men: 2, soc: 0 } },
+    anao: { name: 'Anão', bonus: '+2 FOR, +1 CON, -1 AGI', mods: { for: 2, agi: -1, men: 0, soc: 0 } },
+    qareen: { name: 'Qareen', bonus: '+2 CAR, +1 INT', mods: { for: 0, agi: 0, men: 1, soc: 2 } },
+    lefou: { name: 'Lefou', bonus: '+2 FOR, +1 AGI, -1 CAR', mods: { for: 2, agi: 1, men: 0, soc: -1 } },
+    minotauro: { name: 'Minotauro', bonus: '+2 FOR, +1 CON, -1 INT', mods: { for: 2, agi: 0, men: -1, soc: 0 } },
+    golem: { name: 'Golem', bonus: '+2 FOR, -1 AGI, Imune', mods: { for: 2, agi: -1, men: 0, soc: 0 } },
+    silfide: { name: 'Sílfide', bonus: '+2 CAR, +1 INT, -2 FOR', mods: { for: -2, agi: 1, men: 1, soc: 2 } },
+    trog: { name: 'Trog', bonus: '+2 CON, +1 FOR, -1 INT', mods: { for: 1, agi: 1, men: -1, soc: -1 } },
+    osteon: { name: 'Osteon', bonus: '+1 em 3 Atrib', mods: { for: 0, agi: 1, men: 1, soc: 1 } }
 };
 
+
+
+
 const CLASSES = {
-    guerreiro: { name: 'Guerreiro', hp: 20, mp: 5,  mod: 'for', bonus: '+1 FOR / Tanque' },
-    mago:      { name: 'Mago',      hp: 8,  mp: 20, mod: 'men', bonus: '+2 INT / Magias' },
-    ladino:    { name: 'Ladino',    hp: 12, mp: 10, mod: 'agi', bonus: '+2 AGI / Sneak' },
-    clerigo:   { name: 'Clérigo',   hp: 16, mp: 15, mod: 'men', bonus: '+1 INT / Divino' },
-    barbaro:   { name: 'Bárbaro',   hp: 24, mp: 5,  mod: 'for', bonus: '+2 FOR / Fúria' },
-    paladino:  { name: 'Paladino',  hp: 20, mp: 10, mod: 'soc', bonus: '+1 CAR / Sagrado' },
-    druida:    { name: 'Druida',    hp: 16, mp: 15, mod: 'men', bonus: '+2 INT / Forma' },
-    bardo:     { name: 'Bardo',     hp: 12, mp: 15, mod: 'soc', bonus: '+2 CAR / Inspirar' },
-    cacador:   { name: 'Caçador',   hp: 16, mp: 10, mod: 'agi', bonus: '+2 AGI / Presa' },
-    inventor:  { name: 'Inventor',  hp: 12, mp: 15, mod: 'men', bonus: '+2 INT / Itens' }
+    guerreiro: { name: 'Guerreiro', hp: 20, mp: 5, mod: 'for', bonus: '+1 FOR / Tanque' },
+    mago: { name: 'Mago', hp: 8, mp: 20, mod: 'men', bonus: '+2 INT / Magias' },
+    ladino: { name: 'Ladino', hp: 12, mp: 10, mod: 'agi', bonus: '+2 AGI / Sneak' },
+    clerigo: { name: 'Clérigo', hp: 16, mp: 15, mod: 'men', bonus: '+1 INT / Divino' },
+    barbaro: { name: 'Bárbaro', hp: 24, mp: 5, mod: 'for', bonus: '+2 FOR / Fúria' },
+    paladino: { name: 'Paladino', hp: 20, mp: 10, mod: 'soc', bonus: '+1 CAR / Sagrado' },
+    druida: { name: 'Druida', hp: 16, mp: 15, mod: 'men', bonus: '+2 INT / Forma' },
+    bardo: { name: 'Bardo', hp: 12, mp: 15, mod: 'soc', bonus: '+2 CAR / Inspirar' },
+    cacador: { name: 'Caçador', hp: 16, mp: 10, mod: 'agi', bonus: '+2 AGI / Presa' },
+    inventor: { name: 'Inventor', hp: 12, mp: 15, mod: 'men', bonus: '+2 INT / Itens' }
 };
 
 const PERSONALITIES = {
-    corajoso:    { name: 'Corajoso',     bonus: '+1 FOR',      mods: { for: 1 } },
-    sabio:       { name: 'Sábio',        bonus: '+1 INT',      mods: { men: 1 } },
-    astuto:      { name: 'Astuto',       bonus: '+1 AGI',      mods: { agi: 1 } },
-    carismatico: { name: 'Carismático',  bonus: '+1 CAR',      mods: { soc: 1 } },
-    resiliente:  { name: 'Resiliente',   bonus: '+5 PV Extra', hpBonus: 5 }
+    corajoso: { name: 'Corajoso', bonus: '+1 FOR', mods: { for: 1 } },
+    sabio: { name: 'Sábio', bonus: '+1 INT', mods: { men: 1 } },
+    astuto: { name: 'Astuto', bonus: '+1 AGI', mods: { agi: 1 } },
+    carismatico: { name: 'Carismático', bonus: '+1 CAR', mods: { soc: 1 } },
+    resiliente: { name: 'Resiliente', bonus: '+5 PV Extra', hpBonus: 5 }
 };
 
 const STORAGE_KEY = 'questpad_v9.1';
@@ -70,7 +73,7 @@ function getDefaultState() {
 function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-        try { state = JSON.parse(raw); } catch(e) { /* ignore */ }
+        try { state = JSON.parse(raw); } catch (e) { /* ignore */ }
         return;
     }
     // Migração
@@ -79,24 +82,24 @@ function loadState() {
         if (legacy) {
             try {
                 const old = JSON.parse(legacy);
-                state.isCreated   = old.isCreated || false;
-                state.name        = old.name || '';
-                state.race        = old.race || '';
-                state.cls         = old.class || old.cls || '';
+                state.isCreated = old.isCreated || false;
+                state.name = old.name || '';
+                state.race = old.race || '';
+                state.cls = old.class || old.cls || '';
                 state.personality = old.personality || '';
-                state.history     = old.history || '';
-                state.level       = old.level || 1;
-                state.photoData   = old.photoPath || old.photoData || '';
-                state.gold        = old.gold || 0;
-                state.freePoints  = old.freePoints || 0;
-                state.hp          = old.hp || { current: 10, max: 10 };
-                state.mp          = old.mp || { current: 10, max: 10 };
-                state.attr        = old.attributes || old.attr || { for: 0, agi: 0, men: 0, soc: 0 };
-                state.abilities   = old.abilities || '';
-                state.inventory   = old.inventory || '';
-                state.logs        = old.logs || [];
+                state.history = old.history || '';
+                state.level = old.level || 1;
+                state.photoData = old.photoPath || old.photoData || '';
+                state.gold = old.gold || 0;
+                state.freePoints = old.freePoints || 0;
+                state.hp = old.hp || { current: 10, max: 10 };
+                state.mp = old.mp || { current: 10, max: 10 };
+                state.attr = old.attributes || old.attr || { for: 0, agi: 0, men: 0, soc: 0 };
+                state.abilities = old.abilities || '';
+                state.inventory = old.inventory || '';
+                state.logs = old.logs || [];
                 saveState();
-            } catch(e) { /* ignore */ }
+            } catch (e) { /* ignore */ }
             return;
         }
     }
@@ -108,7 +111,7 @@ function saveState() {
 
 function addLog(msg) {
     const d = new Date();
-    const t = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    const t = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     state.logs.unshift({ t, msg });
     if (state.logs.length > 50) state.logs.length = 50;
 }
@@ -116,7 +119,7 @@ function addLog(msg) {
 // ==================== RENDER ====================
 function render() {
     const creation = document.getElementById('creation-screen');
-    const sheet    = document.getElementById('sheet-view');
+    const sheet = document.getElementById('sheet-view');
 
     if (!state.isCreated) {
         creation.classList.add('active');
@@ -132,9 +135,9 @@ function renderSheet() {
     const $ = id => document.getElementById(id);
 
     // Info
-    $('display-name').textContent  = state.name || '---';
+    $('display-name').textContent = state.name || '---';
     $('display-level').textContent = state.level;
-    $('display-race').textContent  = RACES[state.race]?.name || '---';
+    $('display-race').textContent = RACES[state.race]?.name || '---';
     $('display-class').textContent = CLASSES[state.cls]?.name || '---';
     $('display-personality').textContent = PERSONALITIES[state.personality]?.name || '---';
     $('display-history').textContent = state.history;
@@ -170,8 +173,8 @@ function renderSheet() {
     // Textareas (only if not focused)
     const abEl = $('abilities');
     const invEl = $('inventory');
-    if (document.activeElement !== abEl)  abEl.value  = state.abilities;
-    if (document.activeElement !== invEl) invEl.value  = state.inventory;
+    if (document.activeElement !== abEl) abEl.value = state.abilities;
+    if (document.activeElement !== invEl) invEl.value = state.inventory;
 
     // Log
     $('history-log').innerHTML = state.logs.map(l =>
@@ -248,7 +251,7 @@ function finishCreation() {
     }
 
     const race = RACES[state.race];
-    const cls  = CLASSES[state.cls];
+    const cls = CLASSES[state.cls];
     const pers = PERSONALITIES[state.personality];
 
     // 1) Calcula base (raça + classe + personalidade) — define o piso
@@ -378,7 +381,7 @@ function setupEvents() {
         const card = t.closest('.choice-card');
         if (card) {
             const key = card.dataset.key;
-            const id  = card.dataset.id;
+            const id = card.dataset.id;
             if (key && id) {
                 state[key] = id;
                 card.parentElement.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
@@ -391,19 +394,19 @@ function setupEvents() {
         const distBtn = t.closest('.dist-btn');
         if (distBtn) {
             const attr = distBtn.dataset.dist;
-            const dir  = parseInt(distBtn.dataset.dir);
+            const dir = parseInt(distBtn.dataset.dir);
             if (attr) wizardDistribute(attr, dir);
             return;
         }
 
         // Wizard steps
-        if (t.closest('#btn-step-2'))  { goToStep(2); return; }
-        if (t.closest('#btn-step-3'))  { goToStep(3); return; }
-        if (t.closest('#btn-step-4'))  { goToStep(4); return; }
-        if (t.closest('#btn-back-1'))  { goToStep(1); return; }
-        if (t.closest('#btn-back-2'))  { goToStep(2); return; }
-        if (t.closest('#btn-back-3'))  { goToStep(3); return; }
-        if (t.closest('#btn-finish'))  { finishCreation(); return; }
+        if (t.closest('#btn-step-2')) { goToStep(2); return; }
+        if (t.closest('#btn-step-3')) { goToStep(3); return; }
+        if (t.closest('#btn-step-4')) { goToStep(4); return; }
+        if (t.closest('#btn-back-1')) { goToStep(1); return; }
+        if (t.closest('#btn-back-2')) { goToStep(2); return; }
+        if (t.closest('#btn-back-3')) { goToStep(3); return; }
+        if (t.closest('#btn-finish')) { finishCreation(); return; }
 
         // Gerar Ouro
         if (t.closest('#btn-roll-gold')) {
@@ -414,15 +417,15 @@ function setupEvents() {
         }
 
         // Dashboard actions
-        if (t.closest('#btn-level-up'))   { changeLevel(1);  return; }
+        if (t.closest('#btn-level-up')) { changeLevel(1); return; }
         if (t.closest('#btn-level-down')) { changeLevel(-1); return; }
-        if (t.closest('#btn-reset'))      { resetAll();      return; }
+        if (t.closest('#btn-reset')) { resetAll(); return; }
 
         // Attribute +/- buttons
         const attrBtn = t.closest('.attr-btn');
         if (attrBtn) {
             const attr = attrBtn.dataset.attr;
-            const dir  = parseInt(attrBtn.dataset.dir);
+            const dir = parseInt(attrBtn.dataset.dir);
             if (attr) changeAttr(attr, dir);
             return;
         }
@@ -436,7 +439,7 @@ function setupEvents() {
                 return;
             }
             // PV/PM
-            const stat  = ctlBtn.dataset.stat;
+            const stat = ctlBtn.dataset.stat;
             const delta = parseInt(ctlBtn.dataset.delta);
             if (stat) changeStat(stat, delta);
             return;

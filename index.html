@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>QuestPad Ultra</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RPG dos Guri</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="app">
 
         <!-- ========== WIZARD DE CRIAÇÃO ========== -->
         <section id="creation-screen" class="full-screen-modal active">
             <div class="creation-wizard">
-                <h1 class="pocket-logo">Quest<span>Pad</span></h1>
+                <h1 class="pocket-logo">RPG dos <span>Guri</span></h1>
 
                 <!-- Step 1: Nome + Raça -->
                 <div id="step-1" class="wizard-step active">
@@ -64,8 +69,9 @@
                 <!-- Step 4: Distribuir Pontos de Atributo -->
                 <div id="step-4" class="wizard-step">
                     <h2>Forje seu Poder</h2>
-                    <p class="step-desc">Você tem <strong id="create-free-points">4</strong> pontos para distribuir entre seus atributos.</p>
-                    
+                    <p class="step-desc">Você tem <strong id="create-free-points">4</strong> pontos para distribuir
+                        entre seus atributos.</p>
+
                     <div class="dist-grid">
                         <div class="dist-row">
                             <span class="dist-label">FOR</span>
@@ -135,11 +141,15 @@
                 <div class="resource-bars">
                     <div class="res-item hp">
                         <div class="res-labels"><span>Vida</span><span id="hp-val">0/0</span></div>
-                        <div class="bar-track"><div id="hp-fill" class="bar-fill"></div></div>
+                        <div class="bar-track">
+                            <div id="hp-fill" class="bar-fill"></div>
+                        </div>
                     </div>
                     <div class="res-item mp">
                         <div class="res-labels"><span>Mana</span><span id="mp-val">0/0</span></div>
-                        <div class="bar-track"><div id="mp-fill" class="bar-fill"></div></div>
+                        <div class="bar-track">
+                            <div id="mp-fill" class="bar-fill"></div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -261,4 +271,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
