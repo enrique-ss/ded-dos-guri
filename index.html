@@ -31,7 +31,9 @@
                     </div>
                     <label class="section-label">Escolha sua Raça</label>
                     <div id="race-grid" class="selection-grid"></div>
-                    <button class="btn-primary" id="btn-step-2">Continuar ⮕</button>
+                    <div class="wizard-btn-wrap">
+                        <button class="btn-primary" id="btn-step-2">Continuar ⮕</button>
+                    </div>
                 </div>
 
                 <!-- Step 2: Classe -->
@@ -39,9 +41,11 @@
                     <h2>Caminho Heroico</h2>
                     <label class="section-label">Escolha sua Classe</label>
                     <div id="class-grid" class="selection-grid"></div>
-                    <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
-                        <button class="btn-primary" id="btn-step-3">Narrativa ⮕</button>
+                    <div class="wizard-btn-wrap">
+                        <div class="wizard-nav">
+                            <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
+                            <button class="btn-primary" id="btn-step-3">Narrativa ⮕</button>
+                        </div>
                     </div>
                 </div>
 
@@ -226,6 +230,11 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Botão Descanso -->
+                    <div class="rest-section">
+                        <button class="btn-rest" id="btn-rest">🏨 Descansar (Recuperar PV/PM)</button>
+                    </div>
                 </div>
 
                 <!-- Tab: Story -->
@@ -248,6 +257,11 @@
                 <div id="tab-log" class="tab-pane">
                     <div id="history-log" class="log-scroll"></div>
                 </div>
+
+                <!-- Tab: Notas -->
+                <div id="tab-notes" class="tab-pane">
+                    <textarea id="notes" placeholder="Anotações rápidas da sessão..."></textarea>
+                </div>
             </main>
 
             <nav class="pocket-nav">
@@ -256,15 +270,26 @@
                 <button class="nav-btn" data-tab="skills">✨</button>
                 <button class="nav-btn" data-tab="items">🎒</button>
                 <button class="nav-btn" data-tab="log">📜</button>
-                <button class="nav-btn-dice" id="roll-d20">🎲</button>
+                <button class="nav-btn" data-tab="notes">📝</button>
+                <button class="nav-btn-dice" id="roll-dice">🎲</button>
             </nav>
         </div>
 
-        <!-- Dice Modal -->
+        <!-- Dice Modal (Múltiplos Dados) -->
         <div id="dice-overlay" class="dice-modal">
             <div class="dice-box">
                 <span id="dice-result">--</span>
-                <button id="btn-close-dice">CONTINUAR</button>
+                <span id="dice-type-label" class="dice-type-label">d20</span>
+                <div class="dice-buttons">
+                    <button class="dice-pick" data-sides="4">d4</button>
+                    <button class="dice-pick" data-sides="6">d6</button>
+                    <button class="dice-pick" data-sides="8">d8</button>
+                    <button class="dice-pick" data-sides="10">d10</button>
+                    <button class="dice-pick" data-sides="12">d12</button>
+                    <button class="dice-pick active" data-sides="20">d20</button>
+                </div>
+                <button id="btn-roll-now" class="btn-primary" style="margin-top:1rem;">ROLAR</button>
+                <button id="btn-close-dice" class="btn-secondary" style="margin-top:0.5rem;">FECHAR</button>
             </div>
         </div>
     </div>

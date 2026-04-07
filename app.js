@@ -5,40 +5,50 @@
 
 // ==================== SYSTEM DATA ====================
 const RACES = {
-    humano: { name: 'Humano', bonus: '+1 em Tudo', mods: { for: 1, agi: 1, men: 1, soc: 1 } },
-    elfo: { name: 'Elfo', bonus: '+2 INT, +1 AGI, -1 FOR', mods: { for: -1, agi: 1, men: 2, soc: 0 } },
-    anao: { name: 'Anão', bonus: '+2 FOR, +1 CON, -1 AGI', mods: { for: 2, agi: -1, men: 0, soc: 0 } },
-    qareen: { name: 'Qareen', bonus: '+2 CAR, +1 INT', mods: { for: 0, agi: 0, men: 1, soc: 2 } },
-    lefou: { name: 'Lefou', bonus: '+2 FOR, +1 AGI, -1 CAR', mods: { for: 2, agi: 1, men: 0, soc: -1 } },
-    minotauro: { name: 'Minotauro', bonus: '+2 FOR, +1 CON, -1 INT', mods: { for: 2, agi: 0, men: -1, soc: 0 } },
-    golem: { name: 'Golem', bonus: '+2 FOR, -1 AGI, Imune', mods: { for: 2, agi: -1, men: 0, soc: 0 } },
-    silfide: { name: 'Sílfide', bonus: '+2 CAR, +1 INT, -2 FOR', mods: { for: -2, agi: 1, men: 1, soc: 2 } },
-    trog: { name: 'Trog', bonus: '+2 CON, +1 FOR, -1 INT', mods: { for: 1, agi: 1, men: -1, soc: -1 } },
-    osteon: { name: 'Osteon', bonus: '+1 em 3 Atrib', mods: { for: 0, agi: 1, men: 1, soc: 1 } }
+    humano:    { name: 'Humano',     bonus: '+1 em Tudo',              mods: { for: 1, agi: 1, men: 1, soc: 1 } },
+    elfo:      { name: 'Elfo',       bonus: '+2 INT, +1 AGI, -1 FOR',  mods: { for:-1, agi: 1, men: 2, soc: 0 } },
+    anao:      { name: 'Anão',       bonus: '+2 FOR, -1 AGI',          mods: { for: 2, agi:-1, men: 0, soc: 0 } },
+    qareen:    { name: 'Qareen',     bonus: '+2 CAR, +1 INT',          mods: { for: 0, agi: 0, men: 1, soc: 2 } },
+    lefou:     { name: 'Lefou',      bonus: '+2 FOR, +1 AGI, -1 CAR',  mods: { for: 2, agi: 1, men: 0, soc:-1 } },
+    minotauro: { name: 'Minotauro',  bonus: '+2 FOR, -1 INT',          mods: { for: 2, agi: 0, men:-1, soc: 0 } },
+    golem:     { name: 'Golem',      bonus: '+2 FOR, -1 AGI',          mods: { for: 2, agi:-1, men: 0, soc: 0 } },
+    silfide:   { name: 'Sílfide',    bonus: '+2 CAR, +1 INT, -2 FOR',  mods: { for:-2, agi: 1, men: 1, soc: 2 } },
+    trog:      { name: 'Trog',       bonus: '+1 FOR, +1 AGI, -1 INT',  mods: { for: 1, agi: 1, men:-1, soc:-1 } },
+    osteon:    { name: 'Osteon',     bonus: '+1 AGI, INT, CAR',         mods: { for: 0, agi: 1, men: 1, soc: 1 } },
+    hynne:     { name: 'Hynne',      bonus: '+2 AGI, +1 CAR, -1 FOR',  mods: { for:-1, agi: 2, men: 0, soc: 1 } },
+    aggelus:   { name: 'Aggelus',    bonus: '+1 CAR, +1 INT, +1 FOR',  mods: { for: 1, agi: 0, men: 1, soc: 1 } },
+    sulfure:   { name: 'Sulfure',    bonus: '+2 FOR, +1 CAR, -1 INT',  mods: { for: 2, agi: 0, men:-1, soc: 1 } },
+    kliren:    { name: 'Kliren',     bonus: '+2 INT, +1 CAR, -1 FOR',  mods: { for:-1, agi: 0, men: 2, soc: 1 } },
+    sereia:    { name: 'Sereia',     bonus: '+2 CAR, -1 FOR, +1 AGI',  mods: { for:-1, agi: 1, men: 0, soc: 2 } }
 };
 
-
-
-
 const CLASSES = {
-    guerreiro: { name: 'Guerreiro', hp: 20, mp: 5, mod: 'for', bonus: '+1 FOR / Tanque' },
-    mago: { name: 'Mago', hp: 8, mp: 20, mod: 'men', bonus: '+2 INT / Magias' },
-    ladino: { name: 'Ladino', hp: 12, mp: 10, mod: 'agi', bonus: '+2 AGI / Sneak' },
-    clerigo: { name: 'Clérigo', hp: 16, mp: 15, mod: 'men', bonus: '+1 INT / Divino' },
-    barbaro: { name: 'Bárbaro', hp: 24, mp: 5, mod: 'for', bonus: '+2 FOR / Fúria' },
-    paladino: { name: 'Paladino', hp: 20, mp: 10, mod: 'soc', bonus: '+1 CAR / Sagrado' },
-    druida: { name: 'Druida', hp: 16, mp: 15, mod: 'men', bonus: '+2 INT / Forma' },
-    bardo: { name: 'Bardo', hp: 12, mp: 15, mod: 'soc', bonus: '+2 CAR / Inspirar' },
-    cacador: { name: 'Caçador', hp: 16, mp: 10, mod: 'agi', bonus: '+2 AGI / Presa' },
-    inventor: { name: 'Inventor', hp: 12, mp: 15, mod: 'men', bonus: '+2 INT / Itens' }
+    guerreiro: { name: 'Guerreiro',  hp: 20, mp: 5,  mod: 'for', bonus: '+1 FOR / Tanque' },
+    mago:      { name: 'Mago',       hp: 8,  mp: 20, mod: 'men', bonus: '+1 INT / Magias' },
+    ladino:    { name: 'Ladino',     hp: 12, mp: 10, mod: 'agi', bonus: '+1 AGI / Furtivo' },
+    clerigo:   { name: 'Clérigo',    hp: 16, mp: 15, mod: 'men', bonus: '+1 INT / Divino' },
+    barbaro:   { name: 'Bárbaro',    hp: 24, mp: 3,  mod: 'for', bonus: '+1 FOR / Fúria' },
+    paladino:  { name: 'Paladino',   hp: 20, mp: 10, mod: 'soc', bonus: '+1 CAR / Sagrado' },
+    druida:    { name: 'Druida',     hp: 16, mp: 15, mod: 'men', bonus: '+1 INT / Forma' },
+    bardo:     { name: 'Bardo',      hp: 12, mp: 15, mod: 'soc', bonus: '+1 CAR / Inspirar' },
+    cacador:   { name: 'Caçador',    hp: 16, mp: 10, mod: 'agi', bonus: '+1 AGI / Rastrear' },
+    inventor:  { name: 'Inventor',   hp: 12, mp: 15, mod: 'men', bonus: '+1 INT / Engenhocas' },
+    monge:     { name: 'Monge',      hp: 14, mp: 12, mod: 'agi', bonus: '+1 AGI / Marcial' },
+    feiticeiro:{ name: 'Feiticeiro', hp: 10, mp: 18, mod: 'soc', bonus: '+1 CAR / Inato' },
+    cavaleiro: { name: 'Cavaleiro',  hp: 22, mp: 5,  mod: 'for', bonus: '+1 FOR / Montaria' },
+    arcanista: { name: 'Arcanista',  hp: 8,  mp: 22, mod: 'men', bonus: '+1 INT / Ritual' },
+    nobre:     { name: 'Nobre',      hp: 14, mp: 12, mod: 'soc', bonus: '+1 CAR / Liderança' }
 };
 
 const PERSONALITIES = {
-    corajoso: { name: 'Corajoso', bonus: '+1 FOR', mods: { for: 1 } },
-    sabio: { name: 'Sábio', bonus: '+1 INT', mods: { men: 1 } },
-    astuto: { name: 'Astuto', bonus: '+1 AGI', mods: { agi: 1 } },
-    carismatico: { name: 'Carismático', bonus: '+1 CAR', mods: { soc: 1 } },
-    resiliente: { name: 'Resiliente', bonus: '+5 PV Extra', hpBonus: 5 }
+    corajoso:   { name: 'Corajoso',    bonus: '+1 FOR',      mods: { for: 1 } },
+    sabio:      { name: 'Sábio',       bonus: '+1 INT',      mods: { men: 1 } },
+    astuto:     { name: 'Astuto',      bonus: '+1 AGI',      mods: { agi: 1 } },
+    carismatico:{ name: 'Carismático', bonus: '+1 CAR',      mods: { soc: 1 } },
+    resiliente: { name: 'Resiliente',  bonus: '+5 PV Extra', hpBonus: 5 },
+    misterioso: { name: 'Misterioso',  bonus: '+1 INT, +1 AGI, -1 FOR', mods: { men: 1, agi: 1, for: -1 } },
+    feroz:      { name: 'Feroz',       bonus: '+2 FOR, -1 CAR',  mods: { for: 2, soc: -1 } },
+    gentil:     { name: 'Gentil',      bonus: '+2 CAR, -1 FOR',  mods: { soc: 2, for: -1 } }
 };
 
 const STORAGE_KEY = 'questpad_v9.1';

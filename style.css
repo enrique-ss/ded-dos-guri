@@ -850,3 +850,88 @@ textarea {
         transform: translate(100%, 100%) rotate(45deg);
     }
 }
+
+/* ===== WIZARD BUTTON WRAP (fix posicionamento) ===== */
+.wizard-btn-wrap {
+    margin-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* ===== DESCANSO ===== */
+.rest-section {
+    margin-top: 1rem;
+}
+
+.btn-rest {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(100, 200, 100, 0.3);
+    border-radius: 14px;
+    background: rgba(100, 200, 100, 0.08);
+    color: #8fdf8f;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-rest:active {
+    background: rgba(100, 200, 100, 0.15);
+}
+
+/* ===== DICE MODAL MULTI ===== */
+.dice-type-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.dice-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.dice-pick {
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #1a1c2c;
+    color: #aaa;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.dice-pick.active {
+    border-color: var(--gold);
+    background: rgba(255, 190, 11, 0.15);
+    color: var(--gold);
+}
+
+.dice-pick:active {
+    transform: scale(0.95);
+}
+
+/* ===== GOLD ROLL BUTTON ===== */
+.btn-roll-gold {
+    background: var(--gold);
+    border: none;
+    color: #000;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.btn-roll-gold:active {
+    transform: scale(0.95);
+}
