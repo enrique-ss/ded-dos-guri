@@ -190,14 +190,99 @@ select {
 }
 
 .dist-select {
-    width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid var(--panel-border);
-    font-size: 1.2rem;
-    font-weight: 800;
+    display: none;
+}
+
+/* ATRIBUTO DRAFTER (Wizard Step 4) */
+.array-chip {
+    background: rgba(255, 190, 11, 0.05);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
     text-align: center;
+    font-size: 1.5rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.array-chip:hover {
+    background: rgba(255, 190, 11, 0.15);
+    transform: translateY(-2px);
+}
+
+.array-chip.selected {
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.array-chip.used {
+    opacity: 0.15;
+    pointer-events: none;
+    border-color: var(--panel-border);
+    color: var(--txt-muted);
+}
+
+.attr-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.2rem 0.5rem;
+    border-radius: 15px;
+    border: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.attr-slot:hover {
+    border-color: var(--gold);
+    background: rgba(255, 190, 11, 0.05);
+}
+
+.slot-display {
+    width: 65px;
+    height: 65px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--txt-muted);
+    transition: all 0.3s;
+}
+
+.attr-slot.filled .slot-display {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(255, 190, 11, 0.1);
+    box-shadow: inset 0 0 15px var(--gold-glow);
+}
+
+.attr-slot.active-target {
+    border-color: var(--gold);
+    animation: pulseBorder 1.5s infinite;
+}
+
+@keyframes pulseBorder {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 190, 11, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 190, 11, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 190, 11, 0);
+    }
 }
 
 /* ===== BUTTONS ===== */

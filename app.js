@@ -276,59 +276,84 @@ function buildGrids() {
         </div>
     `).join('');
 
-    renderStandardArraySelectors();
+    renderAttributeDrafter();
 }
 
-function renderStandardArraySelectors() {
-    const selects = document.querySelectorAll('.dist-select');
-    selects.forEach(sel => {
-        const val = sel.value;
-        sel.innerHTML = '<option value="">---</option>' +
-            STANDARD_ARRAY.map(v => `<option value="${v}" ${val == v ? 'selected' : ''}>${v}</option>`).join('');
+let wizardSelection = null; // Currently selected value from pool
 
-        sel.onchange = () => updateStandardArrayDisables();
+function renderAttributeDrafter() {
+    const pool = document.getElementById('available-values-pool');
+    if (!pool) return;
+
+    // 1. Render Pool
+    const usedValues = Object.values(wizardData.attr).filter(v => v !== 0);
+    pool.innerHTML = STANDARD_ARRAY.map(v => {
+        const isUsed = usedValues.includes(v);
+        const isSelected = wizardSelection === v;
+        return `
+            <div class="array-chip ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''}" 
+                 onclick="selectFromPool(${v})">
+                ${v}
+            </div>
+        `;
+    }).join('');
+
+    // 2. Render Slots
+    document.querySelectorAll('.attr-slot').forEach(slot => {
+        const attr = slot.dataset.attr;
+        const val = wizardData.attr[attr];
+        const isFilled = val !== 0;
+        
+        slot.className = `attr-slot ${isFilled ? 'filled' : ''} ${wizardSelection ? 'active-target' : ''}`;
+        slot.querySelector('.slot-display').textContent = isFilled ? val : '---';
+        
+        slot.onclick = () => assignToSlot(attr);
     });
-    updateStandardArrayDisables();
 }
 
-function updateStandardArrayDisables() {
-    const selects = document.querySelectorAll('.dist-select');
-    const usedValues = Array.from(selects).map(s => s.value).filter(v => v !== "");
+window.selectFromPool = function(val) {
+    if (wizardSelection === val) {
+        wizardSelection = null;
+    } else {
+        wizardSelection = val;
+    }
+    renderAttributeDrafter();
+};
 
-    selects.forEach(sel => {
-        const currentVal = sel.value;
-        Array.from(sel.options).forEach(opt => {
-            if (opt.value === "") return;
-            const isUsedElsewhere = usedValues.includes(opt.value) && opt.value !== currentVal;
-            opt.disabled = isUsedElsewhere;
-        });
-    });
-}
+window.assignToSlot = function(attr) {
+    const currentVal = wizardData.attr[attr];
+
+    if (!wizardSelection) {
+        // If clicking a filled slot without a selection, clear it
+        if (currentVal !== 0) {
+            wizardData.attr[attr] = 0;
+        }
+    } else {
+        // If we have a selection, assign it (and swap if needed)
+        wizardData.attr[attr] = wizardSelection;
+        wizardSelection = null;
+    }
+    renderAttributeDrafter();
+};
 
 function goToStep(n) {
     if (n === 3) {
         if (!wizardData.cls || !wizardData.race) { alert("Escolha Raça e Classe primeiro."); return; }
         loadSkillChoices();
     }
+    if (n === 4) {
+        renderAttributeDrafter();
+    }
     if (n === 5) {
-        const selects = document.querySelectorAll('.dist-select');
-        let currentValues = [];
-        selects.forEach(s => {
-            const val = parseInt(s.value);
-            if (!isNaN(val)) {
-                wizardData.attr[s.dataset.attr] = val;
-                currentValues.push(val);
-            }
-        });
-
+        let currentValues = Object.values(wizardData.attr).filter(v => v !== 0);
         let missing = [];
         for (let a of STANDARD_ARRAY) {
             if (!currentValues.includes(a)) {
                 missing.push(a);
             }
         }
-        if (missing.length > 0) {
-            alert(`Distribua todos os atributos! Valores faltantes: ${missing.join(', ')}`);
+        if (missing.length > 0 || currentValues.length < 6) {
+            alert(`Distribua todos os valores!`);
             return;
         }
     }
@@ -388,17 +413,11 @@ function finalizeWizardState(photoBase64) {
         return;
     }
 
-    const selects = document.querySelectorAll('.dist-select');
-    const attrValues = Array.from(selects).map(s => parseInt(s.value));
-    if (attrValues.some(v => isNaN(v))) {
-        alert('Distribua todos os atributos!');
+    const attrValues = Object.values(wizardData.attr);
+    if (attrValues.some(v => v === 0) || attrValues.length < 6) {
+        alert('Distribua todos os valores antes de despertar o herói!');
         return;
     }
-
-    // Assign Base
-    selects.forEach(s => {
-        wizardData.attr[s.dataset.attr] = parseInt(s.value);
-    });
 
     // Finalize State
     state = getDefaultState();

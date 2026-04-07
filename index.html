@@ -89,24 +89,42 @@
                     </div>
                 </div>
 
-                <!-- Step 4: Atributos -->
                 <div id="step-4" class="wizard-step">
                     <h2 class="cinzel">Forje seu Poder</h2>
-                    <p class="subtitle">Distribua livremente o Array Padrão: <strong>15, 14, 13, 12, 10, 8</strong></p>
+                    <p class="subtitle" style="margin-bottom: 2rem;">Toque em um número e depois no atributo para distribuí-lo. Valores disponíveis:</p>
 
+                    <!-- Pool de Valores Disponíveis -->
+                    <div id="available-values-pool"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2.5rem;">
+                        <!-- Chips gerados via JS -->
+                    </div>
+
+                    <!-- Slots de Atributo -->
                     <div class="premium-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="detail-item"><label class="label-tiny">FOR</label><select class="dist-select"
-                                data-attr="for"></select></div>
-                        <div class="detail-item"><label class="label-tiny">DES</label><select class="dist-select"
-                                data-attr="des"></select></div>
-                        <div class="detail-item"><label class="label-tiny">CON</label><select class="dist-select"
-                                data-attr="con"></select></div>
-                        <div class="detail-item"><label class="label-tiny">INT</label><select class="dist-select"
-                                data-attr="int"></select></div>
-                        <div class="detail-item"><label class="label-tiny">SAB</label><select class="dist-select"
-                                data-attr="sab"></select></div>
-                        <div class="detail-item"><label class="label-tiny">CAR</label><select class="dist-select"
-                                data-attr="car"></select></div>
+                        <div class="attr-slot" data-attr="for">
+                            <label class="label-tiny">FOR</label>
+                            <div class="slot-display">---</div>
+                        </div>
+                        <div class="attr-slot" data-attr="des">
+                            <label class="label-tiny">DES</label>
+                            <div class="slot-display">---</div>
+                        </div>
+                        <div class="attr-slot" data-attr="con">
+                            <label class="label-tiny">CON</label>
+                            <div class="slot-display">---</div>
+                        </div>
+                        <div class="attr-slot" data-attr="int">
+                            <label class="label-tiny">INT</label>
+                            <div class="slot-display">---</div>
+                        </div>
+                        <div class="attr-slot" data-attr="sab">
+                            <label class="label-tiny">SAB</label>
+                            <div class="slot-display">---</div>
+                        </div>
+                        <div class="attr-slot" data-attr="car">
+                            <label class="label-tiny">CAR</label>
+                            <div class="slot-display">---</div>
+                        </div>
                     </div>
 
                     <div class="wizard-nav">
