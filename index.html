@@ -170,7 +170,7 @@
             <div id="sheet-container" class="sheet-container read-only fade-in">
 
                 <!-- 1. CABEÇALHO (O REGISTRO) -->
-                <header class="sheet-header premium-card" style="display: flex; flex-direction: column; gap: 1rem;">
+                <header class="sheet-header premium-card">
 
                     <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                         <div class="char-portrait-container">
@@ -178,14 +178,10 @@
                             <img id="display-photo" src="" alt="Avatar" class="char-portrait" style="display: none;">
                         </div>
 
-                        <div class="header-identity"
-                            style="flex: 1; min-width: 150px; text-align: left; overflow: hidden;">
+                        <div class="header-identity">
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <input type="text" id="display-name" class="char-name-input" value="Nome do Herói"
                                     placeholder="Nome do Personagem" readonly style="margin: 0; flex: 1;">
-                                <button class="btn-ghost" id="btn-reset-char"
-                                    style="padding: 0.4rem 0.8rem; border-color: var(--red); color: var(--red); font-size: 0.75rem; flex-shrink: 0;"
-                                    title="Resetar Ficha">Reset</button>
                             </div>
                             <div class="header-sub">
                                 <div class="badge-role cinzel" id="display-race">Humano</div>
@@ -471,6 +467,8 @@
                                     essenciais e mecânicas passivas que o Mestre insere e altera de fora da ficha.</p>
                                 <textarea id="rp-feats" class="large-textarea" readonly></textarea>
                             </div>
+
+                            <button id="btn-reset-char" class="btn-reset-discrete" title="Redefinir toda a ficha">Resetar Dados da Ficha</button>
                         </div>
 
                     </div>
