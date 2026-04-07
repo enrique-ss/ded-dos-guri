@@ -22,8 +22,24 @@
             <div class="creation-wizard">
                 <h1 class="pocket-logo">RPG dos <span>Guri</span></h1>
 
+                <!-- Step 0: Role Selection -->
+                <div id="step-0" class="wizard-step active">
+                    <h2>Bem-vindo, Viajante</h2>
+                    <p class="step-desc">Como você deseja ingressar nesta jornada?</p>
+                    <div class="role-grid">
+                        <div class="choice-card role-card" data-role="mestre">
+                            <strong>MESTRE</strong>
+                            <small>Guia da Narrativa (Em breve)</small>
+                        </div>
+                        <div class="choice-card role-card" data-role="jogador">
+                            <strong>JOGADOR</strong>
+                            <small>Forje seu Legado</small>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Step 1: Nome + Raça -->
-                <div id="step-1" class="wizard-step active">
+                <div id="step-1" class="wizard-step">
                     <h2>Seu Destino</h2>
                     <div class="input-group">
                         <label>Como você se chama?</label>
@@ -31,7 +47,22 @@
                     </div>
                     <label class="section-label">Escolha sua Raça</label>
                     <div id="race-grid" class="selection-grid"></div>
-                    <div class="wizard-btn-wrap">
+                    
+                    <!-- Bonus choice for Human/Half-Elf -->
+                    <div id="racial-choice-area" class="input-group hidden">
+                        <label id="racial-choice-label">Escolha seus bônus (+1 cada):</label>
+                        <div id="racial-choice-grid" class="selection-grid cols-3 small-cards">
+                            <div class="choice-card mini" data-racial-attr="for">FOR</div>
+                            <div class="choice-card mini" data-racial-attr="des">DES</div>
+                            <div class="choice-card mini" data-racial-attr="con">CON</div>
+                            <div class="choice-card mini" data-racial-attr="int">INT</div>
+                            <div class="choice-card mini" data-racial-attr="sab">SAB</div>
+                            <div class="choice-card mini" data-racial-attr="car">CAR</div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-nav">
+                        <button class="btn-secondary" id="btn-back-0">⬅ Voltar</button>
                         <button class="btn-primary" id="btn-step-2">Continuar ⮕</button>
                     </div>
                 </div>
@@ -41,65 +72,56 @@
                     <h2>Caminho Heroico</h2>
                     <label class="section-label">Escolha sua Classe</label>
                     <div id="class-grid" class="selection-grid"></div>
-                    <div class="wizard-btn-wrap">
-                        <div class="wizard-nav">
-                            <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
-                            <button class="btn-primary" id="btn-step-3">Narrativa ⮕</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 3: Personalidade + História + Foto -->
-                <div id="step-3" class="wizard-step">
-                    <h2>Alma e Imagem</h2>
-                    <label class="section-label">Personalidade</label>
-                    <div id="personality-grid" class="selection-grid cols-3"></div>
-                    <div class="input-group">
-                        <label>História do Herói</label>
-                        <textarea id="create-history" rows="4" placeholder="Conte a origem do seu herói..."></textarea>
-                    </div>
-                    <div class="photo-upload-area">
-                        <input type="file" id="create-photo" accept="image/*" hidden>
-                        <div id="photo-preview" class="photo-box">
-                            <span>📷 Retrato</span>
-                        </div>
+                    <div id="class-info-box" class="info-box hidden">
+                        <p id="class-saves"></p>
+                        <p id="class-profs"></p>
                     </div>
                     <div class="wizard-nav">
-                        <button class="btn-secondary" id="btn-back-2">⬅ Voltar</button>
-                        <button class="btn-primary" id="btn-step-4">Distribuir Pontos ⮕</button>
+                        <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
+                        <button class="btn-primary" id="btn-step-3">Perícias ⮕</button>
                     </div>
                 </div>
 
-                <!-- Step 4: Distribuir Pontos de Atributo -->
+                <!-- Step 3: Perícias -->
+                <div id="step-3" class="wizard-step">
+                    <h2>Especialização</h2>
+                    <p class="step-desc">Selecione <strong id="skill-count">0</strong> perícias para seu herói.</p>
+                    <div id="skill-grid" class="selection-grid cols-2"></div>
+                    <div class="wizard-nav">
+                        <button class="btn-secondary" id="btn-back-2">⬅ Voltar</button>
+                        <button class="btn-primary" id="btn-step-4">Atributos ⮕</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Atributos -->
                 <div id="step-4" class="wizard-step">
                     <h2>Forje seu Poder</h2>
-                    <p class="step-desc">Você tem <strong id="create-free-points">4</strong> pontos para distribuir
-                        entre seus atributos.</p>
+                    <p class="step-desc">Distribua os valores do Array Padrão: <strong>15, 14, 13, 12, 10 e 8</strong>.</p>
 
                     <div class="dist-grid">
                         <div class="dist-row">
-                            <span class="dist-label">FOR</span>
-                            <button class="dist-btn" data-dist="for" data-dir="-1">−</button>
-                            <span class="dist-val" id="dist-for">0</span>
-                            <button class="dist-btn" data-dist="for" data-dir="1">+</button>
+                            <span class="dist-label" title="Força">FOR</span>
+                            <select class="dist-select" data-attr="for"></select>
                         </div>
                         <div class="dist-row">
-                            <span class="dist-label">AGI</span>
-                            <button class="dist-btn" data-dist="agi" data-dir="-1">−</button>
-                            <span class="dist-val" id="dist-agi">0</span>
-                            <button class="dist-btn" data-dist="agi" data-dir="1">+</button>
+                            <span class="dist-label" title="Destreza">DES</span>
+                            <select class="dist-select" data-attr="des"></select>
                         </div>
                         <div class="dist-row">
-                            <span class="dist-label">INT</span>
-                            <button class="dist-btn" data-dist="men" data-dir="-1">−</button>
-                            <span class="dist-val" id="dist-men">0</span>
-                            <button class="dist-btn" data-dist="men" data-dir="1">+</button>
+                            <span class="dist-label" title="Constituição">CON</span>
+                            <select class="dist-select" data-attr="con"></select>
                         </div>
                         <div class="dist-row">
-                            <span class="dist-label">CAR</span>
-                            <button class="dist-btn" data-dist="soc" data-dir="-1">−</button>
-                            <span class="dist-val" id="dist-soc">0</span>
-                            <button class="dist-btn" data-dist="soc" data-dir="1">+</button>
+                            <span class="dist-label" title="Inteligência">INT</span>
+                            <select class="dist-select" data-attr="int"></select>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label" title="Sabedoria">SAB</span>
+                            <select class="dist-select" data-attr="sab"></select>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label" title="Carisma">CAR</span>
+                            <select class="dist-select" data-attr="car"></select>
                         </div>
                     </div>
 
@@ -117,14 +139,24 @@
             </div>
         </section>
 
-        <!-- ========== FICHA / DASHBOARD ========== -->
+        <!-- ========== MESTRE VIEW (EM BREVE) ========== -->
+        <div id="mestre-view" class="full-screen-modal">
+            <div class="creation-wizard">
+                <h1 class="pocket-logo">RPG dos <span>Guri</span></h1>
+                <h2>Painel do Mestre</h2>
+                <p class="step-desc">O Mestre ainda não mexe por enquanto. Esta funcionalidade está sendo forjada nos fogos de Isengard.</p>
+                <div class="wizard-nav">
+                    <button class="btn-secondary" id="btn-mestre-back">⬅ Voltar ao Menu</button>
+                </div>
+            </div>
+        </div>
         <div id="sheet-view" class="hidden">
 
             <header class="pocket-header">
                 <div class="header-main">
-                    <div id="char-avatar" class="avatar-circle"></div>
                     <div class="header-info">
                         <h2 id="display-name">---</h2>
+
                         <div class="specs-chips">
                             <span id="display-race" class="chip">---</span>
                             <span id="display-class" class="chip">---</span>
@@ -167,7 +199,7 @@
                         <strong id="display-free-points">0</strong>
                     </div>
 
-                    <div class="stats-grid">
+                    <div class="stats-grid stats-grid-6">
                         <div class="stat-block">
                             <span class="stat-name">FOR</span>
                             <div class="stat-row">
@@ -177,30 +209,47 @@
                             </div>
                         </div>
                         <div class="stat-block">
-                            <span class="stat-name">AGI</span>
+                            <span class="stat-name">DES</span>
                             <div class="stat-row">
-                                <button class="attr-btn" data-attr="agi" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-agi">0</span>
-                                <button class="attr-btn" data-attr="agi" data-dir="1">+</button>
+                                <button class="attr-btn" data-attr="des" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-des">0</span>
+                                <button class="attr-btn" data-attr="des" data-dir="1">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-name">CON</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="con" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-con">0</span>
+                                <button class="attr-btn" data-attr="con" data-dir="1">+</button>
                             </div>
                         </div>
                         <div class="stat-block">
                             <span class="stat-name">INT</span>
                             <div class="stat-row">
-                                <button class="attr-btn" data-attr="men" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-men">0</span>
-                                <button class="attr-btn" data-attr="men" data-dir="1">+</button>
+                                <button class="attr-btn" data-attr="int" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-int">0</span>
+                                <button class="attr-btn" data-attr="int" data-dir="1">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-name">SAB</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="sab" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-sab">0</span>
+                                <button class="attr-btn" data-attr="sab" data-dir="1">+</button>
                             </div>
                         </div>
                         <div class="stat-block">
                             <span class="stat-name">CAR</span>
                             <div class="stat-row">
-                                <button class="attr-btn" data-attr="soc" data-dir="-1">−</button>
-                                <span class="stat-value" id="attr-soc">0</span>
-                                <button class="attr-btn" data-attr="soc" data-dir="1">+</button>
+                                <button class="attr-btn" data-attr="car" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-car">0</span>
+                                <button class="attr-btn" data-attr="car" data-dir="1">+</button>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Ouro -->
                     <div class="gold-control">
@@ -237,11 +286,6 @@
                     </div>
                 </div>
 
-                <!-- Tab: Story -->
-                <div id="tab-story" class="tab-pane">
-                    <div class="personality-tag" id="display-personality">---</div>
-                    <div id="display-history" class="story-scroll"></div>
-                </div>
 
                 <!-- Tab: Skills -->
                 <div id="tab-skills" class="tab-pane">
@@ -266,13 +310,13 @@
 
             <nav class="pocket-nav">
                 <button class="nav-btn active" data-tab="status">🛡️</button>
-                <button class="nav-btn" data-tab="story">📖</button>
                 <button class="nav-btn" data-tab="skills">✨</button>
                 <button class="nav-btn" data-tab="items">🎒</button>
                 <button class="nav-btn" data-tab="log">📜</button>
                 <button class="nav-btn" data-tab="notes">📝</button>
                 <button class="nav-btn-dice" id="roll-dice">🎲</button>
             </nav>
+
         </div>
 
         <!-- Dice Modal (Múltiplos Dados) -->

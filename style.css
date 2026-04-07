@@ -58,6 +58,7 @@ textarea {
     -webkit-overflow-scrolling: touch;
     padding: 2rem 1.2rem;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .full-screen-modal.active {
@@ -87,7 +88,9 @@ textarea {
 }
 
 .wizard-step.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 @keyframes fadeSlide {
@@ -134,11 +137,19 @@ textarea {
 }
 
 /* Grid de seleção */
-.selection-grid {
+.selection-grid, .role-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
     margin-bottom: 2rem;
+}
+
+.role-card {
+    padding: 2.5rem 1rem !important;
+}
+
+.role-card strong {
+    font-size: 1.2rem !important;
 }
 
 .selection-grid.cols-3 {
@@ -155,14 +166,17 @@ textarea {
     transition: all 0.2s;
 }
 
-.choice-card:active {
-    transform: scale(0.96);
+.choice-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 190, 11, 0.4);
+    transform: translateY(-2px);
 }
 
 .choice-card.selected {
-    background: rgba(255, 190, 11, 0.1);
+    background: linear-gradient(135deg, rgba(255, 190, 11, 0.2), rgba(255, 190, 11, 0.05));
     border-color: var(--gold);
-    box-shadow: 0 0 18px var(--gold-glow);
+    box-shadow: 0 8px 24px var(--gold-glow);
+    transform: translateY(-2px) scale(1.02);
 }
 
 .choice-card strong {
@@ -177,6 +191,41 @@ textarea {
     font-size: 0.6rem;
     color: var(--gold);
     font-weight: 600;
+}
+
+.card-trait {
+    font-size: 0.65rem;
+    color: #888;
+    margin-top: 8px;
+    line-height: 1.3;
+}
+
+.small-cards {
+    gap: 0.5rem !important;
+}
+
+.mini {
+    padding: 0.6rem 0.2rem !important;
+    font-size: 0.75rem !important;
+}
+
+.mini-card {
+    padding: 0.8rem 0.4rem !important;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #bbb;
+}
+
+.info-box strong {
+    color: var(--gold);
 }
 
 /* Inputs */
@@ -264,7 +313,8 @@ textarea {
 .wizard-nav {
     display: flex;
     gap: 1rem;
-    margin-top: 0.5rem;
+    margin-top: auto;
+    padding-top: 2rem;
 }
 
 .wizard-nav .btn-primary {
@@ -613,6 +663,23 @@ textarea {
     color: white;
     min-width: 30px;
 }
+
+.dist-select {
+    background: #1a1c2c;
+    border: 1px solid var(--gold);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 80px;
+    text-align: center;
+}
+
+.stats-grid-6 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 
 /* Gold Control */
 .gold-control {
