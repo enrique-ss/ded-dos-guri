@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>QuestPad Ultra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ========== WIZARD DE CRIAÇÃO ========== -->
+        <section id="creation-screen" class="full-screen-modal active">
+            <div class="creation-wizard">
+                <h1 class="pocket-logo">Quest<span>Pad</span></h1>
+
+                <!-- Step 1: Nome + Raça -->
+                <div id="step-1" class="wizard-step active">
+                    <h2>Seu Destino</h2>
+                    <div class="input-group">
+                        <label>Como você se chama?</label>
+                        <input type="text" id="create-name" placeholder="Ex: Galadrius">
+                    </div>
+                    <label class="section-label">Escolha sua Raça</label>
+                    <div id="race-grid" class="selection-grid"></div>
+                    <button class="btn-primary" id="btn-step-2">Continuar ⮕</button>
+                </div>
+
+                <!-- Step 2: Classe -->
+                <div id="step-2" class="wizard-step">
+                    <h2>Caminho Heroico</h2>
+                    <label class="section-label">Escolha sua Classe</label>
+                    <div id="class-grid" class="selection-grid"></div>
+                    <div class="wizard-nav">
+                        <button class="btn-secondary" id="btn-back-1">⬅ Voltar</button>
+                        <button class="btn-primary" id="btn-step-3">Narrativa ⮕</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Personalidade + História + Foto -->
+                <div id="step-3" class="wizard-step">
+                    <h2>Alma e Imagem</h2>
+                    <label class="section-label">Personalidade</label>
+                    <div id="personality-grid" class="selection-grid cols-3"></div>
+                    <div class="input-group">
+                        <label>História do Herói</label>
+                        <textarea id="create-history" rows="4" placeholder="Conte a origem do seu herói..."></textarea>
+                    </div>
+                    <div class="photo-upload-area">
+                        <input type="file" id="create-photo" accept="image/*" hidden>
+                        <div id="photo-preview" class="photo-box">
+                            <span>📷 Retrato</span>
+                        </div>
+                    </div>
+                    <div class="wizard-nav">
+                        <button class="btn-secondary" id="btn-back-2">⬅ Voltar</button>
+                        <button class="btn-primary" id="btn-step-4">Distribuir Pontos ⮕</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Distribuir Pontos de Atributo -->
+                <div id="step-4" class="wizard-step">
+                    <h2>Forje seu Poder</h2>
+                    <p class="step-desc">Você tem <strong id="create-free-points">4</strong> pontos para distribuir entre seus atributos.</p>
+                    
+                    <div class="dist-grid">
+                        <div class="dist-row">
+                            <span class="dist-label">FOR</span>
+                            <button class="dist-btn" data-dist="for" data-dir="-1">−</button>
+                            <span class="dist-val" id="dist-for">0</span>
+                            <button class="dist-btn" data-dist="for" data-dir="1">+</button>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">AGI</span>
+                            <button class="dist-btn" data-dist="agi" data-dir="-1">−</button>
+                            <span class="dist-val" id="dist-agi">0</span>
+                            <button class="dist-btn" data-dist="agi" data-dir="1">+</button>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">INT</span>
+                            <button class="dist-btn" data-dist="men" data-dir="-1">−</button>
+                            <span class="dist-val" id="dist-men">0</span>
+                            <button class="dist-btn" data-dist="men" data-dir="1">+</button>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">CAR</span>
+                            <button class="dist-btn" data-dist="soc" data-dir="-1">−</button>
+                            <span class="dist-val" id="dist-soc">0</span>
+                            <button class="dist-btn" data-dist="soc" data-dir="1">+</button>
+                        </div>
+                    </div>
+
+                    <div class="gold-reveal">
+                        <span>💰 Ouro Inicial:</span>
+                        <strong id="create-gold">???</strong>
+                        <button class="btn-roll-gold" id="btn-roll-gold">🎲 Gerar Ouro</button>
+                    </div>
+
+                    <div class="wizard-nav">
+                        <button class="btn-secondary" id="btn-back-3">⬅ Voltar</button>
+                        <button class="btn-primary shine" id="btn-finish">DESPERTAR HERÓI</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FICHA / DASHBOARD ========== -->
+        <div id="sheet-view" class="hidden">
+
+            <header class="pocket-header">
+                <div class="header-main">
+                    <div id="char-avatar" class="avatar-circle"></div>
+                    <div class="header-info">
+                        <h2 id="display-name">---</h2>
+                        <div class="specs-chips">
+                            <span id="display-race" class="chip">---</span>
+                            <span id="display-class" class="chip">---</span>
+                            <span id="display-gold" class="chip chip-gold">💰 0</span>
+                        </div>
+                    </div>
+                    <div class="level-box">
+                        <span>NVL</span>
+                        <strong id="display-level">1</strong>
+                        <div class="header-btns">
+                            <button id="btn-level-down" class="btn-lvl-minus">−</button>
+                            <button id="btn-level-up" class="btn-lvl-plus">+</button>
+                            <button id="btn-reset" class="btn-reset">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resource-bars">
+                    <div class="res-item hp">
+                        <div class="res-labels"><span>Vida</span><span id="hp-val">0/0</span></div>
+                        <div class="bar-track"><div id="hp-fill" class="bar-fill"></div></div>
+                    </div>
+                    <div class="res-item mp">
+                        <div class="res-labels"><span>Mana</span><span id="mp-val">0/0</span></div>
+                        <div class="bar-track"><div id="mp-fill" class="bar-fill"></div></div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="pocket-content">
+                <!-- Tab: Status -->
+                <div id="tab-status" class="tab-pane active">
+                    <!-- Pontos livres -->
+                    <div class="free-points-bar">
+                        <span>⭐ Pontos Livres:</span>
+                        <strong id="display-free-points">0</strong>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-block">
+                            <span class="stat-name">FOR</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="for" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-for">0</span>
+                                <button class="attr-btn" data-attr="for" data-dir="1">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-name">AGI</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="agi" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-agi">0</span>
+                                <button class="attr-btn" data-attr="agi" data-dir="1">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-name">INT</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="men" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-men">0</span>
+                                <button class="attr-btn" data-attr="men" data-dir="1">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-name">CAR</span>
+                            <div class="stat-row">
+                                <button class="attr-btn" data-attr="soc" data-dir="-1">−</button>
+                                <span class="stat-value" id="attr-soc">0</span>
+                                <button class="attr-btn" data-attr="soc" data-dir="1">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ouro -->
+                    <div class="gold-control">
+                        <label>💰 Ouro</label>
+                        <div class="ctl-row">
+                            <button class="ctl-btn" data-gold="-1">−</button>
+                            <span id="gold-current" class="ctl-value gold-value">0</span>
+                            <button class="ctl-btn" data-gold="1">+</button>
+                        </div>
+                    </div>
+
+                    <div class="quick-controls">
+                        <div class="ctl-group">
+                            <label>PV</label>
+                            <div class="ctl-row">
+                                <button class="ctl-btn" data-stat="hp" data-delta="-1">−</button>
+                                <span id="hp-current" class="ctl-value">0</span>
+                                <button class="ctl-btn" data-stat="hp" data-delta="1">+</button>
+                            </div>
+                        </div>
+                        <div class="ctl-group">
+                            <label>PM</label>
+                            <div class="ctl-row">
+                                <button class="ctl-btn" data-stat="mp" data-delta="-1">−</button>
+                                <span id="mp-current" class="ctl-value">0</span>
+                                <button class="ctl-btn" data-stat="mp" data-delta="1">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Story -->
+                <div id="tab-story" class="tab-pane">
+                    <div class="personality-tag" id="display-personality">---</div>
+                    <div id="display-history" class="story-scroll"></div>
+                </div>
+
+                <!-- Tab: Skills -->
+                <div id="tab-skills" class="tab-pane">
+                    <textarea id="abilities" placeholder="Suas habilidades e perícias..."></textarea>
+                </div>
+
+                <!-- Tab: Items -->
+                <div id="tab-items" class="tab-pane">
+                    <textarea id="inventory" placeholder="Equipamentos e itens na mochila..."></textarea>
+                </div>
+
+                <!-- Tab: Log -->
+                <div id="tab-log" class="tab-pane">
+                    <div id="history-log" class="log-scroll"></div>
+                </div>
+            </main>
+
+            <nav class="pocket-nav">
+                <button class="nav-btn active" data-tab="status">🛡️</button>
+                <button class="nav-btn" data-tab="story">📖</button>
+                <button class="nav-btn" data-tab="skills">✨</button>
+                <button class="nav-btn" data-tab="items">🎒</button>
+                <button class="nav-btn" data-tab="log">📜</button>
+                <button class="nav-btn-dice" id="roll-d20">🎲</button>
+            </nav>
+        </div>
+
+        <!-- Dice Modal -->
+        <div id="dice-overlay" class="dice-modal">
+            <div class="dice-box">
+                <span id="dice-result">--</span>
+                <button id="btn-close-dice">CONTINUAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
