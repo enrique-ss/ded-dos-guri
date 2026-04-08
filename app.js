@@ -724,12 +724,14 @@ function setupEvents() {
 
         // Sheet Logic (Click to update)
         if (t.id === 'check-inspiration') {
+            if (!isMaster) return;
             state.inspiration = !state.inspiration;
             renderSheet();
             broadcastChange();
         }
 
         if (t.id === 'hp-text') {
+            if (!isMaster) return;
             const val = prompt("Alterar Atuais PV:", state.hp.current);
             if (val !== null) {
                 state.hp.current = parseInt(val) || 0;
@@ -859,8 +861,8 @@ function setupEvents() {
         }
 
         // Death Saves
-        if (t.classList.contains('ds-success')) { state.deathSaves.success = (state.deathSaves.success + 1) % 4; renderSheet(); broadcastChange(); }
-        if (t.classList.contains('ds-fail')) { state.deathSaves.fail = (state.deathSaves.fail + 1) % 4; renderSheet(); broadcastChange(); }
+        if (t.classList.contains('ds-success')) { if(!isMaster) return; state.deathSaves.success = (state.deathSaves.success + 1) % 4; renderSheet(); broadcastChange(); }
+        if (t.classList.contains('ds-fail')) { if(!isMaster) return; state.deathSaves.fail = (state.deathSaves.fail + 1) % 4; renderSheet(); broadcastChange(); }
     });
 
     // Input Sync for text/numbers
@@ -894,12 +896,14 @@ function setupEvents() {
 }
 
 window.toggleSave = (a) => {
+    if (!isMaster) return;
     if (state.saves.includes(a)) state.saves = state.saves.filter(x => x !== a);
     else state.saves.push(a);
     renderSheet(); broadcastChange();
 };
 
 window.toggleSkill = (sid) => {
+    if (!isMaster) return;
     if (state.profs.includes(sid)) state.profs = state.profs.filter(x => x !== sid);
     else state.profs.push(sid);
     renderSheet(); broadcastChange();

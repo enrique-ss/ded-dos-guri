@@ -676,9 +676,9 @@ select {
 
 /* SKILLS E SAVES */
 .skills-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem;
 }
 
 .saves-list {
