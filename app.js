@@ -401,17 +401,20 @@ function renderSheet() {
 
     const attacksEl = $('attacks-list');
     if (attacksEl) {
+        const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
         attacksEl.innerHTML = `
-            <div class="attacks-header" style="grid-template-columns: 3fr 1fr 40px;">
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
                 <span>Nome</span>
-                <span class="txt-center">Bônus</span>
-                <span></span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
             </div>
             ${(state.attacks || []).map((atk, i) => `
-                <div class="attack-row">
-                    <span style="flex: 3;">${atk.name}</span>
-                    <span style="text-align:center;">${atk.bonus}</span>
-                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeAttack(${i})">×</button>` : '<span></span>'}
+                <div class="attack-row" style="grid-template-columns: ${gridCols};">
+                    <span>${atk.name}</span>
+                    <span>${atk.bonus}</span>
+                    <span>${atk.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeAttack(${i})">×</button>` : ''}
                 </div>
             `).join('')}
         `;
@@ -420,17 +423,20 @@ function renderSheet() {
     // 6.1 Armors
     const armorsEl = $('armors-list');
     if (armorsEl) {
+        const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
         armorsEl.innerHTML = `
-            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 40px; padding: 0 1rem;">
-                <span style="flex: 2;">Nome</span>
-                <span class="txt-center">Bônus</span>
-                <span></span>
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
+                <span>Nome</span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
             </div>
             ${(state.armors || []).map((arm, i) => `
-                <div class="armor-row">
-                    <span style="flex: 2;">${arm.name}</span>
-                    <span style="text-align:center;">${arm.bonus}</span>
-                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeArmor(${i})">×</button>` : '<span></span>'}
+                <div class="armor-row" style="grid-template-columns: ${gridCols};">
+                    <span>${arm.name}</span>
+                    <span>${arm.bonus}</span>
+                    <span>${arm.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeArmor(${i})">×</button>` : ''}
                 </div>
             `).join('')}
         `;
@@ -439,19 +445,20 @@ function renderSheet() {
     // 6.2 Utility
     const utilityEl = $('utility-list');
     if (utilityEl) {
+        const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
         utilityEl.innerHTML = `
-            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 1fr 40px; padding: 0 1rem;">
-                <span style="flex: 2;">Nome</span>
-                <span class="txt-center">Bônus</span>
-                <span class="txt-center">Qtde</span>
-                <span></span>
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
+                <span>Nome</span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
             </div>
             ${(state.utility || []).map((ut, i) => `
-                <div class="utility-row">
-                    <span style="flex: 2;">${ut.name}</span>
-                    <span style="text-align:center;">${ut.bonus || ''}</span>
-                    <span style="text-align:center;">${ut.qty || ''}</span>
-                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeUtility(${i})">×</button>` : '<span></span>'}
+                <div class="utility-row" style="grid-template-columns: ${gridCols};">
+                    <span>${ut.name}</span>
+                    <span>${ut.bonus || ''}</span>
+                    <span>${ut.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeUtility(${i})">×</button>` : ''}
                 </div>
             `).join('')}
         `;
@@ -734,7 +741,8 @@ function setupEvents() {
             const n = prompt("Nome da Arma/Magia:");
             if (!n) return;
             const b = prompt("Bônus:");
-            state.attacks.push({ name: n, bonus: b });
+            const q = prompt("Quantidade:");
+            state.attacks.push({ name: n, bonus: b, qty: q });
             renderSheet();
             broadcastChange();
         }
@@ -744,8 +752,9 @@ function setupEvents() {
             const n = prompt("Nome do Item:");
             if (!n) return;
             const b = prompt("Bônus:");
+            const q = prompt("Quantidade:");
             state.armors = state.armors || [];
-            state.armors.push({ name: n, bonus: b });
+            state.armors.push({ name: n, bonus: b, qty: q });
             renderSheet();
             broadcastChange();
         }
