@@ -1,0 +1,64 @@
+<section id="history-view" class="full-screen-modal">
+    <div class="sheet-container fade-in">
+        <header class="sheet-header premium-card">
+            <div class="header-main">
+                <h1 class="pocket-logo cinzel" style="font-size: 2rem; margin: 0;">História</h1>
+            </div>
+
+            <div class="header-nav">
+                <button class="nav-btn" data-view="sheet-view">
+                    <span>Ficha</span>
+                </button>
+                <button class="nav-btn" data-view="items-view">
+                    <span>Itens</span>
+                </button>
+                <button class="nav-btn active" data-view="history-view">
+                    <span>História</span>
+                </button>
+                <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red);">
+                    <span>Reset</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="sheet-body" style="grid-template-columns: 1fr;">
+            <div class="sheet-col">
+                <!-- 7. ALMA E PERSONALIDADE -->
+                <div class="premium-card group-flex">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">7. Alma e Personalidade</label>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="detail-item">
+                            <label class="label-tiny">Antecedente</label>
+                            <textarea id="display-bg" class="rp-textarea" maxlength="20" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Alinhamento</label>
+                            <textarea id="display-align" class="rp-textarea" maxlength="20" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Traços de Personalidade</label>
+                            <textarea id="rp-traits" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Ideais</label>
+                            <textarea id="rp-ideals" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Vínculos</label>
+                            <textarea id="rp-bonds" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Fraquezas</label>
+                            <textarea id="rp-flaws" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                    </div>
+
+                    <button id="btn-reset-char" class="btn-reset-discrete" title="Redefinir toda a ficha">Resetar Dados da Ficha</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

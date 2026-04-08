@@ -1,0 +1,16 @@
+<section id="master-panel" class="full-screen-modal">
+    <div class="creation-wizard fade-in" style="max-width: 1200px;">
+        <h1 class="pocket-logo cinzel">Painel do <span>Mestre</span></h1>
+        <p class="subtitle" style="text-align: center; margin-bottom: 3rem;">Aventureiros conectados na sua rede:</p>
+        
+        <div id="master-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+            <!-- Cards de jogadores injetados aqui via JS -->
+            <div class="muted-text cinzel" style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aguardando jogadores entrarem...</div>
+        </div>
+
+        <div class="wizard-nav" style="margin-top: 4rem; justify-content: center;">
+            <button class="btn-ghost" id="btn-master-exit" style="max-width: 300px;">Sair do Modo Mestre</button>
+            <button class="btn-primary" id="btn-master-broadcast" style="max-width: 300px; display: none;">Notificar Todos</button>
+        </div>
+    </div>
+</section>

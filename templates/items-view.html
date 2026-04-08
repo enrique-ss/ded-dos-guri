@@ -1,0 +1,55 @@
+<section id="items-view" class="full-screen-modal">
+    <div class="sheet-container fade-in">
+        <header class="sheet-header premium-card">
+            <div class="header-main">
+                <h1 class="pocket-logo cinzel" style="font-size: 2rem; margin: 0;">Itens</h1>
+            </div>
+
+            <div class="header-nav">
+                <button class="nav-btn" data-view="sheet-view">
+                    <span>Ficha</span>
+                </button>
+                <button class="nav-btn active" data-view="items-view">
+                    <span>Itens</span>
+                </button>
+                <button class="nav-btn" data-view="history-view">
+                    <span>História</span>
+                </button>
+                <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red);">
+                    <span>Reset</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="sheet-body" style="grid-template-columns: 1fr;">
+            <div class="sheet-col">
+                <!-- Arsenal Ofensivo -->
+                <div class="premium-card group-flex">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Arsenal Ofensivo</label>
+                    </div>
+                    <div id="attacks-list" class="attacks-list"></div>
+                    <button class="btn-ghost" id="add-attack" style="border-style: dashed; padding: 0.6rem 1rem; font-size: 0.8rem;">+ Ofensivo</button>
+                </div>
+
+                <!-- Defensivo -->
+                <div class="premium-card group-flex">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Defensivo</label>
+                    </div>
+                    <div id="armors-list" class="attacks-list"></div>
+                    <button class="btn-ghost" id="add-armor" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
+                </div>
+
+                <!-- Inventário -->
+                <div class="premium-card group-flex">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Inventário</label>
+                    </div>
+                    <div id="utility-list" class="attacks-list"></div>
+                    <button class="btn-ghost" id="add-utility" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

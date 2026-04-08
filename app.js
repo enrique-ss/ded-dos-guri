@@ -771,6 +771,14 @@ function setupEvents() {
             broadcastChange();
         }
 
+        // Navegação do footer
+        if (t.classList.contains('nav-btn')) {
+            const viewId = t.dataset.view;
+            if (viewId) {
+                switchView(viewId);
+            }
+        }
+
         // Master Prompts for Stats (since they are not inputs)
         if (isMaster) {
             if (t.closest('.attr-block[data-attr]')) {
@@ -901,5 +909,111 @@ window.removeUtility = (i) => {
     renderSheet(); broadcastChange();
 };
 
-// Start
-window.onload = init;
+// ==================== NAVEGAÇÃO ====================
+let currentView = 'sheet-view';
+
+function switchView(viewId) {
+    // Esconder todas as telas
+    document.querySelectorAll('.full-screen-modal').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    // Mostrar a tela selecionada
+    const targetView = document.getElementById(viewId);
+    if (targetView) {
+        targetView.classList.add('active');
+        currentView = viewId;
+    }
+
+    // Atualizar botões de navegação
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewId) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Se mudou para tela de itens, renderizar as listas
+    if (viewId === 'items-view') {
+        renderItems();
+    }
+}
+
+function renderItems() {
+    const isMaster = state && state.isMaster;
+    const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
+
+    // Arsenal Ofensivo
+    const attacksEl = document.getElementById('attacks-list');
+    if (attacksEl) {
+        attacksEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
+                <span>Nome</span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
+            </div>
+            ${(state.attacks || []).map((atk, i) => `
+                <div class="attack-row" style="grid-template-columns: ${gridCols};">
+                    <span>${atk.name}</span>
+                    <span>${atk.bonus}</span>
+                    <span>${atk.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeAttack(${i})">×</button>` : ''}
+                </div>
+            `).join('')}
+        `;
+    }
+
+    // Defensivo
+    const armorsEl = document.getElementById('armors-list');
+    if (armorsEl) {
+        armorsEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
+                <span>Nome</span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
+            </div>
+            ${(state.armors || []).map((arm, i) => `
+                <div class="armor-row" style="grid-template-columns: ${gridCols};">
+                    <span>${arm.name}</span>
+                    <span>${arm.bonus}</span>
+                    <span>${arm.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeArmor(${i})">×</button>` : ''}
+                </div>
+            `).join('')}
+        `;
+    }
+
+    // Inventário
+    const utilityEl = document.getElementById('utility-list');
+    if (utilityEl) {
+        utilityEl.innerHTML = `
+            <div class="attacks-header" style="grid-template-columns: ${gridCols};">
+                <span>Nome</span>
+                <span>Bônus</span>
+                <span>Qtde</span>
+                ${isMaster ? '<span></span>' : ''}
+            </div>
+            ${(state.utility || []).map((ut, i) => `
+                <div class="utility-row" style="grid-template-columns: ${gridCols};">
+                    <span>${ut.name}</span>
+                    <span>${ut.bonus || ''}</span>
+                    <span>${ut.qty || ''}</span>
+                    ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeUtility(${i})">×</button>` : ''}
+                </div>
+            `).join('')}
+        `;
+    }
+
+    // Mostrar/esconder botões de adicionar
+    const addAttack = document.getElementById('add-attack');
+    const addArmor = document.getElementById('add-armor');
+    const addUtility = document.getElementById('add-utility');
+    if (addAttack) addAttack.style.display = isMaster ? 'block' : 'none';
+    if (addArmor) addArmor.style.display = isMaster ? 'block' : 'none';
+    if (addUtility) addUtility.style.display = isMaster ? 'block' : 'none';
+}
+
+// Start - expor função para ser chamada após carregar templates
+window.initApp = init;

@@ -1,0 +1,202 @@
+<main id="sheet-view" class="full-screen-modal">
+    <div id="sheet-container" class="sheet-container read-only fade-in">
+
+        <!-- CABEÇALHO COM NAVEGAÇÃO -->
+        <header class="sheet-header premium-card">
+            <div class="header-main">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="char-portrait-container">
+                        👤
+                        <img id="display-photo" src="" alt="Avatar" class="char-portrait" style="display: none;">
+                    </div>
+
+                    <div class="header-identity">
+                        <input type="text" id="display-name" class="char-name-input protected-field" value="Herói Sem Nome"
+                            readonly maxlength="25">
+                        <div class="header-sub">
+                            <div class="badge-role cinzel" id="display-class">Guerreiro</div>
+                            <div class="badge-role cinzel" id="display-race">Humano</div>
+                            <div class="badge-role cinzel" id="display-level" style="background: var(--gold); color: #000;">Nível
+                                1</div>
+                            <div class="badge-role cinzel" id="display-xp" style="border-color: var(--gold);">XP 0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-nav">
+                <button class="nav-btn active" data-view="sheet-view">
+                    <span>Ficha</span>
+                </button>
+                <button class="nav-btn" data-view="items-view">
+                    <span>Itens</span>
+                </button>
+                <button class="nav-btn" data-view="history-view">
+                    <span>História</span>
+                </button>
+                <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red);">
+                    <span>Reset</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="sheet-body">
+            <!-- ================= COLUNA ESQUERDA ================= -->
+            <div class="sheet-col">
+
+                <!-- 2. ATRIBUTOS BASE -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">2. Atributos</label>
+                        <span class="info-icon" data-tip="Modificador = (valor - 10) ÷ 2&#10;&#10;Ex: FOR 14 → mod +2&#10;&#10;Role 1d20 + modificador quando o mestre pedir.">i</span>
+                    </div>
+                    <div class="attributes-grid">
+                        <div class="attr-block" data-attr="for">
+                            <div class="attr-circle" id="val-for">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Força</label>
+                            </div>
+                            <div class="attr-mod" id="mod-for">+0</div>
+                        </div>
+                        <div class="attr-block" data-attr="des">
+                            <div class="attr-circle" id="val-des">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Destreza</label>
+                            </div>
+                            <div class="attr-mod" id="mod-des">+0</div>
+                        </div>
+                        <div class="attr-block" data-attr="con">
+                            <div class="attr-circle" id="val-con">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Constituição</label>
+                            </div>
+                            <div class="attr-mod" id="mod-con">+0</div>
+                        </div>
+                        <div class="attr-block" data-attr="int">
+                            <div class="attr-circle" id="val-int">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Inteligência</label>
+                            </div>
+                            <div class="attr-mod" id="mod-int">+0</div>
+                        </div>
+                        <div class="attr-block" data-attr="sab">
+                            <div class="attr-circle" id="val-sab">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Sabedoria</label>
+                            </div>
+                            <div class="attr-mod" id="mod-sab">+0</div>
+                        </div>
+                        <div class="attr-block" data-attr="car">
+                            <div class="attr-circle" id="val-car">10</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Carisma</label>
+                            </div>
+                            <div class="attr-mod" id="mod-car">+0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. INSPIRAÇÃO, PROFICIÊNCIA E SALVAGUARDAS -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">3. Bônus e Salvaguardas</label>
+                        <span class="info-icon" data-tip="Inspiração: Concedida pelo mestre por boa interpretação. Gaste para ganhar Vantagem em 1 teste.&#10;&#10;Proficiência: Nível 1-2 = +2.&#10;&#10;Salvaguardas: Bolinha marcada = soma +2 da proficiência.">i</span>
+                    </div>
+
+                    <div class="sub-stats-grid">
+                        <div class="attr-block" style="cursor: default;">
+                            <div class="attr-circle" id="check-inspiration" style="flex-shrink: 0;">+0</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Inspiração</label>
+                            </div>
+                        </div>
+                        <div class="attr-block" style="cursor: default;">
+                            <div class="attr-circle" id="prof-bonus" style="flex-shrink: 0;">+2</div>
+                            <div class="attr-info">
+                                <label class="label-tiny attr-label">Proficiência</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title" style="margin-top: 0.6rem;">
+                        <label class="label-tiny" style="margin-bottom:0;">Salvaguardas</label>
+                    </div>
+                    <div class="skills-list saves-list" id="saves-list"></div>
+                </div>
+
+                <!-- 4. PERÍCIAS (SKILLS) -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">4. Perícias</label>
+                        <span class="info-icon" data-tip="Bônus = modificador do atributo correspondente.&#10;&#10;Com proficiência (marcada): soma +2.&#10;&#10;Ex: DES 14 (+2) → Acrobacia +4.&#10;&#10;Role 1d20 + bônus quando o mestre pedir.">i</span>
+                    </div>
+                    <div class="skills-list" id="skills-list"></div>
+                </div>
+
+            </div>
+
+            <!-- ================= COLUNA CENTRAL ================= -->
+            <div class="sheet-col">
+
+                <!-- 5. BLOCO DE COMBATE -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">5. Combate</label>
+                        <span class="info-icon" data-tip="CA: 10 + mod. Destreza. Com armadura: +CA da armadura.&#10;&#10;Iniciativa: mod. Destreza. Role d20 no início do combate.&#10;&#10;Deslocamento: 9m (humanos/elfos) ou 7,5m (anões/halflings).&#10;&#10;PV: máximo do dado da classe + mod. CON.&#10;&#10;Dados de Vida: 1d10 (guerreiro), 1d8 (ladino), 1d6 (mago). Role em descanso curto.">i</span>
+                    </div>
+
+                    <div class="combat-stats">
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">CA</label>
+                            <input type="number" id="display-ac" value="10" readonly title="Classe de Armadura">
+                        </div>
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Iniciativa</label>
+                            <div id="display-initiative" class="stat-big">+0</div>
+                        </div>
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Deslocamento</label>
+                            <div id="display-speed" class="stat-big">9m</div>
+                        </div>
+                    </div>
+
+                    <div class="combat-stat-item" style="margin-bottom: 0.6rem; padding: 0.8rem 1rem; background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3); border-radius: 10px; flex-direction: row; justify-content: space-between; align-items: center;">
+                        <label class="label-tiny" style="color: var(--red); margin-bottom: 0;">Pontos de Vida</label>
+                        <div id="hp-text" style="cursor:pointer;">10 / 10</div>
+                    </div>
+
+                    <div class="combat-stats" style="grid-template-columns: 1fr 1fr;">
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Dados de Vida</label>
+                            <input type="text" id="display-hd" value="1d10" readonly title="Dados de Vida">
+                        </div>
+                        <div class="combat-stat-item">
+                            <div class="section-title" style="margin-bottom: 0.3rem;">
+                                <label class="label-tiny" style="margin-bottom:0;">Resgate da Morte</label>
+                                <span class="info-icon" data-tip="PV = 0? Role d20 por turno (sem bônus).&#10;≥10 = Sucesso | &lt;10 = Falha&#10;3 Sucessos = estabilizado&#10;3 Falhas = morte.">i</span>
+                            </div>
+                            <div class="death-saves">
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                </div>
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= COLUNA DIREITA ================= -->
+            <div class="sheet-col">
+            </div>
+        </div>
+
+    </div>
+</main>

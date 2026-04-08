@@ -1173,3 +1173,53 @@ select {
     line-height: 1;
     cursor: pointer;
 }
+
+/* Header de Navegação */
+.sheet-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 1000px) {
+    .sheet-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+}
+
+.header-main {
+    flex: 1;
+}
+
+.header-nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--txt-muted);
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--gold);
+}
+
+.nav-btn.active {
+    background: var(--gold);
+    color: #000;
+}
