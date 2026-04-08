@@ -14,6 +14,41 @@
     --radius: 14px;
     --gap: 0.8rem;
     --p-card: 1rem;
+    
+    /* GLASS PATTERNS (Themed) */
+    --bg-glass: rgba(20, 22, 35, 0.85);
+    --bg-overlay: rgba(0, 0, 0, 0.4);
+    --bg-accent: rgba(255, 255, 255, 0.03);
+    --bg-input: rgba(0, 0, 0, 0.4);
+    --bg-circle: #000;
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --txt-contrast: #000; /* For gold buttons */
+}
+
+[data-theme="light"] {
+    --bg: #f5f6fa;
+    --panel: rgba(255, 255, 255, 0.85);
+    --panel-border: rgba(0, 0, 0, 0.1);
+    --gold: #d49a00;
+    --gold-glow: rgba(212, 154, 0, 0.15);
+    --red: #e63946;
+    --green: #05b083;
+    --txt: #2b2d42;
+    --txt-muted: #6c7086;
+
+    /* GLASS PATTERNS (Light Swaps) */
+    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-overlay: rgba(0, 0, 0, 0.03);
+    --bg-accent: rgba(0, 0, 0, 0.02);
+    --bg-input: rgba(0, 0, 0, 0.03);
+    --bg-circle: #fff;
+    --border-glass: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] body {
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(212, 154, 0, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(0, 132, 255, 0.06) 0%, transparent 45%);
 }
 
 /* ===== RESET & CORE ===== */
@@ -123,7 +158,7 @@ select {
     text-align: center;
     font-size: 3rem;
     margin-bottom: 2rem;
-    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 4px 15px var(--bg-overlay);
 }
 
 .pocket-logo span {
@@ -138,7 +173,7 @@ select {
 }
 
 .choice-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-accent);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     padding: 1.2rem;
@@ -153,7 +188,7 @@ select {
 }
 
 .choice-card.selected {
-    background: rgba(255, 190, 11, 0.1);
+    background: var(--gold-glow);
     border-color: var(--gold);
     box-shadow: 0 0 20px var(--gold-glow);
 }
@@ -161,7 +196,7 @@ select {
 .desc-box {
     margin-top: 1.5rem;
     padding: 1.2rem;
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--bg-overlay);
     border-radius: 12px;
     border-left: 4px solid var(--gold);
     font-size: 0.95rem;
@@ -196,7 +231,7 @@ select {
 
 /* ATRIBUTO DRAFTER (Wizard Step 4) */
 .array-chip {
-    background: rgba(255, 190, 11, 0.05);
+    background: var(--gold-glow);
     border: 2px solid var(--gold);
     color: var(--gold);
     border-radius: 12px;
@@ -216,7 +251,7 @@ select {
 
 .array-chip.selected {
     background: var(--gold);
-    color: #000;
+    color: var(--txt-contrast);
     box-shadow: 0 0 20px var(--gold-glow);
 }
 
@@ -232,7 +267,7 @@ select {
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-overlay);
     padding: 1.2rem 0.5rem;
     border-radius: 15px;
     border: 1px solid var(--panel-border);
@@ -248,8 +283,8 @@ select {
 .slot-display {
     width: 65px;
     height: 65px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-circle);
+    border: 2px solid var(--border-glass);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -263,7 +298,7 @@ select {
 .attr-slot.filled .slot-display {
     border-color: var(--gold);
     color: var(--gold);
-    background: rgba(255, 190, 11, 0.1);
+    background: var(--gold-glow);
     box-shadow: inset 0 0 15px var(--gold-glow);
 }
 
@@ -275,8 +310,8 @@ select {
 .gold-input {
     font-weight: 800 !important;
     color: var(--gold) !important;
-    border: 1px solid rgba(255,190,11,0.3) !important;
-    background: rgba(0,0,0,0.2) !important;
+    border: 1px solid var(--gold-glow) !important;
+    background: var(--bg-overlay) !important;
     height: 40px;
     padding-left: 0.8rem !important;
 }
@@ -284,7 +319,7 @@ select {
 /* ===== BUTTONS ===== */
 .btn-primary {
     background: linear-gradient(135deg, var(--gold) 0%, #ff9f1c 100%);
-    color: #000;
+    color: var(--txt-contrast);
     font-weight: 800;
     padding: 1.2rem;
     border-radius: 50px;
@@ -307,6 +342,43 @@ select {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* ===== THEME TOGGLE BUTTON ===== */
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: var(--bg-glass);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--bg-overlay);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.theme-toggle-btn svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.5s ease;
+}
+
+.theme-toggle-btn:hover svg {
+    transform: rotate(45deg);
+}
+
 /* ===== PREMIUM UI BASE ===== */
 .premium-card {
     background: var(--panel);
@@ -314,7 +386,7 @@ select {
     border-radius: var(--radius);
     padding: var(--p-card);
     backdrop-filter: blur(25px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 30px var(--bg-overlay);
     position: relative;
 }
 
@@ -425,7 +497,7 @@ select {
 .char-name-input {
     font-size: 1.5rem;
     font-weight: 800;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid var(--panel-border);
     width: 100%;
     margin-bottom: 0.4rem;
     text-align: left;
@@ -450,7 +522,7 @@ select {
     border: 3px solid var(--gold);
     box-shadow: 0 0 12px var(--gold-glow);
     overflow: hidden;
-    background: #111;
+    background: var(--bg-circle);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -470,7 +542,7 @@ select {
 }
 
 .badge-role {
-    background: rgba(255, 190, 11, 0.15);
+    background: var(--gold-glow);
     border: 1px solid var(--gold);
     color: var(--gold);
     padding: 0.3rem 0.6rem;
@@ -514,7 +586,7 @@ select {
 }
 
 .detail-item input {
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--bg-input);
     padding: 0.8rem 0.8rem;
     text-align: left;
     border-radius: 10px;
@@ -539,7 +611,7 @@ select {
 }
 
 .protected-field {
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--bg-input);
     padding: 0.8rem 0.8rem;
     text-align: left;
     border-radius: 10px;
@@ -574,7 +646,7 @@ select {
     grid-template-columns: 48px 1fr 40px;
     align-items: center;
     gap: 0.6rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-overlay);
     padding: 0.35rem 0.7rem;
     border-radius: 10px;
     border: 1px solid var(--panel-border);
@@ -583,7 +655,7 @@ select {
 .attr-circle {
     width: 42px;
     height: 42px;
-    background: #000;
+    background: var(--bg-circle);
     border: 2px solid var(--gold);
     border-radius: 50%;
     display: flex;
@@ -607,14 +679,14 @@ select {
 .attr-mod {
     height: 28px;
     background: var(--gold);
-    color: #000;
+    color: var(--txt-contrast);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
     font-size: 0.9rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 6px var(--bg-overlay);
 }
 
 /* ICONS E INFOS (Inspiração, Prof) */
@@ -644,7 +716,7 @@ select {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-overlay);
     padding: 0.8rem 1rem;
     border-radius: 12px;
 }
@@ -692,7 +764,7 @@ select {
     grid-template-columns: 16px 30px 1fr;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--bg-accent);
     padding: 0.28rem 0.6rem;
     border-radius: 8px;
 }
@@ -728,7 +800,7 @@ select {
 }
 
 .combat-stat-item {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-overlay);
     padding: 0.6rem;
     border-radius: 10px;
     text-align: center;
@@ -759,7 +831,7 @@ select {
 
 .hp-track {
     height: 30px;
-    background: #000;
+    background: var(--bg-circle);
     border: 1px solid var(--panel-border);
     border-radius: 15px;
     overflow: hidden;
@@ -783,7 +855,7 @@ select {
 .hp-btn {
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-accent);
     border-radius: 50%;
     font-size: 1.5rem;
     cursor: pointer;
@@ -791,7 +863,7 @@ select {
 }
 
 .hp-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--gold-glow);
 }
 
 .hp-controls input {
@@ -928,11 +1000,11 @@ select {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--bg-overlay);
     padding: 1.5rem;
     border-radius: 14px;
     border: 1px solid var(--gold);
-    box-shadow: inset 0 0 20px rgba(255, 190, 11, 0.05);
+    box-shadow: inset 0 0 20px var(--gold-glow);
 }
 
 .money-input {
@@ -947,7 +1019,7 @@ select {
 .large-textarea {
     width: 100%;
     min-height: 250px;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-input);
     border: 1px solid var(--panel-border);
     border-radius: 12px;
     padding: 1rem;
@@ -958,7 +1030,7 @@ select {
 .rp-textarea {
     width: 100%;
     min-height: 80px;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-input);
     border: 1px solid var(--panel-border);
     border-radius: 10px;
     padding: 1rem;
@@ -1007,13 +1079,13 @@ select {
 
 .read-only .attr-block:hover,
 .read-only .skill-row:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-overlay);
     border-color: var(--panel-border);
 }
 
 /* MASTER PANEL & PLAYER CARDS */
 .player-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-accent);
     border: 2px solid var(--panel-border);
     border-radius: 20px;
     padding: 2.5rem 1.5rem;
@@ -1029,10 +1101,10 @@ select {
 
 .player-card:hover {
     border-color: var(--gold);
-    background: rgba(255, 190, 11, 0.07);
+    background: var(--gold-glow);
     transform: translateY(-10px);
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.6),
+        0 20px 40px var(--bg-overlay),
         0 0 25px var(--gold-glow);
 }
 
@@ -1087,8 +1159,8 @@ select {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: rgba(255, 190, 11, 0.15);
-    border: 1px solid rgba(255, 190, 11, 0.4);
+    background: var(--gold-glow);
+    border: 1px solid var(--gold);
     color: var(--gold);
     font-size: 0.6rem;
     font-style: normal;
@@ -1112,7 +1184,7 @@ select {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) translateY(-80px);
-    background: rgba(10, 12, 22, 0.97);
+    background: var(--bg-glass);
     border: 1px solid var(--gold);
     border-radius: 10px;
     padding: 0.7rem 1rem;
@@ -1126,7 +1198,7 @@ select {
     text-transform: none;
     letter-spacing: 0;
     font-weight: 400;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 25px var(--bg-overlay);
     z-index: 9999999;
     pointer-events: none;
     opacity: 0;
@@ -1196,7 +1268,7 @@ select {
     padding: 0.6rem 1rem;
     border-radius: 10px;
     cursor: pointer;
-    font-family: 'Cinzel', serif;
+    font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s;
@@ -1206,11 +1278,11 @@ select {
 }
 
 .nav-btn:hover {
-    background: rgba(255, 215, 0, 0.1);
+    background: var(--gold-glow);
     color: var(--gold);
 }
 
 .nav-btn.active {
     background: var(--gold);
-    color: #000;
+    color: var(--txt-contrast);
 }
