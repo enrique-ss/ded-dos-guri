@@ -388,9 +388,21 @@ function renderSheet() {
     renderSkills(profBonus);
 
     // 5. Combat
-    $('display-ac').value = state.ac;
     const desMod = Math.floor((state.attr.des - 10) / 2);
+    
+    // Calcular CA Automática
+    const armorBonus = (state.armors || []).reduce((acc, arm) => acc + (parseInt(arm.bonus) || 0), 0);
+    const baseAC = 10 + desMod;
+    const totalAC = baseAC + armorBonus;
+    
+    // Atualizar UI de CA
+    const acInput = $('display-ac');
+    if (acInput) {
+        acInput.value = state.ac || totalAC; // Respeita override manual se existir, senão usa calculado
+    }
+
     $('display-initiative').textContent = (desMod >= 0 ? '+' : '') + desMod;
+    
     $('display-speed').textContent = state.speed + 'm';
     $('hp-text').textContent = `${state.hp.current} / ${state.hp.max}`;
     $('display-hd').value = state.hd;
@@ -522,7 +534,7 @@ function renderSkills(profBonus) {
             <div class="skill-row" onclick="toggleSkill('${s.id}')">
                 <div class="dot-check ${isProf ? 'active' : ''}"></div>
                 <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${s.name} <small style="color:#555">(${s.attr.toUpperCase()})</small></span>
+                <span class="skill-name">${s.name} <small style="color:var(--txt-muted)">(${s.attr.toUpperCase()})</small></span>
             </div>
         `;
     }).join('');
