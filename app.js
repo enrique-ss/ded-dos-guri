@@ -222,18 +222,20 @@ function render() {
     const creation = $('creation-screen');
     const masterPanel = $('master-panel');
     const sheet = $('sheet-view');
+    const items = $('items-view');
+    const history = $('history-view');
 
     // Hide everything
-    [roleSel, creation, masterPanel, sheet].forEach(el => {
+    [roleSel, creation, masterPanel, sheet, items, history].forEach(el => {
         if (el) el.classList.remove('active');
     });
 
     if (isMaster) {
         if (masterEditingId) {
-            if (sheet) {
-                sheet.classList.add('active');
-                renderSheet();
-            }
+            const targetView = $(currentView) || sheet;
+            if (targetView) targetView.classList.add('active');
+            renderSheet();
+            if (currentView === 'items-view') renderItems();
         } else {
             if (masterPanel) {
                 masterPanel.classList.add('active');
@@ -247,11 +249,19 @@ function render() {
             if (roleSel) roleSel.classList.add('active');
         }
     } else {
-        if (sheet) {
-            sheet.classList.add('active');
-            renderSheet();
-        }
+        const targetView = $(currentView) || sheet;
+        if (targetView) targetView.classList.add('active');
+        renderSheet();
+        if (currentView === 'items-view') renderItems();
     }
+
+    // Atualizar botões de navegação
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.view === currentView) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 function renderMasterPanel() {
@@ -298,24 +308,24 @@ function renderSheet() {
     const $ = id => document.getElementById(id);
     const isEditing = isMaster || !document.getElementById('sheet-container').classList.contains('read-only');
 
-    // 1. Header
-    $('display-name').value = state.name;
+    // 1. Header (Sync all instances)
     const raceName = RACES[state.race]?.name || '---';
     const clsName = CLASSES[state.cls]?.name || '---';
 
-    if ($('display-class')) $('display-class').textContent = clsName;
-    if ($('display-race')) $('display-race').textContent = raceName;
-    if ($('display-level')) $('display-level').textContent = `Nível ${state.level}`;
+    document.querySelectorAll('#display-name').forEach(el => el.value = state.name);
+    document.querySelectorAll('#display-class').forEach(el => el.textContent = clsName);
+    document.querySelectorAll('#display-race').forEach(el => el.textContent = raceName);
+    document.querySelectorAll('#display-level').forEach(el => el.textContent = `Nível ${state.level}`);
+    document.querySelectorAll('#display-xp').forEach(el => el.textContent = `XP ${state.xp}`);
 
-    const pImg = $('display-photo');
-    if (pImg) {
+    document.querySelectorAll('#display-photo').forEach(pImg => {
         if (state.photo) {
             pImg.src = state.photo;
             pImg.style.display = 'block';
         } else {
             pImg.style.display = 'none';
         }
-    }
+    });
 
     if ($('display-bg')) {
         $('display-bg').value = state.bg || '---';
@@ -728,7 +738,7 @@ function setupEvents() {
             }
         }
 
-        if (t.id === 'btn-reset-char') {
+        if (t.closest('#btn-reset-char')) {
             if (confirm('Tem certeza que deseja resetar TUDO? Isso não pode ser desfeito.')) {
                 state = getDefaultState();
                 render();
@@ -772,8 +782,9 @@ function setupEvents() {
         }
 
         // Navegação do footer
-        if (t.classList.contains('nav-btn')) {
-            const viewId = t.dataset.view;
+        const nBtn = t.closest('.nav-btn');
+        if (nBtn) {
+            const viewId = nBtn.dataset.view;
             if (viewId) {
                 switchView(viewId);
             }
@@ -913,30 +924,8 @@ window.removeUtility = (i) => {
 let currentView = 'sheet-view';
 
 function switchView(viewId) {
-    // Esconder todas as telas
-    document.querySelectorAll('.full-screen-modal').forEach(el => {
-        el.classList.remove('active');
-    });
-
-    // Mostrar a tela selecionada
-    const targetView = document.getElementById(viewId);
-    if (targetView) {
-        targetView.classList.add('active');
-        currentView = viewId;
-    }
-
-    // Atualizar botões de navegação
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.view === viewId) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Se mudou para tela de itens, renderizar as listas
-    if (viewId === 'items-view') {
-        renderItems();
-    }
+    currentView = viewId;
+    render();
 }
 
 function renderItems() {

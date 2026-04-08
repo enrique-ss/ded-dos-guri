@@ -64,31 +64,22 @@ select {
 
 /* ===== SCREENS & ISOLATION ===== */
 .full-screen-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
     background: var(--bg);
     display: none;
-    overflow-y: auto;
-    padding: 3rem 1.5rem;
+    padding: 1rem; /* 1rem on ALL edges, no touching the borders */
+    min-height: 100vh;
 }
 
 .full-screen-modal.active {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-}
-
-#sheet-view.active {
     display: block;
 }
 
-#sheet-view {
-    padding: 0.5rem 0.8rem;
+#global-header-container.hidden {
+    display: none !important;
 }
 
 @media (max-width: 400px) {
-    #sheet-view {
+    .full-screen-modal {
         padding: 0.5rem 0.4rem;
     }
 }
@@ -114,7 +105,7 @@ select {
 /* ===== WIZARD & ROLE SELECTION ===== */
 .creation-wizard {
     width: 100%;
-    max-width: 650px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 

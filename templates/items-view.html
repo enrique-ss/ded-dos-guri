@@ -1,15 +1,31 @@
-<section id="items-view" class="full-screen-modal">
+<main id="items-view" class="full-screen-modal">
     <div class="sheet-container fade-in">
-        <header class="sheet-header premium-card">
+        <!-- CABEÇALHO COM NAVEGAÇÃO -->
+        <header class="sheet-header premium-card read-only" style="margin-bottom: 1rem;">
             <div class="header-main">
-                <h1 class="pocket-logo cinzel" style="font-size: 2rem; margin: 0;">Itens</h1>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="char-portrait-container">
+                        👤
+                        <img id="display-photo" src="" alt="Avatar" class="char-portrait" style="display: none;">
+                    </div>
+
+                    <div class="header-identity">
+                        <input type="text" id="display-name" class="char-name-input protected-field" value="Herói Sem Nome" readonly maxlength="25">
+                        <div class="header-sub">
+                            <div class="badge-role cinzel" id="display-class">Guerreiro</div>
+                            <div class="badge-role cinzel" id="display-race">Humano</div>
+                            <div class="badge-role cinzel" id="display-level" style="background: var(--gold); color: #000;">Nível 1</div>
+                            <div class="badge-role cinzel" id="display-xp" style="border-color: var(--gold);">XP 0</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="header-nav">
                 <button class="nav-btn" data-view="sheet-view">
                     <span>Ficha</span>
                 </button>
-                <button class="nav-btn active" data-view="items-view">
+                <button class="nav-btn" data-view="items-view">
                     <span>Itens</span>
                 </button>
                 <button class="nav-btn" data-view="history-view">
@@ -20,7 +36,6 @@
                 </button>
             </div>
         </header>
-
         <div class="sheet-body" style="grid-template-columns: 1fr;">
             <div class="sheet-col">
                 <!-- Arsenal Ofensivo -->
@@ -52,4 +67,4 @@
             </div>
         </div>
     </div>
-</section>
+</main>
