@@ -10,11 +10,13 @@
                     </div>
 
                     <div class="header-identity">
-                        <input type="text" id="display-name" class="char-name-input protected-field" value="Herói Sem Nome" readonly maxlength="25">
+                        <input type="text" id="display-name" class="char-name-input protected-field"
+                            value="Herói Sem Nome" readonly maxlength="25">
                         <div class="header-sub">
                             <div class="badge-role cinzel" id="display-class">Guerreiro</div>
                             <div class="badge-role cinzel" id="display-race">Humano</div>
-                            <div class="badge-role cinzel" id="display-level" style="background: var(--gold); color: #000;">Nível 1</div>
+                            <div class="badge-role cinzel" id="display-level"
+                                style="background: var(--gold); color: #000;">Nível 1</div>
                             <div class="badge-role cinzel" id="display-xp" style="border-color: var(--gold);">XP 0</div>
                         </div>
                     </div>
@@ -36,43 +38,92 @@
                 </button>
             </div>
         </header>
-        <div class="sheet-body" style="grid-template-columns: 1fr;">
-            <div class="sheet-col">
-                <!-- 7. ALMA E PERSONALIDADE -->
-                <div class="premium-card group-flex">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Alma e Personalidade</label>
-                    </div>
+        <div class="sheet-body history-grid">
+            <!-- 7. ALMA E PERSONALIDADE -->
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Alma e Personalidade</label>
+                </div>
 
-                    <div class="form-group">
-                        <div class="detail-item">
-                            <label class="label-tiny">Antecedente</label>
-                            <textarea id="display-bg" class="rp-textarea" maxlength="20" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny">Alinhamento</label>
-                            <textarea id="display-align" class="rp-textarea" maxlength="20" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny">Traços de Personalidade</label>
-                            <textarea id="rp-traits" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny">Ideais</label>
-                            <textarea id="rp-ideals" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny">Vínculos</label>
-                            <textarea id="rp-bonds" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
-                        <div class="detail-item">
-                            <label class="label-tiny">Fraquezas</label>
-                            <textarea id="rp-flaws" class="rp-textarea" maxlength="200" style="min-height: 2.2rem; overflow: hidden;"></textarea>
-                        </div>
+                <div class="form-group">
+                    <div class="detail-item">
+                        <label class="label-tiny">Antecedente</label>
+                        <textarea id="display-bg" class="rp-textarea" maxlength="20"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
                     </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Alinhamento</label>
+                        <textarea id="display-align" class="rp-textarea" maxlength="20"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Traços de Personalidade</label>
+                        <textarea id="rp-traits" class="rp-textarea" maxlength="200"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Ideais</label>
+                        <textarea id="rp-ideals" class="rp-textarea" maxlength="200"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Vínculos</label>
+                        <textarea id="rp-bonds" class="rp-textarea" maxlength="200"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Fraquezas</label>
+                        <textarea id="rp-flaws" class="rp-textarea" maxlength="200"
+                            style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                    </div>
+                </div>
 
+            </div>
+
+            <!-- NARRATIVA DO GRUPO E MUNDO -->
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">O Elo dos Desengonçados</label>
+                    <span class="info-icon" data-tip="A origem do grupo e o que os une.">i</span>
+                </div>
+                <div class="lore-content">
+                    <strong>A Origem:</strong> Eles vieram de vilarejos pacatos e sem graça, onde nada de "místico"
+                    acontecia. O desejo de sair da rotina e a burrice de achar que estavam prontos para o mundo os uniu.
+                    <br><br>
+                    <strong>O Azar de Oakhaven:</strong> Eles provavelmente estavam indo para algum festival ou cidade
+                    grande e pegaram um "atalho" que os jogou direto na névoa de Oakhaven. Em vez de darem meia-volta, a
+                    coragem inconsequente falou mais alto: "Ah, deve ter algum tesouro naquele cemitério ali, vamos
+                    ver!"
+                    <br><br>
+                    Alistair não os escolheu por destino, ele os escolheu por necessidade e por uma "aposta" no caráter
+                    deles. Enquanto os grandes heróis e soldados estão ocupados com as guerras e assuntos urgentes que
+                    Alistair precisa atender, "Os Desengonçados" são os únicos que restaram. Alistair vê neles algo que
+                    falta nos soldados treinados: a pureza de quem não foi corrompido pelo mundo e a coragem burra de
+                    quem não sabe que o que está prestes a fazer é impossível.
                 </div>
             </div>
+
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">História do Mundo</label>
+                    <span class="info-icon" data-tip="Informações gerais sobre o cenário da campanha.">i</span>
+                </div>
+                <div class="lore-content lore-empty">
+                    [Em breve: Detalhes sobre o cenário de Oakhaven e a história deste mundo...]
+                </div>
+            </div>
+
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">NPCs e Contatos</label>
+                    <span class="info-icon" data-tip="Aliados e figuras importantes encontradas na jornada.">i</span>
+                </div>
+                <div class="lore-content lore-empty">
+                    [Em breve: Lista de aliados, inimigos e figuras misteriosas...]
+                </div>
+            </div>
+
         </div>
+    </div>
     </div>
 </main>
