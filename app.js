@@ -317,8 +317,16 @@ function renderSheet() {
         }
     }
 
-    if ($('display-bg')) $('display-bg').value = state.bg || '---';
-    if ($('display-align')) $('display-align').value = state.align || '---';
+    if ($('display-bg')) {
+        $('display-bg').value = state.bg || '---';
+        $('display-bg').style.height = 'auto';
+        $('display-bg').style.height = $('display-bg').scrollHeight + 'px';
+    }
+    if ($('display-align')) {
+        $('display-align').value = state.align || '---';
+        $('display-align').style.height = 'auto';
+        $('display-align').style.height = $('display-align').scrollHeight + 'px';
+    }
 
     if ($('display-xp')) {
         $('display-xp').textContent = `XP ${state.xp}`;
@@ -394,17 +402,15 @@ function renderSheet() {
     const attacksEl = $('attacks-list');
     if (attacksEl) {
         attacksEl.innerHTML = `
-            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 1fr 40px;">
+            <div class="attacks-header" style="grid-template-columns: 3fr 1fr 40px;">
                 <span>Nome</span>
                 <span class="txt-center">Bônus</span>
-                <span class="txt-center">Tipo</span>
                 <span></span>
             </div>
             ${(state.attacks || []).map((atk, i) => `
                 <div class="attack-row">
-                    <span style="flex: 2;">${atk.name}</span>
+                    <span style="flex: 3;">${atk.name}</span>
                     <span style="text-align:center;">${atk.bonus}</span>
-                    <span style="text-align:center;">${atk.dmg}</span>
                     ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeAttack(${i})">×</button>` : '<span></span>'}
                 </div>
             `).join('')}
@@ -434,27 +440,44 @@ function renderSheet() {
     const utilityEl = $('utility-list');
     if (utilityEl) {
         utilityEl.innerHTML = `
-            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 40px; padding: 0 1rem;">
+            <div class="attacks-header" style="grid-template-columns: 2fr 1fr 1fr 40px; padding: 0 1rem;">
                 <span style="flex: 2;">Nome</span>
                 <span class="txt-center">Bônus</span>
+                <span class="txt-center">Qtde</span>
                 <span></span>
             </div>
             ${(state.utility || []).map((ut, i) => `
-                <div class="armor-row">
+                <div class="utility-row">
                     <span style="flex: 2;">${ut.name}</span>
-                    <span style="text-align:center;">${ut.bonus}</span>
+                    <span style="text-align:center;">${ut.bonus || ''}</span>
+                    <span style="text-align:center;">${ut.qty || ''}</span>
                     ${isMaster ? `<button class="btn-ghost" style="padding:0; border:none; color:var(--red); font-size:1.2rem;" onclick="removeUtility(${i})">×</button>` : '<span></span>'}
                 </div>
             `).join('')}
         `;
     }
 
-    $('gold-po').value = state.gold;
-    $('rp-traits').value = state.rpTraits;
-    $('rp-ideals').value = state.rpIdeals;
-    $('rp-bonds').value = state.rpBonds;
-    $('rp-flaws').value = state.rpFlaws;
-    $('rp-feats').value = state.rpFeats;
+    if ($('gold-po')) $('gold-po').value = state.gold;
+    if ($('rp-traits')) {
+        $('rp-traits').value = state.rpTraits;
+        $('rp-traits').style.height = 'auto';
+        $('rp-traits').style.height = $('rp-traits').scrollHeight + 'px';
+    }
+    if ($('rp-ideals')) {
+        $('rp-ideals').value = state.rpIdeals;
+        $('rp-ideals').style.height = 'auto';
+        $('rp-ideals').style.height = $('rp-ideals').scrollHeight + 'px';
+    }
+    if ($('rp-bonds')) {
+        $('rp-bonds').value = state.rpBonds;
+        $('rp-bonds').style.height = 'auto';
+        $('rp-bonds').style.height = $('rp-bonds').scrollHeight + 'px';
+    }
+    if ($('rp-flaws')) {
+        $('rp-flaws').value = state.rpFlaws;
+        $('rp-flaws').style.height = 'auto';
+        $('rp-flaws').style.height = $('rp-flaws').scrollHeight + 'px';
+    }
 }
 
 function renderSaves(profBonus) {
@@ -492,8 +515,6 @@ function renderSkills(profBonus) {
 function buildGrids() {
     renderChoiceGrid('race-grid', RACES, wizardData.race, 'race');
     renderChoiceGrid('class-grid', CLASSES, wizardData.cls, 'cls');
-    renderChoiceGrid('bg-grid', BACKGROUNDS, wizardData.bg, 'bg');
-    renderChoiceGrid('align-grid', ALIGNMENTS, wizardData.align, 'align');
     renderAttributeDrafter();
 }
 
@@ -547,9 +568,7 @@ function goToStep(n) {
         if (wizardData.step === 1) {
             const name = document.getElementById('create-name').value.trim();
             if (!name) { alert("Dê um nome ao seu herói!"); return; }
-            if (!wizardData. race) { alert("Escolha uma Raça!"); return; }
-            if (!wizardData.bg) { alert("Escolha um Antecedente!"); return; }
-            if (!wizardData.align) { alert("Escolha um Alinhamento!"); return; }
+            if (!wizardData.race) { alert("Escolha uma Raça!"); return; }
         }
         if (wizardData.step === 2) {
             if (!wizardData.cls) { alert("Escolha uma Classe!"); return; }
@@ -608,20 +627,29 @@ function loadSkillChoices() {
 
 function finishCreation() {
     const name = document.getElementById('create-name').value.trim();
-    if (!name || !wizardData.race || !wizardData.cls || !wizardData.bg || !wizardData.align) { 
-        alert('Complete todas as seleções do registro!'); 
-        return; 
+    const bg = document.getElementById('create-bg').value.trim();
+    const align = document.getElementById('create-align').value.trim();
+
+    if (!name || !wizardData.race || !wizardData.cls) {
+        alert('Complete todas as seleções do registro!');
+        return;
     }
-    
+
+    // Capturar dados de personalidade do formulário
+    wizardData.personality.traits = document.getElementById('create-traits').value.trim();
+    wizardData.personality.ideals = document.getElementById('create-ideals').value.trim();
+    wizardData.personality.bonds = document.getElementById('create-bonds').value.trim();
+    wizardData.personality.flaws = document.getElementById('create-flaws').value.trim();
+
     const fileInput = document.getElementById('create-photo');
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
-        reader.onload = (e) => finalizeWizard(name, e.target.result);
+        reader.onload = (e) => finalizeWizard(name, bg, align, e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
-    } else finalizeWizard(name, '');
+    } else finalizeWizard(name, bg, align, '');
 }
 
-function finalizeWizard(name, photo) {
+function finalizeWizard(name, bg, align, photo) {
     state = getDefaultState();
     state.isCreated = true;
     state.name = name;
@@ -630,8 +658,12 @@ function finalizeWizard(name, photo) {
     state.photo = photo;
     state.attr = { ...wizardData.attr };
     state.profs = [...wizardData.skills];
-    state.bg = BACKGROUNDS[wizardData.bg].name;
-    state.align = ALIGNMENTS[wizardData.align].name;
+    state.bg = bg || '---';
+    state.align = align || '---';
+    state.rpTraits = wizardData.personality.traits || '';
+    state.rpIdeals = wizardData.personality.ideals || '';
+    state.rpBonds = wizardData.personality.bonds || '';
+    state.rpFlaws = wizardData.personality.flaws || '';
 
     const race = RACES[state.race];
     const cls = CLASSES[state.cls];
@@ -702,8 +734,7 @@ function setupEvents() {
             const n = prompt("Nome da Arma/Magia:");
             if (!n) return;
             const b = prompt("Bônus:");
-            const d = prompt("Tipo (Dano/Efeito):");
-            state.attacks.push({ name: n, bonus: b, dmg: d });
+            state.attacks.push({ name: n, bonus: b });
             renderSheet();
             broadcastChange();
         }
@@ -723,9 +754,10 @@ function setupEvents() {
             if (!isMaster) return;
             const n = prompt("Nome do Item:");
             if (!n) return;
-            const b = prompt("Bônus/Qtd:");
+            const b = prompt("Bônus:");
+            const q = prompt("Quantidade:");
             state.utility = state.utility || [];
-            state.utility.push({ name: n, bonus: b });
+            state.utility.push({ name: n, bonus: b, qty: q });
             renderSheet();
             broadcastChange();
         }
@@ -752,10 +784,10 @@ function setupEvents() {
         if (t.id?.startsWith('btn-back-')) goToStep(parseInt(t.id.split('-')[2]));
         if (t.id === 'btn-finish') finishCreation();
 
-        // Choice Cards (Race/Class/BG/Align/Skills)
+        // Choice Cards (Race/Class/Skills)
         const cCard = t.closest('.choice-card[data-id]');
         if (cCard && !cCard.classList.contains('choice-skill')) {
-            const key = cCard.dataset.key; // 'race', 'cls', 'bg', 'align'
+            const key = cCard.dataset.key; // 'race', 'cls'
             wizardData[key] = cCard.dataset.id;
             cCard.parentElement.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
             cCard.classList.add('selected');
@@ -772,14 +804,6 @@ function setupEvents() {
                 const c = CLASSES[cCard.dataset.id];
                 boxId = 'class-desc-box';
                 content = `<strong>${c.name} (d${c.hd.substring(2)})</strong><br><span style="color:var(--gold); font-size:0.8rem;">Perícias: ${c.skillsDesc}</span><br><em style="font-size:0.9rem;">Equipamento: ${c.armor}</em>`;
-            } else if (key === 'bg') {
-                const b = BACKGROUNDS[cCard.dataset.id];
-                boxId = 'bg-desc-box';
-                content = `<strong>${b.name}</strong><br><em style="font-size:0.9rem;">${b.desc}</em>`;
-            } else if (key === 'align') {
-                const a = ALIGNMENTS[cCard.dataset.id];
-                boxId = 'align-desc-box';
-                content = `<strong>${a.name}</strong><br><em style="font-size:0.9rem;">${a.desc}</em>`;
             }
 
             const box = document.getElementById(boxId);
@@ -829,6 +853,12 @@ function setupEvents() {
             if (id === 'rp-bonds') state.rpBonds = val;
             if (id === 'rp-flaws') state.rpFlaws = val;
             if (id === 'rp-feats') state.rpFeats = val;
+        }
+
+        // Auto-resize textareas no bloco 7
+        if (['display-bg', 'display-align', 'rp-traits', 'rp-ideals', 'rp-bonds', 'rp-flaws'].includes(id)) {
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
         }
 
         debounceSync();
