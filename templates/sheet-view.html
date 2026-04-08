@@ -94,8 +94,85 @@
                     </div>
                 </div>
 
-                <!-- 3. INSPIRAÇÃO, PROFICIÊNCIA E SALVAGUARDAS -->
+            </div>
+
+            <!-- ================= COLUNA CENTRAL ================= -->
+            <div class="sheet-col">
+                       <!-- 5. BLOCO DE COMBATE -->
                 <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Combate</label>
+                        <span class="info-icon" data-tip="Armadura: 10 + mod. Destreza. Com armadura: +CA da armadura.&#10;&#10;Iniciativa: mod. Destreza. Role d20 no início do combate.&#10;&#10;Deslocamento: 9m (humanos/elfos) ou 7,5m (anões/halflings).&#10;&#10;PV: máximo do dado da classe + mod. CON.&#10;&#10;Dados de Vida: 1d10 (guerreiro), 1d8 (ladino), 1d6 (mago). Role em descanso curto.&#10;&#10;Resgate da Morte:&#10;PV = 0? Role d20 por turno (sem bônus).&#10;≥10 = Sucesso | <10 = Falha&#10;3 Sucessos = estabilizado&#10;3 Falhas = morte.">i</span>
+                    </div>
+
+                    <div class="combat-stats" style="grid-template-columns: 1fr 1fr;">
+                        
+                        <!-- 1. Pontos de Vida -->
+                        <div class="combat-stat-item" style="background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3);">
+                            <label class="label-tiny" style="color: var(--red);">Pontos de Vida</label>
+                            <div id="hp-text" class="stat-big" style="color: var(--red); cursor: pointer;">10 / 10</div>
+                        </div>
+
+                        <!-- 2. Dados de Vida -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Dados de Vida</label>
+                            <input type="text" id="display-hd" class="stat-big" value="1d10" readonly title="Dados de Vida" style="padding: 0;">
+                        </div>
+
+                        <!-- 3. Armadura -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Armadura</label>
+                            <input type="number" id="display-ac" class="stat-big" value="10" readonly title="Classe de Armadura" style="padding: 0;">
+                        </div>
+
+                        <!-- 4. Iniciativa -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Iniciativa</label>
+                            <div id="display-initiative" class="stat-big">+0</div>
+                        </div>
+
+                        <!-- 5. Deslocamento -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Deslocamento</label>
+                            <div id="display-speed" class="stat-big">9m</div>
+                        </div>
+
+                        <!-- 6. Resgate da Morte -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny" style="margin-bottom:0.5rem;">Resgate da Morte</label>
+                            <div class="death-saves" style="flex-direction: column; gap: 0.3rem;">
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                </div>
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PERÍCIAS (SKILLS) -->
+                <div class="premium-card" style="flex: 1;">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Perícias</label>
+                        <span class="info-icon" data-tip="Bônus = modificador do atributo correspondente.&#10;&#10;Com proficiência (marcada): soma +2.&#10;&#10;Ex: DES 14 (+2) → Acrobacia +4.&#10;&#10;Role 1d20 + bônus quando o mestre pedir.">i</span>
+                    </div>
+                    <div class="skills-list" id="skills-list"></div>
+                </div>
+
+            </div>
+
+            <!-- ================= COLUNA DIREITA ================= -->
+            <div class="sheet-col">
+                
+                <!-- INSPIRAÇÃO, PROFICIÊNCIA E SALVAGUARDAS -->
+                <div class="premium-card" style="flex: 1;">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Bônus e Salvaguardas</label>
                         <span class="info-icon" data-tip="Inspiração: Concedida pelo mestre por boa interpretação. Gaste para ganhar Vantagem em 1 teste.&#10;&#10;Proficiência: Nível 1-2 = +2.&#10;&#10;Salvaguardas: Bolinha marcada = soma +2 da proficiência.">i</span>
@@ -122,77 +199,6 @@
                     <div class="skills-list saves-list" id="saves-list"></div>
                 </div>
 
-            </div>
-
-            <!-- ================= COLUNA CENTRAL ================= -->
-            <div class="sheet-col">
-
-                <!-- 5. BLOCO DE COMBATE -->
-                <div class="premium-card">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Combate</label>
-                        <span class="info-icon" data-tip="CA: 10 + mod. Destreza. Com armadura: +CA da armadura.&#10;&#10;Iniciativa: mod. Destreza. Role d20 no início do combate.&#10;&#10;Deslocamento: 9m (humanos/elfos) ou 7,5m (anões/halflings).&#10;&#10;PV: máximo do dado da classe + mod. CON.&#10;&#10;Dados de Vida: 1d10 (guerreiro), 1d8 (ladino), 1d6 (mago). Role em descanso curto.">i</span>
-                    </div>
-
-                    <div class="combat-stats">
-                        <div class="combat-stat-item">
-                            <label class="label-tiny">CA</label>
-                            <input type="number" id="display-ac" value="10" readonly title="Classe de Armadura">
-                        </div>
-                        <div class="combat-stat-item">
-                            <label class="label-tiny">Iniciativa</label>
-                            <div id="display-initiative" class="stat-big">+0</div>
-                        </div>
-                        <div class="combat-stat-item">
-                            <label class="label-tiny">Deslocamento</label>
-                            <div id="display-speed" class="stat-big">9m</div>
-                        </div>
-                    </div>
-
-                    <div class="combat-stat-item" style="margin-bottom: 0.6rem; padding: 0.8rem 1rem; background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3); border-radius: 10px; flex-direction: row; justify-content: space-between; align-items: center;">
-                        <label class="label-tiny" style="color: var(--red); margin-bottom: 0;">Pontos de Vida</label>
-                        <div id="hp-text" style="cursor:pointer;">10 / 10</div>
-                    </div>
-
-                    <div class="combat-stats" style="grid-template-columns: 1fr 1fr;">
-                        <div class="combat-stat-item">
-                            <label class="label-tiny">Dados de Vida</label>
-                            <input type="text" id="display-hd" value="1d10" readonly title="Dados de Vida">
-                        </div>
-                        <div class="combat-stat-item">
-                            <div class="section-title" style="margin-bottom: 0.3rem;">
-                                <label class="label-tiny" style="margin-bottom:0;">Resgate da Morte</label>
-                                <span class="info-icon" data-tip="PV = 0? Role d20 por turno (sem bônus).&#10;≥10 = Sucesso | &lt;10 = Falha&#10;3 Sucessos = estabilizado&#10;3 Falhas = morte.">i</span>
-                            </div>
-                            <div class="death-saves">
-                                <div class="d-save-group">
-                                    <div class="dot-check ds-success"></div>
-                                    <div class="dot-check ds-success"></div>
-                                    <div class="dot-check ds-success"></div>
-                                </div>
-                                <div class="d-save-group">
-                                    <div class="dot-check ds-fail"></div>
-                                    <div class="dot-check ds-fail"></div>
-                                    <div class="dot-check ds-fail"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PERÍCIAS (SKILLS) -->
-                <div class="premium-card" style="flex: 1;">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Perícias</label>
-                        <span class="info-icon" data-tip="Bônus = modificador do atributo correspondente.&#10;&#10;Com proficiência (marcada): soma +2.&#10;&#10;Ex: DES 14 (+2) → Acrobacia +4.&#10;&#10;Role 1d20 + bônus quando o mestre pedir.">i</span>
-                    </div>
-                    <div class="skills-list" id="skills-list"></div>
-                </div>
-
-            </div>
-
-            <!-- ================= COLUNA DIREITA ================= -->
-            <div class="sheet-col">
             </div>
         </div>
 
