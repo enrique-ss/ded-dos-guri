@@ -321,8 +321,14 @@ async function handleAuth(mode) {
 }
 
 function toggleAuthMode(mode) {
-    document.getElementById('login-form').classList.toggle('hidden', mode === 'signup');
-    document.getElementById('signup-form').classList.toggle('hidden', mode === 'login');
+    const card = document.getElementById('auth-inner-card');
+    if (card) {
+        if (mode === 'signup') {
+            card.classList.add('is-flipped');
+        } else {
+            card.classList.remove('is-flipped');
+        }
+    }
 }
 
 

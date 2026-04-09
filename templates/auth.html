@@ -2,54 +2,63 @@
     <div class="auth-wrapper fade-in">
         <div class="pocket-logo cinzel">D&D<span>dosGuri</span></div>
         
-        <div class="premium-card auth-card">
-            <div id="login-form" class="auth-section">
-                <h2 class="cinzel highlight-text">Entrar na Taverna</h2>
-                <p class="muted-text small-text" style="margin-bottom: 2rem;">Retorne de onde parou sua jornada épica.</p>
+        <div class="auth-card-container">
+            <div id="auth-inner-card" class="auth-card-inner">
                 
-                <div class="input-group">
-                    <label class="label-tiny">E-mail</label>
-                    <input type="email" id="auth-email" placeholder="nome@reino.com" class="premium-input">
-                </div>
-                
-                <div class="input-group">
-                    <label class="label-tiny">Sua Senha</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="premium-input">
-                </div>
-                
-                <button class="btn-primary full-width" onclick="handleAuth('login')">
-                    Iniciar Sessão
-                </button>
-                
-                <p class="small-text txt-center" style="margin-top: 1.5rem;">
-                    Novo por aqui? <a href="#" onclick="toggleAuthMode('signup')" class="highlight-text">Criar uma conta</a>
-                </p>
-            </div>
-
-            <div id="signup-form" class="auth-section hidden">
-                <h2 class="cinzel highlight-text">Nova Jornada</h2>
-                <p class="muted-text small-text" style="margin-bottom: 2rem;">Crie sua identidade lendária no mundo.</p>
-                
-                <div class="input-group">
-                    <label class="label-tiny">E-mail</label>
-                    <input type="email" id="signup-email" placeholder="aventureiro@reino.com" class="premium-input">
-                </div>
-                
-                <div class="input-group">
-                    <label class="label-tiny">Escolha uma Senha</label>
-                    <input type="password" id="signup-password" placeholder="••••••••" class="premium-input">
-                </div>
-                
-                <button class="btn-primary full-width" onclick="handleAuth('signup')">
-                    Cadastrar Herói
-                </button>
-                
-                <p class="small-text txt-center" style="margin-top: 1.5rem;">
-                    Já tem conta? <a href="#" onclick="toggleAuthMode('login')" class="highlight-text">Fazer Login</a>
-                </p>
-            </div>
-
+                <!-- FRONT: LOGIN -->
+                <div class="premium-card auth-side auth-front">
+                    <div id="login-form" class="auth-section">
+                        <h2 class="cinzel highlight-text" style="margin-bottom: 2.5rem;">Entrar na Taverna</h2>
+                        
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="label-tiny">E-mail</label>
+                            <input type="email" id="auth-email" placeholder="nome@reino.com" class="premium-input">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label class="label-tiny">Sua Senha</label>
+                            <input type="password" id="auth-password" placeholder="••••••••" class="premium-input">
+                        </div>
+                        
+                        <div class="auth-actions-row">
+                            <button class="btn-ghost" onclick="toggleAuthMode('signup')" style="flex: 1; border-radius: 12px; padding: 1.1rem;">
+                                Criar Conta
+                            </button>
+                            <button class="btn-primary" onclick="handleAuth('login')" style="flex: 1.5; border-radius: 12px; padding: 1.1rem;">
+                                Continuar
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                <!-- BACK: SIGNUP -->
+                <div class="premium-card auth-side auth-back">
+                    <div id="signup-form" class="auth-section">
+                        <h2 class="cinzel highlight-text" style="margin-bottom: 2.5rem;">Nova Jornada</h2>
+                        
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="label-tiny">E-mail</label>
+                            <input type="email" id="signup-email" placeholder="aventureiro@reino.com" class="premium-input">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label class="label-tiny">Escolha uma Senha</label>
+                            <input type="password" id="signup-password" placeholder="••••••••" class="premium-input">
+                        </div>
+                        
+                        <div class="auth-actions-row">
+                            <button class="btn-ghost" onclick="toggleAuthMode('login')" style="flex: 1; border-radius: 12px; padding: 1.1rem;">
+                                Voltar
+                            </button>
+                            <button class="btn-primary" onclick="handleAuth('signup')" style="flex: 1.5; border-radius: 12px; padding: 1.1rem;">
+                                Cadastrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
         
         <p class="muted-text txt-center" style="font-size: 0.7rem; margin-top: 2rem; opacity: 0.5;">
             Powered by Supabase & Ethereal Engine v13

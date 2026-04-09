@@ -1691,77 +1691,86 @@ select {
     font-size: 1rem;
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
-/* ===== AUTH SCREEN (ETHEREAL OBSIDIAN) ===== */
+/* ===== AUTH SCREEN (3D FLIP & PREMIUM) ===== */
 #auth-screen {
     display: none;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, rgba(255, 190, 11, 0.03) 0%, var(--bg) 70%);
+    background: radial-gradient(circle at center, rgba(255, 190, 11, 0.12) 0%, var(--bg) 70%);
 }
 
 #auth-screen.active {
     display: flex;
 }
 
-.auth-wrapper {
+.auth-card-container {
     width: 100%;
     max-width: 420px;
-    padding: 1.5rem;
+    height: 520px;
+    perspective: 1500px;
+    margin: 0 auto;
+}
+
+.auth-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+}
+
+.auth-card-inner.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.auth-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-back {
+    transform: rotateY(180deg);
 }
 
 .auth-card {
     padding: 2.5rem !important;
-    border: 1px solid rgba(255, 190, 11, 0.1) !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 190, 11, 0.05) !important;
-}
-
-.auth-section h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 190, 11, 0.15) !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8), 
+        0 0 30px rgba(255, 190, 11, 0.05) !important;
+    background: rgba(20, 22, 35, 0.95) !important;
+    backdrop-filter: blur(40px) !important;
 }
 
 .premium-input {
-    width: 100%;
-    background: var(--bg-input) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
     border: 1px solid var(--panel-border) !important;
-    padding: 1.1rem 1.2rem !important;
+    padding: 1.1rem !important;
     border-radius: 12px !important;
-    color: var(--txt) !important;
     font-size: 1rem !important;
-    transition: all 0.3s ease !important;
+    color: #fff !important;
 }
 
 .premium-input:focus {
     border-color: var(--gold) !important;
-    background: rgba(255, 190, 11, 0.05) !important;
     box-shadow: 0 0 15px var(--gold-glow) !important;
 }
 
-.auth-divider {
+.full-width {
+    width: 100%;
+}
+
+.auth-actions-row {
     display: flex;
-    align-items: center;
-    margin: 2rem 0;
-    color: var(--txt-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 2px;
+    gap: 1rem;
+    width: 100%;
 }
 
-.auth-divider::before, .auth-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--panel-border), transparent);
-    margin: 0 1.5rem;
-}
-
-.auth-card a {
-    text-decoration: none;
-    transition: all 0.2s;
-}
-
-.auth-card a:hover {
-    text-shadow: 0 0 10px var(--gold-glow);
-    text-decoration: underline;
-}
 
