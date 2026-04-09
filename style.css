@@ -176,8 +176,8 @@ select {
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-top: -0.5rem;
-    color: var(--gold);
-    text-shadow: 0 0 5px var(--gold-glow);
+    color: #ffbe0b;
+    text-shadow: 0 0 5px rgba(255, 190, 11, 0.4);
 }
 
 .selection-grid {
@@ -204,6 +204,11 @@ select {
     border-color: var(--gold);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.choice-card strong {
+    color: var(--gold);
+    transition: color 0.3s;
 }
 
     box-shadow: 0 2px 8px var(--gold-glow);
@@ -474,6 +479,12 @@ select {
 .highlight-text {
     color: var(--gold);
     font-weight: 700;
+}
+
+[data-theme="light"] .auth-card .highlight-text,
+[data-theme="light"] .auth-card .label-tiny,
+[data-theme="light"] .choice-card strong {
+    color: #000;
 }
 
 .txt-center {
