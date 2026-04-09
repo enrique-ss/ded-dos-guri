@@ -27,6 +27,13 @@
     overflow: hidden;
 }
 
+@media (max-width: 600px) {
+    .char-name-input {
+        font-size: 1.2rem;
+        padding: 0.1rem 0.4rem;
+    }
+}
+
 .header-sub {
     display: flex;
     flex-wrap: wrap;
@@ -49,6 +56,14 @@
     justify-content: center;
     font-size: 1.8rem;
     position: relative;
+}
+
+@media (max-width: 600px) {
+    .char-portrait-container {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
 }
 
 .char-portrait {
@@ -128,6 +143,16 @@
 .detail-item input:focus {
     border-color: var(--gold);
     outline: none;
+}
+
+/* Esconder setas de input number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 .protected-field {
@@ -347,10 +372,19 @@
 .combat-stat-item input,
 .stat-big {
     font-size: 1.4rem;
-    font-weight: 800;
+    font-weight: 900;
     color: var(--gold);
     text-align: center;
     width: 100%;
+    height: 40px;          /* Altura fixa rigorosa */
+    line-height: 40px;     /* Alinhamento vertical centralizado */
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hp-section {
@@ -533,11 +567,13 @@
 .master-editable {
     cursor: pointer !important;
     transition: all 0.2s;
+    border-radius: 12px !important;
 }
 
 .master-editable:hover {
-    background: rgba(255, 190, 11, 0.15) !important;
-    box-shadow: 0 0 15px var(--gold-glow);
+    background: rgba(255, 190, 11, 0.1) !important;
+    box-shadow: 0 0 10px var(--gold-glow), inset 0 0 5px var(--gold-glow);
+    outline: 1px solid var(--gold);
 }
 
 /* INVENTARIO E MOEDAS */
