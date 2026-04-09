@@ -1,24 +1,28 @@
 <main id="role-selection" class="full-screen-modal">
-    <div class="creation-wizard fade-in">
+    <div class="auth-wrapper fade-in">
         <h1 class="pocket-logo cinzel">D&D<span>dosGuri</span></h1>
-        <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Escolha sua função</h2>
-        <div class="selection-grid">
-            <div class="choice-card" data-role="mestre">
-                <strong>MESTRE</strong>
-            </div>
-            <div class="choice-card" data-role="jogador">
-                <strong>JOGADOR</strong>
-            </div>
-            <div class="choice-card admin-only" data-role="admin" style="display: none;">
-                <strong>ADMIN</strong>
-            </div>
-        </div>
         
-        <!-- Botão de logout se já tiver usuário logado -->
-        <div id="logout-section" style="text-align: center; margin-top: 2rem;">
-            <button class="btn-ghost" onclick="clearSession()" style="border-color: var(--red); color: var(--red); padding: 0.5rem 1rem;">
-                Trocar Usuário / Logout
-            </button>
+        <div class="premium-card auth-card" style="padding: 2.5rem !important;">
+            <h2 class="cinzel highlight-text" style="text-align: center; margin-bottom: 2.5rem;">Escolha sua função</h2>
+            
+            <div class="selection-grid" style="grid-template-columns: 1fr; gap: 1rem;">
+                <div class="choice-card" data-role="mestre" style="min-height: 80px; padding: 1rem;">
+                    <strong>MESTRE</strong>
+                </div>
+                <div class="choice-card" data-role="jogador" style="min-height: 80px; padding: 1rem;">
+                    <strong>JOGADOR</strong>
+                </div>
+                <!-- Role Admin oculta por padrão -->
+                <div class="choice-card admin-only" data-role="admin" style="display: none; min-height: 80px; padding: 1rem; border-color: var(--gold); border-style: dashed;">
+                    <strong>ADMIN HUB</strong>
+                </div>
+            </div>
+
+            <div id="logout-section" style="text-align: center; margin-top: 2rem;">
+                <button class="btn-ghost" onclick="clearSession()" style="width: 100%; border-color: rgba(255, 62, 77, 0.3); color: var(--red); padding: 0.8rem; border-radius: 12px; font-size: 0.8rem;">
+                    Trocar Usuário / Sair
+                </button>
+            </div>
         </div>
     </div>
 </main>

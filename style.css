@@ -81,6 +81,7 @@ h3,
 .cinzel {
     font-family: 'Cinzel', serif;
     letter-spacing: 1px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 input,
@@ -157,15 +158,26 @@ select {
 }
 
 .pocket-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     text-align: center;
-    font-size: 3rem;
-    margin-bottom: 2rem;
-    text-shadow: 0 4px 15px var(--bg-overlay);
+    font-size: 4rem;
+    margin: 0 0 2.5rem 0;
+    color: #e1e1e1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .pocket-logo span {
+    display: block;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: -0.5rem;
     color: var(--gold);
-    text-shadow: 0 0 15px var(--gold-glow);
+    text-shadow: 0 0 5px var(--gold-glow);
 }
 
 .selection-grid {
@@ -175,24 +187,26 @@ select {
 }
 
 .choice-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--bg-accent);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     padding: 1.2rem;
     cursor: pointer;
     text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     transition: all 0.2s;
 }
 
 .choice-card:hover {
     border-color: var(--gold);
     transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-.choice-card.selected {
-    background: var(--gold-glow);
-    border-color: var(--gold);
-    box-shadow: 0 0 20px var(--gold-glow);
+    box-shadow: 0 2px 8px var(--gold-glow);
 }
 
 .desc-box {
@@ -301,12 +315,12 @@ select {
     border-color: var(--gold);
     color: var(--gold);
     background: var(--gold-glow);
-    box-shadow: inset 0 0 15px var(--gold-glow);
+    box-shadow: inset 0 0 8px var(--gold-glow);
 }
 
 .attr-slot.active-target {
     border-color: var(--gold);
-    box-shadow: 0 0 15px var(--gold-glow);
+    box-shadow: 0 0 8px var(--gold-glow);
 }
 
 .gold-input {
@@ -320,28 +334,44 @@ select {
 
 /* ===== BUTTONS ===== */
 .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: linear-gradient(135deg, var(--gold) 0%, #ff9f1c 100%);
     color: var(--txt-contrast);
     font-weight: 800;
-    padding: 1.2rem;
+    padding: 1.1rem;
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    box-shadow: 0 8px 20px var(--gold-glow);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
 }
 
 .btn-ghost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 1px solid var(--panel-border);
     color: var(--txt);
-    padding: 1rem;
+    padding: 1.1rem;
     border-radius: 50px;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: all 0.2s;
 }
 
 .btn-ghost:hover {
     background: rgba(255, 255, 255, 0.05);
+    border-color: var(--gold);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
 }
 
 /* ===== MASTER SIDEBAR TOGGLE ===== */
@@ -359,7 +389,7 @@ select {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px var(--bg-overlay);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     backdrop-filter: blur(10px);
     z-index: 1001;
     transition: all 0.3s ease;
@@ -369,7 +399,7 @@ select {
     transform: scale(1.1);
     border-color: var(--gold);
     color: var(--gold);
-    box-shadow: 0 0 20px var(--gold-glow);
+    box-shadow: 0 0 12px var(--gold-glow);
 }
 
 /* ===== THEME TOGGLE BUTTON ===== */
@@ -387,7 +417,7 @@ select {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px var(--bg-overlay);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     backdrop-filter: blur(10px);
     z-index: 9999;
     transition: all 0.3s ease;
@@ -396,7 +426,7 @@ select {
 .theme-toggle-btn:hover {
     transform: scale(1.1);
     border-color: var(--gold);
-    box-shadow: 0 0 20px var(--gold-glow);
+    box-shadow: 0 0 12px var(--gold-glow);
 }
 
 .theme-toggle-btn svg {
@@ -416,7 +446,7 @@ select {
     border-radius: var(--radius);
     padding: var(--p-card);
     backdrop-filter: blur(25px);
-    box-shadow: 0 12px 30px var(--bg-overlay);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     position: relative;
 }
 
@@ -1284,7 +1314,7 @@ select {
     text-transform: none;
     letter-spacing: 0;
     font-weight: 400;
-    box-shadow: 0 8px 25px var(--bg-overlay);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     z-index: 9999999;
     pointer-events: none;
     opacity: 0;
@@ -1692,21 +1722,30 @@ select {
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
 /* ===== AUTH SCREEN (3D FLIP & PREMIUM) ===== */
-#auth-screen {
-    display: none;
+#auth-screen.active, #role-selection.active {
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at center, rgba(255, 190, 11, 0.12) 0%, var(--bg) 70%);
 }
 
-#auth-screen.active {
-    display: flex;
+#auth-screen, #role-selection {
+    display: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#auth-screen {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/resources/login.jpeg');
+}
+
+#role-selection {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/resources/role.webp');
 }
 
 .auth-card-container {
     width: 100%;
     max-width: 420px;
-    height: 520px;
     perspective: 1500px;
     margin: 0 auto;
 }
@@ -1714,7 +1753,7 @@ select {
 .auth-card-inner {
     position: relative;
     width: 100%;
-    height: 100%;
+    display: grid;
     text-align: center;
     transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-style: preserve-3d;
@@ -1725,9 +1764,8 @@ select {
 }
 
 .auth-side {
-    position: absolute;
+    grid-area: 1 / 1;
     width: 100%;
-    height: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     display: flex;
@@ -1740,27 +1778,28 @@ select {
 }
 
 .auth-card {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
     padding: 2.5rem !important;
     border: 1px solid rgba(255, 190, 11, 0.15) !important;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.8), 
-        0 0 30px rgba(255, 190, 11, 0.05) !important;
-    background: rgba(20, 22, 35, 0.95) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    background: var(--panel) !important;
     backdrop-filter: blur(40px) !important;
 }
 
 .premium-input {
-    background: rgba(0, 0, 0, 0.6) !important;
+    background: var(--bg-input) !important;
     border: 1px solid var(--panel-border) !important;
     padding: 1.1rem !important;
     border-radius: 12px !important;
     font-size: 1rem !important;
-    color: #fff !important;
+    color: var(--txt) !important;
 }
 
 .premium-input:focus {
     border-color: var(--gold) !important;
-    box-shadow: 0 0 15px var(--gold-glow) !important;
+    box-shadow: 0 0 8px var(--gold-glow) !important;
 }
 
 .full-width {
