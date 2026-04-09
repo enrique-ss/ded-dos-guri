@@ -1,16 +1,86 @@
 <main id="master-panel" class="full-screen-modal">
-    <div class="creation-wizard fade-in">
-        <h1 class="pocket-logo cinzel" style="margin-top: 1rem;">Painel do <span>Mestre</span></h1>
-        <p class="subtitle" style="text-align: center; margin-bottom: 3rem;">Aventureiros conectados na sua rede:</p>
+    <div class="master-hub-layout fade-in">
         
-        <div id="master-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-            <!-- Cards de jogadores injetados aqui via JS -->
-            <div class="muted-text cinzel" style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aguardando jogadores entrarem...</div>
-        </div>
+        <!-- Cabeçalho do Mestre (Substituiu a Sidebar) -->
+        <header class="master-header premium-card">
+            <div class="header-left">
+                <h1 class="pocket-logo cinzel" style="font-size: 1.2rem; margin: 0;">Master Hub</h1>
+            </div>
+            
+            <nav class="master-nav">
+                <button class="m-nav-btn active" data-tab="players">
+                    <span class="icon">👥</span> <span class="nav-txt">Jogadores</span>
+                </button>
+                <button class="m-nav-btn" data-tab="initiative">
+                    <span class="icon">⚔️</span> <span class="nav-txt">Iniciativa</span>
+                </button>
+                <button class="m-nav-btn" data-tab="bestiary">
+                    <span class="icon">👾</span> <span class="nav-txt">Bestiário</span>
+                </button>
+                <button class="m-nav-btn" data-tab="log">
+                    <span class="icon">📜</span> <span class="nav-txt">Log</span>
+                </button>
+                <button class="m-nav-btn" data-tab="notes">
+                    <span class="icon">📝</span> <span class="nav-txt">Notas</span>
+                </button>
+            </nav>
 
-        <div class="wizard-nav" style="margin-top: 4rem; justify-content: center;">
-            <button class="btn-ghost" id="btn-master-exit" style="max-width: 300px;">Sair do Modo Mestre</button>
-            <button class="btn-primary" id="btn-master-broadcast" style="max-width: 300px; display: none;">Notificar Todos</button>
-        </div>
+            <div class="header-right">
+                <button class="btn-ghost" id="btn-master-exit" style="padding: 0.5rem 1rem; font-size: 0.75rem; border-color: var(--panel-border);">Sair</button>
+            </div>
+        </header>
+
+        <!-- Área de Conteúdo Dinâmica -->
+        <section class="master-content">
+            
+            <!-- ABA: JOGADORES -->
+            <div id="m-tab-players" class="m-tab-content active">
+                <div class="m-tab-header">
+                    <h2 class="cinzel">Aventureiros Conectados</h2>
+                </div>
+                <div id="master-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <!-- Cards injetados via JS -->
+                </div>
+            </div>
+
+            <!-- ABA: INICIATIVA -->
+            <div id="m-tab-initiative" class="m-tab-content">
+                <div class="m-tab-header">
+                    <h2 class="cinzel">Rastreador de Iniciativa</h2>
+                </div>
+                <div id="initiative-list" class="initiative-list">
+                    <!-- Linhas injetadas via JS -->
+                </div>
+            </div>
+
+            <!-- ABA: BESTIÁRIO -->
+            <div id="m-tab-bestiary" class="m-tab-content">
+                <div class="m-tab-header">
+                    <h2 class="cinzel">Bestiário Local</h2>
+                    <button class="btn-primary" onclick="startNPCCreation()" style="padding: 0.5rem 1.5rem;">+ Novo NPC</button>
+                </div>
+                <div id="npcs-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <!-- NPCs criados injetados aqui -->
+                </div>
+            </div>
+
+            <!-- ABA: LOG DA MESA -->
+            <div id="m-tab-log" class="m-tab-content">
+                <h2 class="cinzel" style="margin-bottom: 1.5rem;">Histórico de Atividades (Audit Log)</h2>
+                <div id="master-log-history" class="log-history">
+                    <!-- Histórico de logs automáticos injetado aqui -->
+                    <div class="muted-text txt-center" style="padding: 3rem;">Nenhuma atividade registrada ainda.</div>
+                </div>
+            </div>
+
+            <!-- ABA: NOTAS EXCLUSIVAS -->
+            <div id="m-tab-notes" class="m-tab-content">
+                <h2 class="cinzel" style="margin-bottom: 1.5rem;">Anotações Privadas</h2>
+                <div class="premium-card">
+                    <textarea id="master-private-notes" class="rp-textarea" placeholder="História, NPCs secretos, tesouros escondidos..." style="min-height: 60vh;"></textarea>
+                </div>
+            </div>
+
+        </section>
     </div>
 </main>

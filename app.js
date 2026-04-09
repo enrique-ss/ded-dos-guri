@@ -80,6 +80,7 @@ const SKILLS = [
 
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
 const STORAGE_KEY = 'rpg_guri_v10';
+const MASTER_STORAGE_KEY = 'rpg_guri_master_v1';
 
 // ==================== REAL-TIME SETUP ====================
 let socket;
@@ -87,10 +88,13 @@ try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
 
 let isMaster = false;
 let connectedPlayers = {}; // { socketId: state }
-let masterEditingId = null; // ID do jogador que o mestre está editando agora
+let masterEditingId = null; // ID do jogador ou NPC que o mestre está editando agora
+let masterEditingType = 'player'; // 'player' ou 'npc'
+let isCreatingNPC = false; // Flag para saber se o Wizard está criando um NPC ou um Personagem
 
 // ==================== STATE ====================
 let state = getDefaultState();
+let masterState = loadMasterState();
 
 // Temporal wizard state
 let wizardData = {
@@ -118,6 +122,7 @@ function getDefaultState() {
         hp: { current: 10, max: 10 },
         ac: 10,
         speed: 9,
+        initiativeRoll: 0,
         hd: '1d10',
         photo: '',
         attr: { for: 10, des: 10, con: 10, int: 10, sab: 10, car: 10 },
@@ -137,9 +142,41 @@ function getDefaultState() {
     };
 }
 
+function loadMasterState() {
+    const defaults = {
+        activeTab: 'players',
+        initiative: [], // { name, val, id }
+        notes: '',
+        logHistory: [],
+        npcs: [] // Lista de fichas de NPCs (Bestiário)
+    };
+    
+    const raw = localStorage.getItem(MASTER_STORAGE_KEY);
+    if (!raw) return defaults;
+
+    try {
+        const loaded = JSON.parse(raw);
+        // Merge profundo simples para garantir que arrays existam
+        return {
+            ...defaults,
+            ...loaded,
+            initiative: loaded.initiative || [],
+            logHistory: loaded.logHistory || [],
+            npcs: loaded.npcs || []
+        };
+    } catch (e) {
+        console.error("Erro ao carregar dados do Mestre:", e);
+        return defaults;
+    }
+}
+
+function saveMasterState() {
+    localStorage.setItem(MASTER_STORAGE_KEY, JSON.stringify(masterState));
+}
+
 // ==================== SYNC LOGIC ====================
 function broadcastChange() {
-    if (!socket) return;
+    if (!socket || masterEditingType === 'npc') return; // NPCs não são sincronizados via rede, são locais ao mestre
     if (isMaster && masterEditingId) {
         socket.emit('masterUpdatePlayer', { targetId: masterEditingId, data: state });
     } else if (!isMaster && state.isCreated) {
@@ -147,11 +184,31 @@ function broadcastChange() {
     }
 }
 
+// Helper para enviar mensagens automáticas ao log
+function sendSystemLog(msg) {
+    if (!socket) return;
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // Envia para todos
+    socket.emit('sendMessage', msg);
+
+    // Salva no histórico do mestre para persistência (Audit Log)
+    masterState.logHistory.push({ timestamp, text: msg });
+    saveMasterState();
+    
+    // Se estiver na aba de login, renderiza na hora
+    if (isMaster && masterState.activeTab === 'log') renderLogHistory();
+}
+
 // Para não sobrecarregar o servidor com cada tecla digitada nos textareas
 const debounceSync = debounce(() => {
     broadcastChange();
     saveState();
 }, 800);
+
+const debounceGoldLog = debounce((name, gold) => {
+    sendSystemLog(`💰 <strong>${name}</strong> agora tem <strong>${gold} po</strong>.`);
+}, 2000);
 
 function debounce(func, wait) {
     let timeout;
@@ -190,6 +247,32 @@ if (socket) {
             renderSheet();
         }
     });
+
+    // --- RECEBIMENTO DE LOG E ALERTAS ---
+    socket.on('newLogEntry', ({ timestamp, text }) => {
+        const wrapper = document.getElementById('master-log-wrapper');
+        const content = document.getElementById('master-log-content');
+        if (!wrapper || !content) return;
+
+        wrapper.classList.remove('hidden');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<div class="log-time">${timestamp}</div><div>${text}</div>`;
+        content.prepend(entry);
+        
+        // Auto-scroll para o topo se houver muitos
+        content.scrollTop = 0;
+    });
+
+    socket.on('incomingAlert', (text) => {
+        const banner = document.getElementById('global-alert-banner');
+        if (!banner) return;
+        banner.textContent = text;
+        banner.classList.remove('hidden');
+        
+        // Esconde após 8 segundos
+        setTimeout(() => banner.classList.add('hidden'), 8000);
+    });
 }
 
 // ==================== APP LOGIC ====================
@@ -213,7 +296,15 @@ function loadState() {
 }
 
 function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (isMaster && masterEditingType === 'npc') {
+        const idx = masterState.npcs.findIndex(n => n.id == masterEditingId);
+        if (idx !== -1) {
+            masterState.npcs[idx] = { ...state };
+            saveMasterState();
+        }
+    } else {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
 }
 
 function render() {
@@ -231,7 +322,9 @@ function render() {
     });
 
     if (isMaster) {
-        if (masterEditingId) {
+        if (isCreatingNPC) {
+            if (creation) creation.classList.add('active');
+        } else if (masterEditingId) {
             const targetView = $(currentView) || sheet;
             if (targetView) targetView.classList.add('active');
             renderSheet();
@@ -268,39 +361,224 @@ function renderMasterPanel() {
     const grid = document.getElementById('master-grid');
     if (!grid) return;
 
+    // 1. Jogadores Conectados com Barras de HP
     const ids = Object.keys(connectedPlayers);
     if (ids.length === 0) {
         grid.innerHTML = '<div class="muted-text cinzel" style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aguardando jogadores entrarem...</div>';
+    } else {
+        grid.innerHTML = ids.map(id => {
+            const p = connectedPlayers[id];
+            const hpPercent = Math.max(0, Math.min(100, (p.hp.current / p.hp.max) * 100));
+            let hpClass = '';
+            if (hpPercent < 25) hpClass = 'danger';
+            else if (hpPercent < 50) hpClass = 'warning';
+
+            return `
+                <div class="choice-card player-card" onclick="openPlayerSheet('${id}')">
+                    <div class="char-portrait-container" style="width: 50px; height: 50px; margin: 0 auto 1rem; font-size: 1.2rem;">
+                        ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
+                    </div>
+                    <strong style="display:block; margin-bottom: 0.3rem; font-size: 0.9rem;">${p.name || 'Sem Nome'}</strong>
+                    <div class="muted-text" style="font-size: 0.65rem; text-transform: uppercase;">
+                        ${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}
+                    </div>
+                    
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; font-weight: 700;">
+                        HP: ${p.hp.current} / ${p.hp.max}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 2. Sincronizar Abas e Conteúdo
+    document.querySelectorAll('.m-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === masterState.activeTab);
+    });
+    document.querySelectorAll('.m-tab-content').forEach(tab => {
+        tab.classList.toggle('active', tab.id === `m-tab-${masterState.activeTab}`);
+    });
+
+    // 3. Renderizar Ferramentas
+    if (masterState.activeTab === 'initiative') renderInitiative();
+    if (masterState.activeTab === 'bestiary') renderBestiary();
+    if (masterState.activeTab === 'log') renderLogHistory();
+    if (masterState.activeTab === 'notes') {
+        const notesArea = document.getElementById('master-private-notes');
+        if (notesArea) notesArea.value = masterState.notes;
+    }
+}
+
+window.switchMasterTab = function(tabId) {
+    masterState.activeTab = tabId;
+    saveMasterState();
+    renderMasterPanel();
+};
+
+// --- LÓGICA DE INICIATIVA ---
+
+
+function renderInitiative() {
+    const list = document.getElementById('initiative-list');
+    if (!list) return;
+
+    // 1. Coletar jogadores conectados que rolaram iniciativa
+    const playerInits = Object.values(connectedPlayers)
+        .filter(p => p.initiativeRoll > 0)
+        .map(p => ({ 
+            id: p.id || 'player', 
+            name: p.name, 
+            val: p.initiativeRoll, 
+            isPlayer: true 
+        }));
+
+    // 2. Coletar NPCs do Bestiário que rolaram iniciativa
+    const npcInits = (masterState.npcs || [])
+        .filter(n => n.initiativeRoll > 0)
+        .map(n => ({ 
+            id: n.id, 
+            name: n.name, 
+            val: n.initiativeRoll, 
+            isPlayer: false 
+        }));
+
+    // 3. Fundir e Ordenar
+    const allInits = [...playerInits, ...npcInits].sort((a, b) => b.val - a.val);
+
+    if (allInits.length === 0) {
+        list.innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Nenhum herói ou vilão em combate no momento.</div>';
         return;
     }
 
-    grid.innerHTML = ids.map(id => {
-        const p = connectedPlayers[id];
+    list.innerHTML = allInits.map(item => `
+        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'} fade-in" style="${!item.isPlayer ? 'border-left-color: var(--red);' : ''}">
+            <div class="init-score">${item.val}</div>
+            <div class="init-name cinzel">${item.isPlayer ? '🛡️' : '👾'} ${item.name}</div>
+        </div>
+    `).join('');
+}
+
+function renderBestiary() {
+    const grid = document.getElementById('npcs-grid');
+    if (!grid) return;
+
+    if (masterState.npcs.length === 0) {
+        grid.innerHTML = '<div class="muted-text txt-center" style="grid-column: 1/-1; padding: 4rem;">O Bestiário está vazio. Crie monstros para populá-lo!</div>';
+        return;
+    }
+
+    grid.innerHTML = masterState.npcs.map(npc => {
+        const hpPercent = Math.max(0, Math.min(100, (npc.hp.current / npc.hp.max) * 100));
+        let hpClass = '';
+        if (hpPercent < 25) hpClass = 'danger';
+        else if (hpPercent < 50) hpClass = 'warning';
+
         return `
-            <div class="choice-card player-card" onclick="openPlayerSheet('${id}')">
-                <div class="char-portrait-container" style="width: 60px; height: 60px; margin: 0 auto 1rem;">
-                    ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
+            <div class="choice-card player-card fade-in" onclick="openNPCSheet('${npc.id}')">
+                <div class="char-portrait-container" style="width: 50px; height: 50px; margin: 0 auto 1rem; font-size: 1.2rem;">
+                    ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
                 </div>
-                <strong style="display:block; margin-bottom: 0.3rem;">${p.name || 'Sem Nome'}</strong>
-                <div class="muted-text" style="font-size: 0.7rem; text-transform: uppercase;">
-                    ${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}
+                <strong style="display:block; margin-bottom: 0.3rem; font-size: 0.9rem;">${npc.name}</strong>
+                <div class="muted-text" style="font-size: 0.65rem; text-transform: uppercase;">
+                    ${RACES[npc.race]?.name || '---'} • ${CLASSES[npc.cls]?.name || '---'}
                 </div>
-                <div style="margin-top: 1rem; font-weight: 900; color: var(--red);">
-                    HP: ${p.hp.current} / ${p.hp.max}
+                
+                <div class="hp-bar-container">
+                    <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; font-weight: 700;">
+                    HP: ${npc.hp.current} / ${npc.hp.max}
                 </div>
             </div>
         `;
     }).join('');
 }
 
+window.addNPCToInitiative = function(npcId) {
+    const npc = masterState.npcs.find(n => n.id === npcId);
+    if (!npc) return;
+
+    const val = prompt(`Iniciativa para ${npc.name} (Dado Físico + Modificador):`, Math.floor((npc.attr.des - 10) / 2));
+    if (val === null) return;
+
+    const score = parseInt(val) || 0;
+    
+    // NPCs na iniciativa são simples { name, val, id, isPlayer: false }
+    masterState.initiative.push({
+        id: Date.now(),
+        name: npc.name,
+        val: score
+    });
+
+    saveMasterState();
+    sendSystemLog(`👾 <strong>${npc.name}</strong> entrou no combate com iniciativa <strong>${score}</strong>.`);
+    
+    // Muda para a aba de iniciativa para ver o resultado
+    switchMasterTab('initiative'); 
+};
+
+window.deleteNPC = function(npcId) {
+    if (confirm("Deseja apagar este NPC permanentemente?")) {
+        masterState.npcs = masterState.npcs.filter(n => n.id !== npcId);
+        saveMasterState();
+        renderBestiary();
+    }
+};
+
+function renderLogHistory() {
+    const list = document.getElementById('master-log-history');
+    if (!list) return;
+
+    if (masterState.logHistory.length === 0) {
+        list.innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Nenhuma atividade registrada ainda.</div>';
+        return;
+    }
+
+    // Mostra os logs mais recentes primeiro no topo do histórico
+    list.innerHTML = [...masterState.logHistory].reverse().map(log => `
+        <div class="log-entry" style="margin-bottom: 0.5rem; background: rgba(255,255,255,0.03);">
+            <div class="log-time">${log.timestamp}</div>
+            <div style="font-size: 0.85rem;">${log.text}</div>
+        </div>
+    `).join('');
+}
+
+// --- LÓGICA DE ALERTAS ---
+window.broadcastMasterAlert = function() {
+    const input = document.getElementById('master-alert-input');
+    const msg = input.value.trim();
+    if (!msg || !socket) return;
+
+    socket.emit('sendAlert', msg);
+    input.value = ''; // Limpa após enviar alerta rápido
+};
+
 window.openPlayerSheet = function(id) {
     masterEditingId = id;
+    masterEditingType = 'player';
     state = connectedPlayers[id];
     
     // Remove read-only para o mestre poder editar tudo
     const container = document.getElementById('sheet-container');
     if (container) container.classList.remove('read-only');
     
+    render();
+};
+
+window.openNPCSheet = function(id) {
+    const npc = masterState.npcs.find(n => n.id == id);
+    if (!npc) return;
+
+    masterEditingId = id;
+    masterEditingType = 'npc';
+    state = npc; // O NPC local vira o estado ativo para edição
+
+    const container = document.getElementById('sheet-container');
+    if (container) container.classList.remove('read-only');
+
     render();
 };
 
@@ -357,7 +635,13 @@ function renderSheet() {
         }
     });
 
-    // 2. Attributes
+    // Show/Hide NPC Danger Zone
+    const npcDanger = document.getElementById('npc-danger-zone');
+    if (npcDanger) {
+        npcDanger.style.display = (isMaster && masterEditingType === 'npc') ? 'flex' : 'none';
+    }
+
+    // Attributes
     const attrs = ['for', 'des', 'con', 'int', 'sab', 'car'];
     attrs.forEach(a => {
         const valEl = $(`val-${a}`);
@@ -401,7 +685,7 @@ function renderSheet() {
         acInput.value = state.ac || totalAC; // Respeita override manual se existir, senão usa calculado
     }
 
-    $('display-initiative').textContent = (desMod >= 0 ? '+' : '') + desMod;
+    $('display-initiative').textContent = state.initiativeRoll || 0;
     
     $('display-speed').textContent = state.speed + 'm';
     $('hp-text').textContent = `${state.hp.current} / ${state.hp.max}`;
@@ -611,6 +895,12 @@ function goToStep(n) {
         }
     }
 
+    if (n === 1 && isCreatingNPC) {
+        document.querySelector('#creation-screen h1 span').textContent = 'NPC';
+    } else if (n === 1) {
+        document.querySelector('#creation-screen h1 span').textContent = 'Herói';
+    }
+
     wizardData.step = n;
     if (n === 3) {
         loadSkillChoices();
@@ -679,6 +969,45 @@ function finishCreation() {
 }
 
 function finalizeWizard(name, bg, align, photo) {
+    // Se for NPC, salvamos na lista do mestre
+    if (isCreatingNPC) {
+        const npcState = { ...getDefaultState() };
+        npcState.isCreated = true;
+        npcState.name = name;
+        npcState.race = wizardData.race;
+        npcState.cls = wizardData.cls;
+        npcState.photo = photo;
+        npcState.attr = { ...wizardData.attr };
+        npcState.profs = [...wizardData.skills];
+        npcState.bg = bg || '---';
+        npcState.align = align || '---';
+        npcState.id = Date.now(); // ID único para o NPC (no mestre)
+
+        const race = RACES[npcState.race] || { speed: 9 };
+        const cls = CLASSES[npcState.cls] || { hp: 8, hd: '1d8', saves: [] };
+        
+        npcState.speed = race.speed;
+        npcState.ac = 10 + Math.floor((npcState.attr.des - 10) / 2);
+        npcState.hp.max = (cls.hp || 10) + Math.floor((npcState.attr.con - 10) / 2);
+        npcState.hp.current = npcState.hp.max;
+        npcState.hd = '1' + (cls.hd?.substring(1) || 'd8');
+        npcState.saves = [...(cls.saves || [])];
+
+        // Garantir que masterState.npcs exista antes do push
+        if (!Array.isArray(masterState.npcs)) masterState.npcs = [];
+        
+        masterState.npcs.push(npcState);
+        saveMasterState();
+        isCreatingNPC = false;
+        sendSystemLog(`👾 Mestre criou um novo NPC: <strong>${name}</strong>.`);
+        
+        masterState.activeTab = 'bestiary'; // Forçar aba de NPCs ao voltar
+        switchView('master-panel');
+        renderMasterPanel();
+        return;
+    }
+
+    // Fluxo normal do Jogador
     state = getDefaultState();
     state.isCreated = true;
     state.name = name;
@@ -705,8 +1034,30 @@ function finalizeWizard(name, bg, align, photo) {
     
     saveState();
     if (socket) socket.emit('playerIdentify', state);
+    sendSystemLog(`📜 <strong>${state.name}</strong> (${CLASSES[state.cls].name}) acaba de entrar na aventura!`);
     render();
 }
+
+window.startNPCCreation = function() {
+    isCreatingNPC = true;
+    wizardData = {
+        active: true,
+        step: 1,
+        name: '', race: '', cls: '',
+        bg: '', align: '', photo: '',
+        personality: { traits: '', ideals: '', bonds: '', flaws: '' },
+        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
+        skills: []
+    };
+    buildGrids();
+    
+    // Limpar campos do DOM se existirem
+    const nameInput = document.getElementById('create-name');
+    if (nameInput) nameInput.value = '';
+    
+    switchView('creation-screen');
+    goToStep(1);
+};
 
 // ==================== INTERACTIVE SHEET EVENTS ====================
 function setupEvents() {
@@ -727,10 +1078,17 @@ function setupEvents() {
         }
 
         if (t.id === 'btn-master-exit' || t.id === 'btn-back-to-role') {
-            isMaster = false;
-            wizardData.active = false;
-            masterEditingId = null;
-            render();
+            if (isMaster && masterEditingId) {
+                // Se o mestre estiver editando alguém, apenas volta para o painel
+                const prevTab = masterEditingType === 'npc' ? 'bestiary' : 'players';
+                masterEditingId = null;
+                masterEditingType = 'player';
+                masterState.activeTab = prevTab;
+                render();
+            } else {
+                // Caso contrário (está no painel ou é jogador), reseta tudo (refresh)
+                window.location.reload();
+            }
             return;
         }
 
@@ -738,23 +1096,56 @@ function setupEvents() {
         if (t.id === 'check-inspiration') {
             if (!isMaster) return;
             state.inspiration = !state.inspiration;
+            sendSystemLog(`✨ <strong>${state.name}</strong> ${state.inspiration ? 'ganhou' : 'usou'} Inspiração!`);
             renderSheet();
             broadcastChange();
         }
 
         if (t.id === 'hp-text') {
             if (!isMaster) return;
-            const val = prompt("Alterar Atuais PV:", state.hp.current);
+            const oldHp = state.hp.current;
+            const val = prompt("Alterar Atuais PV:", oldHp);
             if (val !== null) {
                 state.hp.current = parseInt(val) || 0;
+                const diff = state.hp.current - oldHp;
+                if (diff !== 0) {
+                    sendSystemLog(`❤️ <strong>${state.name}</strong>: HP ${diff > 0 ? 'ganhou' : 'perdeu'} ${Math.abs(diff)} (Total: ${state.hp.current}/${state.hp.max})`);
+                }
                 renderSheet();
                 broadcastChange();
             }
         }
 
+        if (t.id === 'display-initiative') {
+            const val = prompt("Resultado do Dado Físico + Modificador:", state.initiativeRoll);
+            if (val !== null) {
+                state.initiativeRoll = parseInt(val) || 0;
+                sendSystemLog(`⚔️ <strong>${state.name}</strong> definiu sua iniciativa para <strong>${state.initiativeRoll}</strong>.`);
+                renderSheet();
+                broadcastChange();
+            }
+        }
+
+        if (t.id === 'btn-delete-current-npc') {
+            if (confirm("Deseja apagar este NPC permanentemente?")) {
+                const idToDelete = masterEditingId;
+                masterState.npcs = masterState.npcs.filter(n => n.id != idToDelete);
+                saveMasterState();
+                
+                // Retornar ao painel
+                masterEditingId = null;
+                masterEditingType = 'player';
+                masterState.activeTab = 'bestiary';
+                render();
+            }
+            return;
+        }
+
         if (t.closest('#btn-reset-char')) {
             if (confirm('Tem certeza que deseja resetar TUDO? Isso não pode ser desfeito.')) {
+                const oldName = state.name;
                 state = getDefaultState();
+                sendSystemLog(`♻️ A ficha de <strong>${oldName}</strong> foi resetada pelo Mestre.`);
                 render();
                 broadcastChange();
             }
@@ -767,6 +1158,7 @@ function setupEvents() {
             const b = prompt("Bônus:");
             const q = prompt("Quantidade:");
             state.attacks.push({ name: n, bonus: b, qty: q });
+            sendSystemLog(`⚔️ <strong>${state.name}</strong> adicionou novo ataque: <strong>${n}</strong> (+${b})`);
             renderSheet();
             broadcastChange();
         }
@@ -779,6 +1171,7 @@ function setupEvents() {
             const q = prompt("Quantidade:");
             state.armors = state.armors || [];
             state.armors.push({ name: n, bonus: b, qty: q });
+            sendSystemLog(`🛡️ <strong>${state.name}</strong> equipou: <strong>${n}</strong> (+${b})`);
             renderSheet();
             broadcastChange();
         }
@@ -793,6 +1186,13 @@ function setupEvents() {
             state.utility.push({ name: n, bonus: b, qty: q });
             renderSheet();
             broadcastChange();
+        }
+
+        // NAVEGAÇÃO DO Hub do Mestre (Abas)
+        const mNavBtn = t.closest('.m-nav-btn');
+        if (mNavBtn) {
+            switchMasterTab(mNavBtn.dataset.tab);
+            return;
         }
 
         // Navegação do footer
@@ -812,12 +1212,23 @@ function setupEvents() {
                 if (val !== null) { state.attr[attrKey] = parseInt(val) || 0; renderSheet(); broadcastChange(); }
             }
             if (t.id === 'display-level') {
-                const val = prompt("Mudar Nível:", state.level);
-                if (val !== null) { state.level = parseInt(val) || 1; renderSheet(); broadcastChange(); }
+                const oldLvl = state.level;
+                const val = prompt("Mudar Nível:", oldLvl);
+                if (val !== null && parseInt(val) !== oldLvl) { 
+                    state.level = parseInt(val) || 1; 
+                    sendSystemLog(`🌟 <strong>${state.name}</strong> subiu para o <strong>Nível ${state.level}</strong>!`);
+                    renderSheet(); broadcastChange(); 
+                }
             }
             if (t.id === 'display-xp') {
-                const val = prompt("Mudar XP (0 a 5):", state.xp);
-                if (val !== null) { state.xp = parseInt(val) || 0; renderSheet(); broadcastChange(); }
+                const oldXp = state.xp;
+                const val = prompt("Mudar XP (0 a 5):", oldXp);
+                if (val !== null && parseInt(val) !== oldXp) { 
+                    state.xp = parseInt(val) || 0; 
+                    const diff = state.xp - oldXp;
+                    sendSystemLog(`📈 <strong>${state.name}</strong> ${diff > 0 ? 'ganhou' : 'perdeu'} ${Math.abs(diff)} XP (Total: ${state.xp})`);
+                    renderSheet(); broadcastChange(); 
+                }
             }
         }
 
@@ -882,12 +1293,22 @@ function setupEvents() {
         const id = e.target.id;
         const val = e.target.value;
 
+        if (id === 'master-private-notes') {
+            masterState.notes = val;
+            saveMasterState();
+            return;
+        }
+
         if (id === 'display-name') state.name = val;
         if (id === 'display-ac') state.ac = parseInt(val) || 10;
         if (id === 'display-hd') state.hd = val;
         if (id === 'display-bg') state.bg = val;
         if (id === 'display-align') state.align = val;
-        if (id === 'gold-po') state.gold = parseInt(val) || 0;
+        if (id === 'gold-po') {
+            state.gold = parseInt(val) || 0;
+            // Debounce o log de ouro para não spammar ao digitar
+            debounceGoldLog(state.name, state.gold);
+        }
         if (id === 'inventory-list') state.inventory = val;
         if (id?.startsWith('rp-')) {
             if (id === 'rp-traits') state.rpTraits = val;
