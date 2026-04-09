@@ -435,9 +435,9 @@ function renderInitiative() {
             isPlayer: true 
         }));
 
-    // 2. Coletar NPCs do Bestiário que rolaram iniciativa
+    // 2. Coletar NPCs do Bestiário que rolaram iniciativa e não estão excluídos
     const npcInits = (masterState.npcs || [])
-        .filter(n => n.initiativeRoll > 0)
+        .filter(n => n.initiativeRoll > 0 && !n.isDeleted)
         .map(n => ({ 
             id: n.id, 
             name: n.name, 
@@ -470,7 +470,7 @@ function renderBestiary() {
         return;
     }
 
-    grid.innerHTML = masterState.npcs.map(npc => {
+    grid.innerHTML = (masterState.npcs || []).filter(n => !n.isDeleted).map(npc => {
         const hpPercent = Math.max(0, Math.min(100, (npc.hp.current / npc.hp.max) * 100));
         let hpClass = '';
         if (hpPercent < 25) hpClass = 'danger';
@@ -478,6 +478,8 @@ function renderBestiary() {
 
         return `
             <div class="choice-card player-card fade-in" onclick="openNPCSheet('${npc.id}')">
+                <button class="btn-ghost" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})" style="position: absolute; top: 10px; right: 10px; padding: 0.3rem; font-size: 0.8rem; border: none; color: var(--red); z-index: 5;">🗑️</button>
+                
                 <div class="char-portrait-container" style="width: 50px; height: 50px; margin: 0 auto 1rem; font-size: 1.2rem;">
                     ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
                 </div>
@@ -580,6 +582,16 @@ window.openNPCSheet = function(id) {
     if (container) container.classList.remove('read-only');
 
     render();
+};
+
+window.softDeleteNPC = function(id) {
+    if (!confirm("Deseja enviar este NPC para o arquivo?")) return;
+    const npc = masterState.npcs.find(n => n.id == id);
+    if (npc) {
+        npc.isDeleted = true;
+        saveMasterState();
+        render(); // Re-renderiza o painel para sumir com o NPC
+    }
 };
 
 function renderSheet() {
@@ -703,7 +715,17 @@ function renderSheet() {
     if ($('add-attack')) $('add-attack').style.display = isMaster ? 'block' : 'none';
     if ($('add-armor')) $('add-armor').style.display = isMaster ? 'block' : 'none';
     if ($('add-utility')) $('add-utility').style.display = isMaster ? 'block' : 'none';
-    if ($('btn-reset-char')) $('btn-reset-char').style.display = 'block'; // Liberado para todos
+    if ($('btn-reset-char')) {
+        const resetBtn = $('btn-reset-char');
+        const resetTxt = resetBtn.querySelector('span');
+        if (isMaster && masterEditingType === 'npc') {
+            resetBtn.className = 'nav-btn'; // Remove class btn-reset (red)
+            if (resetTxt) resetTxt.textContent = 'Voltar';
+        } else {
+            resetBtn.className = 'nav-btn btn-reset';
+            if (resetTxt) resetTxt.textContent = 'Reset';
+        }
+    }
 
     const attacksEl = $('attacks-list');
     if (attacksEl) {
@@ -1142,6 +1164,13 @@ function setupEvents() {
         }
 
         if (t.closest('#btn-reset-char')) {
+            if (isMaster && masterEditingType === 'npc') {
+                // Se for NPC, o botão configurado como "Voltar" apenas fecha a ficha
+                masterEditingId = null;
+                masterState.activeTab = 'bestiary';
+                render();
+                return;
+            }
             if (confirm('Tem certeza que deseja resetar TUDO? Isso não pode ser desfeito.')) {
                 const oldName = state.name;
                 state = getDefaultState();

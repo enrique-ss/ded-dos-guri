@@ -778,10 +778,24 @@ select {
     border-radius: 50%;
     padding: 2px;
     background-clip: content-box;
+    transition: all 0.2s;
 }
+
+.ds-success { border-color: var(--green) !important; }
+.ds-fail { border-color: var(--red) !important; }
 
 .dot-check.active {
     background-color: var(--gold);
+}
+
+.ds-success.active {
+    background-color: var(--green);
+    box-shadow: 0 0 8px var(--green-glow);
+}
+
+.ds-fail.active {
+    background-color: var(--red);
+    box-shadow: 0 0 8px var(--red-glow);
 }
 
 .skill-val {
