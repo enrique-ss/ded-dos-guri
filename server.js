@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Estado global dos jogadores conectados: { socketId: state }
 let gamePlayers = {};
@@ -15,21 +15,24 @@ let gamePlayers = {};
 app.use(express.static(path.join(__dirname, './')));
 
 io.on('connection', (socket) => {
-    console.log('Novo aventureiro conectado:', socket.id);
-    
     // Envia a lista atual de jogadores para quem acabou de conectar (útil para o Mestre)
     socket.emit('updatePlayersList', gamePlayers);
 
     // Jogador se identifica e envia sua ficha atual
     socket.on('playerIdentify', (playerData) => {
         gamePlayers[socket.id] = playerData;
+        
+        const identifier = playerData.userEmail ? `${playerData.name} (${playerData.userEmail})` : (playerData.name || 'Herói');
+        console.log(`[LOGIN] ${identifier} entrou na sessão.`);
+
         // Notifica todos (especialmente o mestre) sobre a lista atualizada
         io.emit('updatePlayersList', gamePlayers);
         
         // --- LOG AUTOMÁTICO ---
+        
         io.emit('newLogEntry', { 
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            text: `🟢 <strong>${playerData.name || 'Herói'}</strong> entrou na aventura!` 
+            text: `🟢 <strong>${identifier}</strong> entrou na aventura!` 
         });
     });
 

@@ -109,6 +109,18 @@ let masterEditingId = null; // ID do jogador ou NPC que o mestre está editando 
 let masterEditingType = 'player'; // 'player' ou 'npc'
 let isCreatingNPC = false; // Flag para saber se o Wizard está criando um NPC ou um Personagem
 let roleSelected = false; // Flag para forçar o usuário a passar pela tela de seleção de role
+let user = null;
+
+// ==================== SUPABASE SETUP ====================
+let supabaseClient = null;
+try {
+    if (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url !== "SUA_URL_DO_SUPABASE") {
+        supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    }
+} catch (e) {
+    console.warn("Supabase não configurado ou erro ao iniciar:", e);
+}
+
 
 // ==================== STATE ====================
 let state = getDefaultState();
@@ -223,6 +235,7 @@ function sendSystemLog(msg) {
 const debounceSync = debounce(() => {
     broadcastChange();
     saveState();
+    if (user) saveStateToSupabase();
 }, 800);
 
 const debounceGoldLog = debounce((name, gold) => {
@@ -295,7 +308,16 @@ if (socket) {
 }
 
 // ==================== APP LOGIC ====================
-function init() {
+async function init() {
+    // Verificar sessão do Supabase
+    if (supabaseClient) {
+        const { data } = await supabaseClient.auth.getUser();
+        if (data.user) {
+            user = data.user;
+            await loadStateFromSupabase();
+        }
+    }
+
     loadState();
     buildGrids();
     setupEvents();
@@ -303,7 +325,10 @@ function init() {
 
     // Se já tiver ficha, identifica no servidor
     if (socket && state.isCreated && !isMaster) {
-        socket.emit('playerIdentify', state);
+        socket.emit('playerIdentify', { 
+            ...state, 
+            userEmail: user ? user.email : 'Convidado' 
+        });
     }
 }
 
@@ -326,8 +351,87 @@ function saveState() {
     }
 }
 
+// --- SUPABASE HELPERS ---
+async function handleAuth(mode) {
+    const email = mode === 'login' ? document.getElementById('auth-email').value : document.getElementById('signup-email').value;
+    const password = mode === 'login' ? document.getElementById('auth-password').value : document.getElementById('signup-password').value;
+
+    if (!supabaseClient) return alert("Supabase não configurado. Adicione sua URL e Key no arquivo config.js.");
+
+    let result;
+    if (mode === 'login') {
+        result = await supabaseClient.auth.signInWithPassword({ email, password });
+    } else {
+        result = await supabaseClient.auth.signUp({ email, password });
+    }
+
+    if (result.error) {
+        alert("Erro: " + result.error.message);
+    } else {
+        user = result.data.user;
+        await loadStateFromSupabase();
+        
+        // Se já tiver ficha, identifica no servidor imediatamente
+        if (socket && state.isCreated && !isMaster) {
+            socket.emit('playerIdentify', { 
+                ...state, 
+                userEmail: user.email 
+            });
+        }
+        
+        render(); // Vai esconder a tela de auth e mostrar a próxima
+    }
+}
+
+function toggleAuthMode(mode) {
+    document.getElementById('login-form').classList.toggle('hidden', mode === 'signup');
+    document.getElementById('signup-form').classList.toggle('hidden', mode === 'login');
+}
+
+function continueAsGuest() {
+    localStorage.setItem('rpg_guest_mode', 'true');
+    render();
+}
+
+async function logout() {
+    if (supabaseClient) await supabaseClient.auth.signOut();
+    user = null;
+    localStorage.removeItem('rpg_guest_mode');
+    location.reload();
+}
+
+async function saveStateToSupabase() {
+    if (!user || !supabaseClient || !state.isCreated) return;
+    
+    const { error } = await supabaseClient
+        .from('characters')
+        .upsert({ 
+            user_id: user.id, 
+            name: state.name,
+            data: state 
+        }, { onConflict: 'user_id' });
+
+    if (error) console.error("Erro ao salvar no Supabase:", error);
+}
+
+async function loadStateFromSupabase() {
+    if (!user || !supabaseClient) return;
+
+    const { data, error } = await supabaseClient
+        .from('characters')
+        .select('data')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    if (data && data.data) {
+        state = data.data;
+        saveState(); // Salva localmente também
+    }
+}
+
 function render() {
     const $ = id => document.getElementById(id);
+    const authScreen = $('auth-screen');
     const roleSel = $('role-selection');
     const creation = $('creation-screen');
     const masterPanel = $('master-panel');
@@ -336,9 +440,15 @@ function render() {
     const history = $('history-view');
 
     // Hide everything
-    [roleSel, creation, masterPanel, sheet, items, history].forEach(el => {
+    [authScreen, roleSel, creation, masterPanel, sheet, items, history].forEach(el => {
         if (el) el.classList.remove('active');
     });
+
+    if (!user && !localStorage.getItem('rpg_guest_mode')) {
+        const authScreen = document.getElementById('auth-screen');
+        if (authScreen) authScreen.classList.add('active');
+        return;
+    }
 
     if (!roleSelected) {
         if (roleSel) roleSel.classList.add('active');

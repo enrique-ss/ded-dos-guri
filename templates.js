@@ -12,7 +12,7 @@ const TemplateLoader = {
     },
 
     async loadAllTemplates() {
-        const templates = ['role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'history-view'];
+        const templates = ['auth', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'history-view'];
         const app = document.getElementById('app');
         
         for (const template of templates) {

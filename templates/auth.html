@@ -1,0 +1,65 @@
+<section id="auth-screen" class="full-screen-modal">
+    <div class="auth-wrapper fade-in">
+        <div class="pocket-logo cinzel">RPG<span>dosGuri</span></div>
+        
+        <div class="premium-card auth-card">
+            <div id="login-form" class="auth-section">
+                <h2 class="cinzel highlight-text">Entrar na Taverna</h2>
+                <p class="muted-text small-text" style="margin-bottom: 2rem;">Retorne de onde parou sua jornada épica.</p>
+                
+                <div class="input-group">
+                    <label class="label-tiny">E-mail</label>
+                    <input type="email" id="auth-email" placeholder="nome@reino.com" class="premium-input">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label-tiny">Sua Senha</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="premium-input">
+                </div>
+                
+                <button class="btn-primary full-width" onclick="handleAuth('login')">
+                    Iniciar Sessão
+                </button>
+                
+                <p class="small-text txt-center" style="margin-top: 1.5rem;">
+                    Novo por aqui? <a href="#" onclick="toggleAuthMode('signup')" class="highlight-text">Criar uma conta</a>
+                </p>
+            </div>
+
+            <div id="signup-form" class="auth-section hidden">
+                <h2 class="cinzel highlight-text">Nova Jornada</h2>
+                <p class="muted-text small-text" style="margin-bottom: 2rem;">Crie sua identidade lendária no mundo.</p>
+                
+                <div class="input-group">
+                    <label class="label-tiny">E-mail</label>
+                    <input type="email" id="signup-email" placeholder="aventureiro@reino.com" class="premium-input">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label-tiny">Escolha uma Senha</label>
+                    <input type="password" id="signup-password" placeholder="••••••••" class="premium-input">
+                </div>
+                
+                <button class="btn-primary full-width" onclick="handleAuth('signup')">
+                    Cadastrar Herói
+                </button>
+                
+                <p class="small-text txt-center" style="margin-top: 1.5rem;">
+                    Já tem conta? <a href="#" onclick="toggleAuthMode('login')" class="highlight-text">Fazer Login</a>
+                </p>
+            </div>
+
+            <div class="auth-divider">
+                <span>OU</span>
+            </div>
+
+            <button class="btn-ghost full-width" onclick="continueAsGuest()">
+                Continuar Offline (Local)
+            </button>
+        </div>
+        
+        <p class="muted-text txt-center" style="font-size: 0.7rem; margin-top: 2rem; opacity: 0.5;">
+            Powered by Supabase & Ethereal Engine v13
+        </p>
+    </div>
+</section>

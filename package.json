@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/enrique-ss/rpg#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "socket.io": "^4.8.3"
   }

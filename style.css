@@ -1691,3 +1691,77 @@ select {
     font-size: 1rem;
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
+/* ===== AUTH SCREEN (ETHEREAL OBSIDIAN) ===== */
+#auth-screen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(255, 190, 11, 0.03) 0%, var(--bg) 70%);
+}
+
+#auth-screen.active {
+    display: flex;
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+}
+
+.auth-card {
+    padding: 2.5rem !important;
+    border: 1px solid rgba(255, 190, 11, 0.1) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 190, 11, 0.05) !important;
+}
+
+.auth-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.premium-input {
+    width: 100%;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--panel-border) !important;
+    padding: 1.1rem 1.2rem !important;
+    border-radius: 12px !important;
+    color: var(--txt) !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.premium-input:focus {
+    border-color: var(--gold) !important;
+    background: rgba(255, 190, 11, 0.05) !important;
+    box-shadow: 0 0 15px var(--gold-glow) !important;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+    color: var(--txt-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.auth-divider::before, .auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--panel-border), transparent);
+    margin: 0 1.5rem;
+}
+
+.auth-card a {
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.auth-card a:hover {
+    text-shadow: 0 0 10px var(--gold-glow);
+    text-decoration: underline;
+}
+
