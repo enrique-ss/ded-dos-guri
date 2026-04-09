@@ -1062,7 +1062,9 @@ function renderSkills(profBonus) {
             <div class="skill-row" onclick="toggleSkill('${s.id}')">
                 <div class="dot-check ${isProf ? 'active' : ''}"></div>
                 <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${s.name} <small style="color:var(--txt-muted)">(${s.attr.toUpperCase()})</small></span>
+                <span class="skill-name">
+                    ${s.name} <small style="color:var(--txt-muted); font-size: 0.65rem; margin-left: 0.4rem;">(${s.attr.toUpperCase()})</small>
+                </span>
             </div>
         `;
     }).join('');
@@ -1175,6 +1177,14 @@ function goToStep(n) {
         if (wizardData.step === 2) {
             if (!wizardData.cls) { alert("Escolha uma Classe!"); return; }
         }
+        if (wizardData.step === 3) {
+            const limitText = document.getElementById('skills-limit-text');
+            const max = parseInt(limitText?.dataset.max || 0);
+            if (wizardData.skills.length < max) {
+                alert(`Você precisa escolher todas as ${max} perícias! Ainda faltam ${max - wizardData.skills.length}.`);
+                return;
+            }
+        }
         if (wizardData.step === 4) {
             const unset = Object.entries(wizardData.attr).filter(([k, v]) => v === 0);
             if (unset.length > 0) {
@@ -1216,7 +1226,9 @@ function loadSkillChoices() {
 
     const limitText = document.getElementById('skills-limit-text');
     if (limitText) {
-        limitText.textContent = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (Faltam ${maxPicks - wizardData.skills.length}):`;
+        const faltam = maxPicks - wizardData.skills.length;
+        const color = faltam > 0 ? '#4CAF50' : '#ff3333';
+        limitText.innerHTML = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (<strong style="color: ${color};">Faltam ${faltam}</strong>):`;
         limitText.dataset.max = maxPicks;
     }
 
@@ -1227,7 +1239,8 @@ function loadSkillChoices() {
             const isSelected = wizardData.skills.includes(s.id);
             return `
                 <div class="choice-card choice-skill ${isSelected ? 'selected' : ''}" data-skill="${s.id}">
-                    <strong>${s.name}</strong> <small>(${s.attr.toUpperCase()})</small>
+                    <strong>${s.name}</strong> 
+                    <small style="opacity: 0.6; font-size: 0.70rem; margin-left: 0.4rem;">(${s.attr.toUpperCase()})</small>
                 </div>
             `;
         }).join('');
@@ -1516,8 +1529,27 @@ function setupEvents() {
             
             if (!isMaster) {
                 if (confirm('Tem certeza que deseja EXCLUIR seu personagem? Isso não pode ser desfeito.')) {
-                    localStorage.removeItem(STORAGE_KEY);
-                    window.location.reload();
+                    const oldName = state.name || 'Aventureiro Anônimo';
+                    state = getDefaultState();
+                    saveState(); // Salva estado zerado localmente
+                    
+                    // Soft delete na base de dados (sobreescreve os dados com a ficha vazia sem apagar o user_id do banco)
+                    if (user && supabaseClient) {
+                        supabaseClient.from('characters').update({ 
+                            name: null, 
+                            data: state 
+                        }).eq('user_id', user.id).then();
+                    }
+                    
+                    sendSystemLog(`☠️ <strong>${oldName}</strong> apagou sua ficha da existência.`);
+                    broadcastChange();
+                    
+                    // Joga o jogador pro menu de Seleção de Role
+                    roleSelected = false;
+                    isMaster = false;
+                    isAdmin = false;
+                    localStorage.removeItem('rpg_role');
+                    render();
                 }
             } else {
                 if (confirm('Tem certeza que deseja resetar TUDO desta ficha? Isso não pode ser desfeito.')) {
@@ -1678,7 +1710,9 @@ function setupEvents() {
             }
             sCard.classList.toggle('selected');
             if (limitText) {
-                limitText.textContent = `Escolha ${wizardData.skills.length} / ${max} perícias (Faltam ${max - wizardData.skills.length}):`;
+                const faltam = max - wizardData.skills.length;
+                const color = faltam > 0 ? '#4CAF50' : '#ff3333';
+                limitText.innerHTML = `Escolha ${wizardData.skills.length} / ${max} perícias (<strong style="color: ${color};">Faltam ${faltam}</strong>):`;
             }
         }
 

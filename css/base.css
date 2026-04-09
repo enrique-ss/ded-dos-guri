@@ -1,4 +1,4 @@
-/* ===== RPG dos Guri – Base & Theme ===== */
+/* ===== RPG dos Guri – Design System v13.0 ===== */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
@@ -14,6 +14,8 @@
     --radius: 14px;
     --gap: 0.8rem;
     --p-card: 1rem;
+
+    /* GLASS PATTERNS (Themed) */
     --bg-glass: rgba(20, 22, 35, 0.85);
     --bg-overlay: rgba(0, 0, 0, 0.4);
     --bg-accent: rgba(255, 255, 255, 0.03);
@@ -21,6 +23,7 @@
     --bg-circle: #000;
     --border-glass: rgba(255, 255, 255, 0.1);
     --txt-contrast: #000;
+    /* For gold buttons */
 }
 
 [data-theme="light"] {
@@ -33,6 +36,8 @@
     --green: #05b083;
     --txt: #2b2d42;
     --txt-muted: #6c7086;
+
+    /* GLASS PATTERNS (Light Swaps) */
     --bg-glass: rgba(255, 255, 255, 0.85);
     --bg-overlay: rgba(0, 0, 0, 0.03);
     --bg-accent: rgba(0, 0, 0, 0.02);
@@ -41,8 +46,23 @@
     --border-glass: rgba(0, 0, 0, 0.1);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
+[data-theme="light"] body {
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(212, 154, 0, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(0, 132, 255, 0.06) 0%, transparent 45%);
+}
+
+/* ===== RESET & CORE ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
 body {
     min-height: 100%;
     font-family: 'Outfit', sans-serif;
@@ -55,12 +75,45 @@ body {
     line-height: 1.6;
 }
 
-h1, h2, h3, .cinzel { font-family: 'Cinzel', serif; letter-spacing: 1px; }
-input, button, textarea, select { font-family: inherit; border: none; outline: none; background: transparent; color: inherit; }
-.hidden { display: none !important; }
-
-.fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+h1,
+h2,
+h3,
+.cinzel {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+input,
+button,
+textarea,
+select {
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* For the sheet, we want block for full width scrolling */
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
