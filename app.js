@@ -108,6 +108,7 @@ let connectedPlayers = {}; // { socketId: state }
 let masterEditingId = null; // ID do jogador ou NPC que o mestre está editando agora
 let masterEditingType = 'player'; // 'player' ou 'npc'
 let isCreatingNPC = false; // Flag para saber se o Wizard está criando um NPC ou um Personagem
+let roleSelected = false; // Flag para forçar o usuário a passar pela tela de seleção de role
 
 // ==================== STATE ====================
 let state = getDefaultState();
@@ -339,6 +340,11 @@ function render() {
         if (el) el.classList.remove('active');
     });
 
+    if (!roleSelected) {
+        if (roleSel) roleSel.classList.add('active');
+        return;
+    }
+
     if (isMaster) {
         if (isCreatingNPC) {
             if (creation) creation.classList.add('active');
@@ -373,6 +379,7 @@ function render() {
             btn.classList.add('active');
         }
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderMasterPanel() {
@@ -439,6 +446,7 @@ window.switchMasterTab = function(tabId) {
     masterState.activeTab = tabId;
     saveMasterState();
     renderMasterPanel();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // --- LÓGICA DE INICIATIVA ---
@@ -752,6 +760,9 @@ function renderSheet() {
         if (isMaster && masterEditingType === 'npc') {
             resetBtn.className = 'nav-btn'; // Remove class btn-reset (red)
             if (resetTxt) resetTxt.textContent = 'Voltar';
+        } else if (!isMaster) {
+            resetBtn.className = 'nav-btn btn-reset';
+            if (resetTxt) resetTxt.textContent = 'Excluir';
         } else {
             resetBtn.className = 'nav-btn btn-reset';
             if (resetTxt) resetTxt.textContent = 'Reset';
@@ -1010,6 +1021,7 @@ function goToStep(n) {
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     const step = document.getElementById('step-' + n);
     if (step) step.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function loadSkillChoices() {
@@ -1166,8 +1178,11 @@ function setupEvents() {
         const rCard = t.closest('.choice-card[data-role]');
         if (rCard) {
             console.log("Role selected:", rCard.dataset.role);
+            roleSelected = true;
             if (rCard.dataset.role === 'mestre') {
                 isMaster = true;
+                masterState.activeTab = 'players'; // Sempre inicia em Aventureiros
+                saveMasterState();
             } else {
                 wizardData.active = true;
             }
@@ -1175,7 +1190,7 @@ function setupEvents() {
             return;
         }
 
-        if (t.id === 'btn-master-exit' || t.id === 'btn-back-to-role') {
+        if (t.closest('#btn-master-exit') || t.closest('#btn-back-to-role')) {
             if (isMaster && masterEditingId) {
                 // Se o mestre estiver editando alguém, apenas volta para o painel
                 const prevTab = masterEditingType === 'npc' ? 'bestiary' : 'players';
@@ -1247,12 +1262,20 @@ function setupEvents() {
                 render();
                 return;
             }
-            if (confirm('Tem certeza que deseja resetar TUDO? Isso não pode ser desfeito.')) {
-                const oldName = state.name;
-                state = getDefaultState();
-                sendSystemLog(`♻️ A ficha de <strong>${oldName}</strong> foi resetada pelo Mestre.`);
-                render();
-                broadcastChange();
+            
+            if (!isMaster) {
+                if (confirm('Tem certeza que deseja EXCLUIR seu personagem? Isso não pode ser desfeito.')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    window.location.reload();
+                }
+            } else {
+                if (confirm('Tem certeza que deseja resetar TUDO desta ficha? Isso não pode ser desfeito.')) {
+                    const oldName = state.name;
+                    state = getDefaultState();
+                    sendSystemLog(`♻️ A ficha de <strong>${oldName}</strong> foi resetada pelo Mestre.`);
+                    render();
+                    broadcastChange();
+                }
             }
         }
 
