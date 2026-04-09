@@ -77,15 +77,20 @@
 }
 
 .badge-role {
-    background: var(--gold-glow);
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 0.3rem 0.6rem;
+    background: var(--gold);
+    color: var(--txt-contrast);
+    padding: 0.35rem 0.75rem;
     border-radius: 20px;
     font-weight: 800;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border: none;
 }
 
 .header-details.side-by-side {
@@ -222,7 +227,7 @@ input[type=number] {
 }
 
 .attr-mod {
-    height: 28px;
+    height: 30px;
     background: var(--gold);
     color: var(--txt-contrast);
     border-radius: 6px;
@@ -230,8 +235,7 @@ input[type=number] {
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 6px var(--bg-overlay);
+    font-size: 0.95rem;
 }
 
 /* ICONS E INFOS (Inspiração, Prof) */
@@ -597,6 +601,19 @@ input[type=number] {
     max-width: 120px;
 }
 
+.items-grid-layout {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+    align-items: stretch;
+}
+
+@media (max-width: 1000px) {
+    .items-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 .large-textarea {
     width: 100%;
     min-height: 250px;
@@ -623,22 +640,31 @@ input[type=number] {
 }
 
 .history-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 1.2rem;
-    align-items: stretch;
+    align-items: start;
 }
 
-@media (min-width: 800px) {
-    .history-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+@media (max-width: 1200px) {
+    .history-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
-@media (min-width: 1400px) {
-    .history-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+@media (max-width: 700px) {
+    .history-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Mestre sempre pode clicar */
+body.is-master .read-only input,
+body.is-master .read-only textarea {
+    pointer-events: auto !important;
+}
+
+.read-only input,
+.read-only textarea {
+    pointer-events: none;
+    border-color: transparent !important;
+    background: transparent !important;
 }
 
 

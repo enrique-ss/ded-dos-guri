@@ -87,10 +87,15 @@ function setupEvents() {
                  }
              }
         }
-        if (t.id === 'display-initiative' && prompt("Iniciativa:", state.initiativeRoll) !== null) {
-            state.initiativeRoll = parseInt(val) || 0;
-            sendSystemLog(`⚔️ <strong>${state.name}</strong>: Iniciativa ${state.initiativeRoll}`);
-            renderSheet(); broadcastChange();
+        if (t.id === 'display-initiative') {
+            if (isMaster) {
+                const val = prompt("Iniciativa:", state.initiativeRoll);
+                if (val !== null) {
+                    state.initiativeRoll = parseInt(val) || 0;
+                    sendSystemLog(`⚔️ <strong>${state.name}</strong>: Iniciativa ${state.initiativeRoll}`);
+                    renderSheet(); broadcastChange();
+                }
+            }
         }
 
         if (t.closest('#btn-reset-char')) {
@@ -151,6 +156,14 @@ function setupEvents() {
                     renderSheet(); broadcastChange();
                 }
             }
+            if (t.id === 'display-class') {
+                const val = prompt("Alterar Classe:", state.cls);
+                if (val !== null) { state.cls = val; renderSheet(); broadcastChange(); }
+            }
+            if (t.id === 'display-race') {
+                const val = prompt("Alterar Raça:", state.race);
+                if (val !== null) { state.race = val; renderSheet(); broadcastChange(); }
+            }
         }
 
         // Wizard steps
@@ -201,6 +214,18 @@ function setupEvents() {
     });
 
     document.addEventListener('input', e => {
+        if (!isMaster) return;
+        const id = e.target.id;
+        if (id.startsWith('lore-')) {
+            const worldLore = JSON.parse(localStorage.getItem('rpg_world_lore') || '{}');
+            worldLore[id.replace('lore-', '')] = e.target.value;
+            localStorage.setItem('rpg_world_lore', JSON.stringify(worldLore));
+            broadcastChange(); // Notifica outros clientes que o lore mudou
+        }
+    });
+
+    // Auto-save fields as they type
+    document.addEventListener('input', (e) => {
         const id = e.target.id;
         const val = e.target.value;
         if (id === 'master-private-notes') { masterState.notes = val; saveMasterState(); return; }

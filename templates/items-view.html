@@ -40,37 +40,35 @@
 
             </div>
         </header>
-        <div class="sheet-body" style="grid-template-columns: 1fr;">
-            <div class="sheet-col">
-                <!-- Arsenal Ofensivo -->
-                <div class="premium-card group-flex">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Arsenal Ofensivo</label>
-                        <span class="info-icon" data-tip="ARMA E ATAQUES:&#10;&#10;• Bônus: O que você soma no d20 para acertar o golpe.&#10;• Dano: O dado que você rola para tirar vida do inimigo se acertar.&#10;&#10;DICA: Armas corpo-a-corpo usam FORÇA. Armas à distância usam DESTREZA.">i</span>
-                    </div>
-                    <div id="attacks-list" class="attacks-list"></div>
-                    <button class="btn-ghost" id="add-attack" style="border-style: dashed; padding: 0.6rem 1rem; font-size: 0.8rem;">+ Ofensivo</button>
+        <div class="sheet-body items-grid-layout">
+            <!-- Arsenal Ofensivo -->
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Arsenal Ofensivo</label>
+                    <span class="info-icon" data-tip="ARMA E ATAQUES:&#10;&#10;• Bônus: O que você soma no d20 para acertar o golpe.&#10;• Dano: O dado que você rola para tirar vida do inimigo se acertar.&#10;&#10;DICA: Armas corpo-a-corpo usam FORÇA. Armas à distância usam DESTREZA.">i</span>
                 </div>
+                <div id="attacks-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-attack" style="border-style: dashed; padding: 0.6rem 1rem; font-size: 0.8rem;">+ Ofensivo</button>
+            </div>
 
-                <!-- Defensivo -->
-                <div class="premium-card group-flex">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Defensivo</label>
-                        <span class="info-icon" data-tip="PROTEÇÃO:&#10;&#10;Aqui você lista escudos, capas mágicas ou armaduras.&#10;&#10;AUTOMAÇÃO: O bônus numérico que você colocar aqui será SOMADO automaticamente à sua CA lá na aba principal da ficha.">i</span>
-                    </div>
-                    <div id="armors-list" class="attacks-list"></div>
-                    <button class="btn-ghost" id="add-armor" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
+            <!-- Defensivo -->
+            <div class="premium-card group-flex" style="flex: 1;">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Defensivo</label>
+                    <span class="info-icon" data-tip="PROTEÇÃO:&#10;&#10;Aqui você lista escudos, capas mágicas ou armaduras.&#10;&#10;AUTOMAÇÃO: O bônus numérico que você colocar aqui será SOMADO automaticamente à sua CA lá na aba principal da ficha.">i</span>
                 </div>
+                <div id="armors-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-armor" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
+            </div>
 
-                <!-- Inventário -->
-                <div class="premium-card group-flex">
-                    <div class="section-title">
-                        <label class="label-tiny" style="margin-bottom:0;">Inventário</label>
-                        <span class="info-icon" data-tip="COISAS ÚTEIS:&#10;&#10;Poções, tochas, cordas e itens de história.&#10;&#10;PESO: Lembre-se que você tem um limite de carga (geralmente FORÇA x 7,5kg). Não carregue o mundo nas costas!">i</span>
-                    </div>
-                    <div id="utility-list" class="attacks-list"></div>
-                    <button class="btn-ghost" id="add-utility" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
+            <!-- Inventário -->
+            <div class="premium-card group-flex" style="flex: 1;">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Inventário</label>
+                    <span class="info-icon" data-tip="COISAS ÚTEIS:&#10;&#10;Poções, tochas, cordas e itens de história.&#10;&#10;PESO: Lembre-se que você tem um limite de carga (geralmente FORÇA x 7,5kg). Não carregue o mundo nas costas!">i</span>
                 </div>
+                <div id="utility-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-utility" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Item</button>
             </div>
         </div>
     </div>
