@@ -1,0 +1,75 @@
+/* ===== Screens & High-Level Layout ===== */
+
+.full-screen-modal {
+    background: var(--bg);
+    display: none;
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+.full-screen-modal.active { display: block; }
+#global-header-container.hidden { display: none !important; }
+
+@media (max-width: 400px) {
+    .full-screen-modal { padding: 0.5rem 0.4rem; }
+}
+
+/* WIZARD & ROLE SELECTION */
+.creation-wizard { width: 100%; max-width: 1400px; margin: 0 auto; }
+.wizard-step { display: none; flex-direction: column; gap: 1.5rem; }
+.wizard-step.active { display: flex; }
+
+.pocket-logo {
+    text-align: center; font-size: 3rem; margin-bottom: 2rem;
+    text-shadow: 0 4px 15px var(--bg-overlay);
+}
+.pocket-logo span { color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
+
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1.2rem;
+}
+
+.choice-card {
+    background: var(--bg-accent);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: 1.2rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+.choice-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+.choice-card.selected { background: var(--gold-glow); border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+
+.desc-box {
+    margin-top: 1.5rem; padding: 1.2rem;
+    background: var(--bg-overlay); border-radius: 12px;
+    border-left: 4px solid var(--gold); font-size: 0.95rem;
+    line-height: 1.5; text-align: left; animation: fadeIn 0.3s ease-out;
+}
+.desc-box:empty { display: none; }
+
+/* AUTH SCREEN */
+#auth-screen {
+    display: none; align-items: center; justify-content: center;
+    background: radial-gradient(circle at center, rgba(255, 190, 11, 0.08) 0%, var(--bg) 70%);
+}
+#auth-screen.active { display: flex; }
+.auth-wrapper { width: 100%; max-width: 420px; padding: 2rem; }
+.auth-card {
+    padding: 2.5rem !important;
+    border: 1px solid rgba(255, 190, 11, 0.15) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 190, 11, 0.05), inset 0 0 20px rgba(255, 190, 11, 0.02) !important;
+    backdrop-filter: blur(40px) !important;
+}
+.auth-section h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.auth-divider {
+    display: flex; align-items: center; margin: 2rem 0;
+    color: var(--txt-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+}
+.auth-divider::before, .auth-divider::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, var(--panel-border), transparent); margin: 0 1.5rem;
+}

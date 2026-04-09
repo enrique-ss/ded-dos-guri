@@ -1,15 +1,24 @@
-<main id="role-selection" class="full-screen-modal active">
+<main id="role-selection" class="full-screen-modal">
     <div class="creation-wizard fade-in">
-        <h1 class="pocket-logo cinzel" style="margin-top: 2rem;">D&D dos <span>Guri</span></h1>
-        <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Escolha sua
-            função</h2>
-        <div class="selection-grid" style="gap: 2rem; max-width: 600px; margin: 0 auto;">
-            <div class="choice-card" data-role="mestre" style="padding: 3rem 1.5rem;">
+        <h1 class="pocket-logo cinzel">D&D<span>dosGuri</span></h1>
+        <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 3rem;">Escolha sua função</h2>
+        <div class="selection-grid">
+            <div class="choice-card" data-role="mestre">
                 <strong>MESTRE</strong>
             </div>
-            <div class="choice-card" data-role="jogador" style="padding: 3rem 1.5rem;">
+            <div class="choice-card" data-role="jogador">
                 <strong>JOGADOR</strong>
             </div>
+            <div class="choice-card admin-only" data-role="admin" style="display: none;">
+                <strong>ADMIN</strong>
+            </div>
+        </div>
+        
+        <!-- Botão de logout se já tiver usuário logado -->
+        <div id="logout-section" style="text-align: center; margin-top: 2rem;">
+            <button class="btn-ghost" onclick="clearSession()" style="border-color: var(--red); color: var(--red); padding: 0.5rem 1rem;">
+                Trocar Usuário / Logout
+            </button>
         </div>
     </div>
 </main>

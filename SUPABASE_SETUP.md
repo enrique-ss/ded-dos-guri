@@ -4,7 +4,7 @@ Para que o sistema de login e salvamento na nuvem funcione, siga estes passos:
 
 ## 1. Criar Projeto no Supabase
 1. Vá para [supabase.com](https://supabase.com/) e crie uma conta gratuita.
-2. Crie um novo projeto (ex: "RPG dos Guri").
+2. Crie um novo projeto (ex: "D&D dos Guri").
 3. Aguarde a finalização da criação.
 
 ## 2. Configurar o Banco de Dados

@@ -1,109 +1,15 @@
-/**
- * RPG dos Guri – Engine v11.0 (Multiusuário Real-time)
- * D&D 5e-style character sheet with Master Mode.
- */
-
-// ==================== SYSTEM DATA ====================
-const RACES = {
-    humano: { name: 'Humano', modsDesc: '+1 em 3 atributos à escolha', feature: 'Aprendiz Rápido: Ganha 1 Talento (Feat) no nível 1.', speed: 9 },
-    elfo: { name: 'Elfo', modsDesc: '+2 Destreza, +1 Inteligência', feature: 'Sentido Aguçado: Visão no escuro e imunidade a sono mágico.', speed: 9 },
-    anao: { name: 'Anão', modsDesc: '+2 Constituição, +1 Força', feature: 'Resiliência: Resistência a veneno e +1 PV por nível.', speed: 7.5 },
-    halfling: { name: 'Halfling', modsDesc: '+2 Destreza, +1 Carisma', feature: 'Sorte: Pode relançar qualquer resultado "1" no dado.', speed: 7.5 },
-    meio_elfo: { name: 'Meio-Elfo', modsDesc: '+2 Carisma, +1 em outros 2', feature: 'Versatilidade: Proficiência em 2 perícias extras.', speed: 9 },
-    meio_orc: { name: 'Meio-Orc', modsDesc: '+2 Força, +1 Constituição', feature: 'Tenacidade: Se cair a 1 HP, consegue se levantar e dar um ultimo ataque antes de desmaiar.', speed: 9 },
-    tiefling: { name: 'Tiefling', modsDesc: '+2 Carisma, +1 Inteligência', feature: 'Legado: Resistência a fogo e 1 Truque mágico (Cantrip).', speed: 9 },
-    gnomo: { name: 'Gnomo', modsDesc: '+2 Inteligência, +1 Const.', feature: 'Mente Astuta: Vantagem em salvaguardas mentais contra magia.', speed: 7.5 }
-};
-
-const CLASSES = {
-    guerreiro: { name: 'Guerreiro', hp: 10, saves: ['for', 'con'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Acrobacia, Adestrar Animais, Atletismo, História, Intuição, Intimidação, Percepção e Sobrevivência.', skillChoices: 2, allowSkills: ['acrobatics', 'animal', 'athletics', 'history', 'insight', 'intimidation', 'perception', 'survival'] },
-    ladino: { name: 'Ladino', hp: 8, saves: ['des', 'int'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas de mão, espadas curtas, rapieiras e espadas longas.', skillsDesc: 'Escolha 4: Acrobacia, Atletismo, Atuação, Enganação, Furtividade, Intimidação... +Ferramentas de Ladrão.', skillChoices: 4, allowSkills: ['acrobatics', 'athletics', 'performance', 'deception', 'stealth', 'intimidation', 'insight', 'investigation', 'perception', 'persuasion', 'sleight'] },
-    mago: { name: 'Mago', hp: 6, saves: ['int', 'sab'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves. (Nenhuma armadura).', skillsDesc: 'Escolha 2: Arcanismo, História, Investigação, Medicina e Religião.', skillChoices: 2, allowSkills: ['arcana', 'history', 'investigation', 'medicine', 'religion'] },
-    clerigo: { name: 'Clérigo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e médias, escudos e armas simples.', skillsDesc: 'Escolha 2: História, Intuição, Medicina, Persuasão e Religião.', skillChoices: 2, allowSkills: ['history', 'insight', 'medicine', 'persuasion', 'religion'] },
-    paladino: { name: 'Paladino', hp: 10, saves: ['sab', 'car'], hd: '1d10', armor: 'Todas as armaduras, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Atletismo, Intuição, Intimidação, Medicina, Persuasão e Religião.', skillChoices: 2, allowSkills: ['athletics', 'insight', 'intimidation', 'medicine', 'persuasion', 'religion'] },
-    barbaro: { name: 'Bárbaro', hp: 12, saves: ['for', 'con'], hd: '1d12', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 2: Adestrar Animais, Atletismo, Intimidação, Natureza, Percepção e Sobrevivência.', skillChoices: 2, allowSkills: ['animal', 'athletics', 'intimidation', 'nature', 'perception', 'survival'] },
-    bardo: { name: 'Bardo', hp: 8, saves: ['des', 'car'], hd: '1d8', armor: 'Armaduras leves, armas simples, bestas, espadas. +3 Instrumentos.', skillsDesc: 'Escolha 3 quaisquer (O Bardo é o "pau para toda obra").', skillChoices: 3, allowSkills: 'all' },
-    patrulheiro: { name: 'Patrulheiro', hp: 10, saves: ['for', 'des'], hd: '1d10', armor: 'Armaduras leves e médias, escudos, armas simples e marciais.', skillsDesc: 'Escolha 3: Adestrar Animais, Atletismo, Intuição, Investigação, Natureza... Furtividade.', skillChoices: 3, allowSkills: ['animal', 'athletics', 'insight', 'investigation', 'nature', 'perception', 'survival', 'stealth'] },
-    feiticeiro: { name: 'Feiticeiro', hp: 6, saves: ['con', 'car'], hd: '1d6', armor: 'Adagas, dardos, fundas, bordões e bestas leves.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, Intuição, Intimidação, Persuasão e Religião.', skillChoices: 2, allowSkills: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'] },
-    bruxo: { name: 'Bruxo', hp: 8, saves: ['sab', 'car'], hd: '1d8', armor: 'Armaduras leves e armas simples.', skillsDesc: 'Escolha 2: Arcanismo, Enganação, História, Intimidação, Investigação, Natureza e Religião.', skillChoices: 2, allowSkills: ['arcana', 'deception', 'history', 'intimidation', 'investigation', 'nature', 'religion'] },
-    druida: { name: 'Druida', hp: 8, saves: ['int', 'sab'], hd: '1d8', armor: 'Armaduras leves e médias (não usam metal!), escudos, clavas, lanças...', skillsDesc: 'Escolha 2: Adestrar Animais, Arcanismo, Intuição, Medicina, Natureza, Percepção, Religião e Sobrevivência.', skillChoices: 2, allowSkills: ['animal', 'arcana', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'] }
-};
-
-const BACKGROUNDS = {
-    acolito: { name: 'Acólito', desc: 'Você serviu em um templo e possui conhecimentos religiosos e rituais.' },
-    charlatao: { name: 'Charlatão', desc: 'Um mestre da manipulação e truques, viveu de enganar os outros.' },
-    criminoso: { name: 'Criminoso', desc: 'Você tem contatos no submundo e experiência em atividades ilegais.' },
-    animador: { name: 'Animador', desc: 'Ator, músico ou gladiador; você sabe como entreter uma plateia.' },
-    heroi: { name: 'Herói do Povo', desc: 'Você veio de uma origem humilde e se tornou um defensor dos plebeus.' },
-    artesao: { name: 'Artesão de Guilda', desc: 'Membro de uma guilda mercantil, perito em um ofício específico.' },
-    eremita: { name: 'Eremita', desc: 'Você viveu em isolamento e descobriu um segredo ou iluminação.' },
-    nobre: { name: 'Nobre', desc: 'Você nasceu em uma família influente e possui privilégios sociais.' },
-    forasteiro: { name: 'Forasteiro', desc: 'Um sobrevivente das terras selvagens, acostumado a ambientes rudes.' },
-    sabio: { name: 'Sábio', desc: 'Um estudioso dedicado à busca pelo conhecimento acadêmico.' },
-    marinheiro: { name: 'Marinheiro', desc: 'Um lobo do mar, experiente em navios e navegação.' },
-    soldado: { name: 'Soldado', desc: 'Você foi treinado para a guerra e serviu em um exército ou guarda.' },
-    orfao: { name: 'Órfão', desc: 'Você cresceu nas ruas, sobrevivendo apenas com sua esperteza.' }
-};
-
-const ALIGNMENTS = {
-    lb: { name: 'Leal/Bom', desc: 'Age com honra, compaixão e segue a lei.' },
-    nb: { name: 'Neutro/Bom', desc: 'Faz o melhor que pode para ajudar os outros.' },
-    cb: { name: 'Caótico/Bom', desc: 'Age conforme sua consciência, independente das leis.' },
-    ln: { name: 'Leal/Neutro', desc: 'Age conforme a lei, tradição ou código pessoal.' },
-    nn: { name: 'Neutro', desc: 'Afastado de dilemas morais; age com pragmatismo.' },
-    cn: { name: 'Caótico/Neutro', desc: 'Segue seus caprichos; preza a liberdade individual.' },
-    lm: { name: 'Leal/Mau', desc: 'Toma o que quer dentro dos limites de um código ou lei.' },
-    nm: { name: 'Neutro/Mau', desc: 'Faz qualquer coisa para conseguir o que quer, sem escrúpulos.' },
-    cm: { name: 'Caótico/Mau', desc: 'Age com violência impulsiva e sede de poder.' }
-};
-
-const SKILLS = [
-    { id: 'acrobatics', name: 'Acrobacia', attr: 'des' },
-    { id: 'athletics', name: 'Atletismo', attr: 'for' },
-    { id: 'arcana', name: 'Arcanismo', attr: 'int' },
-    { id: 'deception', name: 'Enganação', attr: 'car' },
-    { id: 'stealth', name: 'Furtividade', attr: 'des' },
-    { id: 'history', name: 'História', attr: 'int' },
-    { id: 'intimidation', name: 'Intimidação', attr: 'car' },
-    { id: 'insight', name: 'Intuição', attr: 'sab' },
-    { id: 'investigation', name: 'Investigação', attr: 'int' },
-    { id: 'medicine', name: 'Medicina', attr: 'sab' },
-    { id: 'nature', name: 'Natureza', attr: 'int' },
-    { id: 'perception', name: 'Percepção', attr: 'sab' },
-    { id: 'persuasion', name: 'Persuasão', attr: 'car' },
-    { id: 'sleight', name: 'Prestidigitação', attr: 'des' },
-    { id: 'religion', name: 'Religião', attr: 'int' },
-    { id: 'survival', name: 'Sobrevivência', attr: 'sab' },
-    { id: 'animal', name: 'Adestrar Animais', attr: 'sab' },
-    { id: 'performance', name: 'Atuação', attr: 'car' }
-];
-
-const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
-
-const CONDITIONS = {
-    blinded: { name: 'Cego', icon: '👁️', color: '#7f8c8d' },
-    charmed: { name: 'Enfeitiçado', icon: '💖', color: '#e84393' },
-    deafened: { name: 'Surdo', icon: '🔇', color: '#95a5a6' },
-    frightened: { name: 'Amedrontado', icon: '😨', color: '#6c5ce7' },
-    grappled: { name: 'Agarrado', icon: '🤝', color: '#d63031' },
-    incapacitated: { name: 'Incapacitado', icon: '🤕', color: '#fab1a0' },
-    invisible: { name: 'Invisível', icon: '👻', color: '#81ecec' },
-    paralyzed: { name: 'Paralisado', icon: '⚡', color: '#fdcb6e' },
-    petrified: { name: 'Petrificado', icon: '🗿', color: '#2d3436' },
-    poisoned: { name: 'Envenenado', icon: '🤢', color: '#27ae60' },
-    prone: { name: 'Caído', icon: '🛌', color: '#e67e22' },
-    restrained: { name: 'Imobilizado', icon: '⛓️', color: '#e17055' },
-    stunned: { name: 'Atordoado', icon: '💫', color: '#f1c40f' },
-    unconscious: { name: 'Inconsciente', icon: '💤', color: '#2980b9' }
-};
-const STORAGE_KEY = 'rpg_guri_v10';
+// ==================== SYSTEM CONFIG ====================
+const STORAGE_KEY_BASE = 'rpg_guri_v10';
 const MASTER_STORAGE_KEY = 'rpg_guri_master_v1';
+
+
 
 // ==================== REAL-TIME SETUP ====================
 let socket;
 try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
 
 let isMaster = false;
+let isAdmin = false; // Flag especial para admin
 let connectedPlayers = {}; // { socketId: state }
 let masterEditingId = null; // ID do jogador ou NPC que o mestre está editando agora
 let masterEditingType = 'player'; // 'player' ou 'npc'
@@ -114,11 +20,17 @@ let user = null;
 // ==================== SUPABASE SETUP ====================
 let supabaseClient = null;
 try {
-    if (typeof SUPABASE_CONFIG !== 'undefined' && SUPABASE_CONFIG.url !== "SUA_URL_DO_SUPABASE") {
+    const isPlaceholder = !SUPABASE_CONFIG || 
+                         SUPABASE_CONFIG.url.includes("SUA_URL") || 
+                         SUPABASE_CONFIG.anonKey.includes("SUA_KEY");
+
+    if (typeof SUPABASE_CONFIG !== 'undefined' && !isPlaceholder) {
         supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    } else {
+        console.warn("Supabase: Configurações de placeholder detectadas ou ausentes.");
     }
 } catch (e) {
-    console.warn("Supabase não configurado ou erro ao iniciar:", e);
+    console.error("Supabase: Erro crítico ao iniciar cliente:", e);
 }
 
 
@@ -218,17 +130,8 @@ function broadcastChange() {
 // Helper para enviar mensagens automáticas ao log
 function sendSystemLog(msg) {
     if (!socket) return;
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    // Envia para todos
+    // Envia para o servidor, que replicará para o Mestre via 'newLogEntry'
     socket.emit('sendMessage', msg);
-
-    // Salva no histórico do mestre para persistência (Audit Log)
-    masterState.logHistory.push({ timestamp, text: msg });
-    saveMasterState();
-    
-    // Se estiver na aba de login, renderiza na hora
-    if (isMaster && masterState.activeTab === 'log') renderLogHistory();
 }
 
 // Para não sobrecarregar o servidor com cada tecla digitada nos textareas
@@ -282,18 +185,16 @@ if (socket) {
 
     // --- RECEBIMENTO DE LOG E ALERTAS ---
     socket.on('newLogEntry', ({ timestamp, text }) => {
-        const wrapper = document.getElementById('master-log-wrapper');
-        const content = document.getElementById('master-log-content');
-        if (!wrapper || !content) return;
+        if (!isMaster) return;
 
-        wrapper.classList.remove('hidden');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `<div class="log-time">${timestamp}</div><div>${text}</div>`;
-        content.prepend(entry);
-        
-        // Auto-scroll para o topo se houver muitos
-        content.scrollTop = 0;
+        // Adiciona ao histórico persistente do mestre
+        masterState.logHistory.push({ timestamp, text });
+        saveMasterState();
+
+        // Se a aba de log estiver aberta, renderiza na hora
+        if (masterState.activeTab === 'log') {
+            renderLogHistory();
+        }
     });
 
     socket.on('incomingAlert', (text) => {
@@ -309,10 +210,37 @@ if (socket) {
 
 // ==================== APP LOGIC ====================
 async function init() {
-    // Verificar sessão do Supabase
+    // Criar usuário admin automaticamente se não existir
     if (supabaseClient) {
+        try {
+            const adminEmail = 'admin@rpg.com';
+            const adminPass = 'admin123';
+
+            const { data: { user: existingUser } } = await supabaseClient.auth.getUser();
+            
+            if (!existingUser) {
+                // Tenta fazer login primeiro
+                const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
+                    email: adminEmail,
+                    password: adminPass
+                });
+
+                if (loginError) {
+                    console.log('Admin: Conta ainda não criada ou senha incorreta.');
+                } else {
+                    user = loginData.user;
+                    await loadStateFromSupabase();
+                }
+            } else {
+                user = existingUser;
+                await loadStateFromSupabase();
+            }
+        } catch (e) {
+            console.log('Setup de Admin Automático ignorado ou falhou:', e.message);
+        }
+        // Verificar sessão do Supabase
         const { data } = await supabaseClient.auth.getUser();
-        if (data.user) {
+        if (data && data.user) {
             user = data.user;
             await loadStateFromSupabase();
         }
@@ -325,17 +253,17 @@ async function init() {
 
     // Se já tiver ficha, identifica no servidor
     if (socket && state.isCreated && !isMaster) {
-        socket.emit('playerIdentify', { 
-            ...state, 
-            userEmail: user ? user.email : 'Convidado' 
-        });
+        socket.emit('playerIdentify', { ...state, userEmail: user ? user.email : 'Convidado' });
     }
 }
 
 function loadState() {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
+    const raw = localStorage.getItem(key);
     if (raw) {
         state = JSON.parse(raw);
+    } else {
+        state = getDefaultState();
     }
 }
 
@@ -347,7 +275,8 @@ function saveState() {
             saveMasterState();
         }
     } else {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
+        localStorage.setItem(key, JSON.stringify(state));
     }
 }
 
@@ -358,28 +287,36 @@ async function handleAuth(mode) {
 
     if (!supabaseClient) return alert("Supabase não configurado. Adicione sua URL e Key no arquivo config.js.");
 
-    let result;
-    if (mode === 'login') {
-        result = await supabaseClient.auth.signInWithPassword({ email, password });
-    } else {
-        result = await supabaseClient.auth.signUp({ email, password });
-    }
-
-    if (result.error) {
-        alert("Erro: " + result.error.message);
-    } else {
-        user = result.data.user;
-        await loadStateFromSupabase();
-        
-        // Se já tiver ficha, identifica no servidor imediatamente
-        if (socket && state.isCreated && !isMaster) {
-            socket.emit('playerIdentify', { 
-                ...state, 
-                userEmail: user.email 
-            });
+    try {
+        let result;
+        if (mode === 'login') {
+            result = await supabaseClient.auth.signInWithPassword({ email, password });
+        } else {
+            result = await supabaseClient.auth.signUp({ email, password });
         }
-        
-        render(); // Vai esconder a tela de auth e mostrar a próxima
+
+        if (result.error) {
+            alert("Erro de Autenticação: " + result.error.message);
+        } else if (result.data.user) {
+            user = result.data.user;
+            await loadStateFromSupabase();
+            
+            // Se for um novo cadastro e precisar de confirmação de e-mail
+            if (mode === 'signup' && !result.data.session) {
+                alert("Cadastro realizado! Verifique seu e-mail para confirmar a conta antes de entrar.");
+                return;
+            }
+
+            // Identifica no servidor se já tiver ficha
+            if (socket && state.isCreated && !isMaster) {
+                socket.emit('playerIdentify', { ...state, userEmail: user.email });
+            }
+            
+            render();
+        }
+    } catch (err) {
+        console.error("Erro fatal no Auth:", err);
+        alert("Ocorreu um erro inesperado ao processar o login.");
     }
 }
 
@@ -388,16 +325,98 @@ function toggleAuthMode(mode) {
     document.getElementById('signup-form').classList.toggle('hidden', mode === 'login');
 }
 
-function continueAsGuest() {
-    localStorage.setItem('rpg_guest_mode', 'true');
-    render();
-}
 
 async function logout() {
     if (supabaseClient) await supabaseClient.auth.signOut();
     user = null;
     localStorage.removeItem('rpg_guest_mode');
     location.reload();
+}
+
+async function clearSession() {
+    try {
+        // Fazer logout do Supabase
+        if (supabaseClient) await supabaseClient.auth.signOut();
+    } catch (e) {
+        console.warn("Erro ao deslogar do Supabase:", e);
+    }
+    
+    // Limpar tudo do estado do app
+    user = null;
+    roleSelected = false;
+    isMaster = false;
+    isAdmin = false;
+    
+    // Limpar localStorage
+    const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
+    localStorage.removeItem(key);
+    localStorage.removeItem(MASTER_STORAGE_KEY);
+    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('rpg_guest_mode');
+    
+    // Forçar reload e limpar URL (evita loops de login se o token ainda estiver nos parâmetros)
+    window.location.href = window.location.origin + window.location.pathname;
+}
+
+// Expor globalmente para os botões do HTML
+window.logout = logout;
+window.clearSession = clearSession;
+
+async function loadUsers() {
+    if (!supabaseClient) {
+        document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Supabase não disponível</div>';
+        return;
+    }
+
+    try {
+        // Buscar usuários do Supabase (requer privilégios de admin)
+        const { data, error } = await supabaseClient.auth.admin.listUsers();
+        
+        if (error) {
+            // Se não tiver privilégios admin, tentar buscar pelos personagens
+            const { data: characters, error: charError } = await supabaseClient
+                .from('characters')
+                .select('data, updated_at');
+            
+            if (charError) {
+                document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Erro ao carregar usuários</div>';
+                return;
+            }
+            
+            // Extrair emails dos personagens
+            const users = [...new Set(characters.map(c => c.data?.userEmail).filter(Boolean))];
+            
+            document.getElementById('users-list').innerHTML = `
+                <div style="background: var(--bg-overlay); border-radius: 12px; padding: 1.5rem;">
+                    <h3 style="color: var(--gold); margin-bottom: 1rem;">Usuários Detectados (${users.length})</h3>
+                    ${users.length > 0 ? users.map(email => `
+                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
+                            <span>${email}</span>
+                            <small style="color: var(--txt-muted);">Detectado via personagem</small>
+                        </div>
+                    `).join('') : '<div class="muted-text txt-center" style="padding: 2rem;">Nenhum usuário encontrado</div>'}
+                </div>
+            `;
+            return;
+        }
+        
+        // Se tiver privilégios admin, mostrar lista completa
+        document.getElementById('users-list').innerHTML = `
+            <div style="background: var(--bg-overlay); border-radius: 12px; padding: 1.5rem;">
+                <h3 style="color: var(--gold); margin-bottom: 1rem;">Todos os Usuários (${data.users.length})</h3>
+                ${data.users.map(u => `
+                    <div style="padding: 0.75rem; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
+                        <span>${u.email}</span>
+                        <small style="color: var(--txt-muted);">Criado: ${new Date(u.created_at).toLocaleDateString('pt-BR')}</small>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+    } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
+        document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Erro ao carregar usuários</div>';
+    }
 }
 
 async function saveStateToSupabase() {
@@ -417,6 +436,9 @@ async function saveStateToSupabase() {
 async function loadStateFromSupabase() {
     if (!user || !supabaseClient) return;
 
+    // Reset local state first to ensure no leaks between users
+    state = getDefaultState();
+
     const { data, error } = await supabaseClient
         .from('characters')
         .select('data')
@@ -425,7 +447,7 @@ async function loadStateFromSupabase() {
 
     if (data && data.data) {
         state = data.data;
-        saveState(); // Salva localmente também
+        saveState(); // Salva localmente também com a nova chave do usuário
     }
 }
 
@@ -444,14 +466,45 @@ function render() {
         if (el) el.classList.remove('active');
     });
 
-    if (!user && !localStorage.getItem('rpg_guest_mode')) {
+    if (!user) {
         const authScreen = document.getElementById('auth-screen');
         if (authScreen) authScreen.classList.add('active');
         return;
     }
 
     if (!roleSelected) {
-        if (roleSel) roleSel.classList.add('active');
+        if (roleSel) {
+            roleSel.classList.add('active');
+            
+            console.log('Debug - User:', user);
+            console.log('Debug - User email:', user?.email);
+            
+            // Verificar se é admin para mostrar opções corretas
+            const isAdminUser = user && user.email === 'admin@rpg.com';
+            const adminCard = roleSel.querySelector('.admin-only');
+            const selectionGrid = roleSel.querySelector('.selection-grid');
+            const logoutSection = roleSel.querySelector('#logout-section');
+            
+            console.log('Debug - Is admin user:', isAdminUser);
+            console.log('Debug - Admin card:', adminCard);
+            console.log('Debug - Logout section:', logoutSection);
+            
+            if (isAdminUser) {
+                // Mostrar todas as 3 opções (só admin)
+                if (adminCard) adminCard.style.display = 'flex';
+                if (selectionGrid) selectionGrid.classList.remove('two-options');
+            } else {
+                // Esconder admin e mostrar só 2 opções
+                if (adminCard) adminCard.style.display = 'none';
+                if (selectionGrid) selectionGrid.classList.add('two-options');
+            }
+            
+            // Mostrar botão de logout se tiver usuário logado
+            if (user && logoutSection) {
+                logoutSection.style.display = 'block';
+                console.log('Debug - Mostrando logout section');
+            }
+        }
         return;
     }
 
@@ -467,6 +520,17 @@ function render() {
             if (masterPanel) {
                 masterPanel.classList.add('active');
                 renderMasterPanel();
+                
+                // Mostrar aba de usuários se for admin
+                if (isAdmin) {
+                    const adminTabs = document.querySelectorAll('.admin-only');
+                    adminTabs.forEach(tab => tab.style.display = 'block');
+                    
+                    // Se a tab ativa for 'admin', carregar usuários
+                    if (masterState.activeTab === 'users') {
+                        loadUsers();
+                    }
+                }
             }
         }
     } else if (!state.isCreated) {
@@ -1279,6 +1343,61 @@ window.startNPCCreation = function() {
     goToStep(1);
 };
 
+// ==================== ADMIN FUNCTIONS ====================
+function showAdminCredentials() {
+    const loginHTML = `
+        <div id="admin-credentials-modal" class="full-screen-modal active" style="background: rgba(0,0,0,0.9);">
+            <div class="creation-wizard fade-in" style="max-width: 400px;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">Credenciais Admin</h2>
+                <form id="admin-credentials-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <input type="email" id="admin-email" placeholder="Email" required
+                           style="padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text);">
+                    <input type="password" id="admin-password" placeholder="Senha" required
+                           style="padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--bg-secondary); color: var(--text);">
+                    <button type="submit" class="btn-primary" style="padding: 0.75rem; border: none; border-radius: 8px; background: var(--gold); color: var(--bg-primary); font-weight: bold; cursor: pointer;">Entrar</button>
+                    <button type="button" onclick="closeAdminCredentials()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-muted); cursor: pointer;">Cancelar</button>
+                </form>
+                <div id="admin-error" style="color: var(--danger); text-align: center; margin-top: 1rem; display: none;"></div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', loginHTML);
+    
+    // Setup form submission
+    document.getElementById('admin-credentials-form').addEventListener('submit', handleAdminCredentials);
+}
+
+function closeAdminCredentials() {
+    const modal = document.getElementById('admin-credentials-modal');
+    if (modal) modal.remove();
+}
+
+function handleAdminCredentials(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
+    const errorDiv = document.getElementById('admin-error');
+    
+    if (email === 'admin@rpg.com' && password === 'admin123') {
+        // Login successful - setup admin mode
+        closeAdminCredentials();
+        roleSelected = true;
+        isMaster = true; // Admin usa a mesma interface do mestre
+        isAdmin = true;  // Flag especial para admin
+        masterState.activeTab = 'users'; // Tab especial para admin
+        saveMasterState();
+        render();
+    } else {
+        errorDiv.textContent = 'Credenciais inválidas!';
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 3000);
+    }
+}
+
 // ==================== INTERACTIVE SHEET EVENTS ====================
 function setupEvents() {
     document.addEventListener('click', e => {
@@ -1288,12 +1407,25 @@ function setupEvents() {
         const rCard = t.closest('.choice-card[data-role]');
         if (rCard) {
             console.log("Role selected:", rCard.dataset.role);
-            roleSelected = true;
+            
+            if (rCard.dataset.role === 'admin') {
+                localStorage.setItem('adminAuth', 'true');
+                window.location.href = '/admin';
+                return;
+            }
+            
             if (rCard.dataset.role === 'mestre') {
+                const code = prompt("Digite o Código do Mestre:");
+                if (code !== "4444") {
+                    alert("Acesso Negado: Código incorreto.");
+                    return;
+                }
+                roleSelected = true;
                 isMaster = true;
                 masterState.activeTab = 'players'; // Sempre inicia em Aventureiros
                 saveMasterState();
             } else {
+                roleSelected = true;
                 wizardData.active = true;
             }
             render();
@@ -1309,8 +1441,11 @@ function setupEvents() {
                 masterState.activeTab = prevTab;
                 render();
             } else {
-                // Caso contrário (está no painel ou é jogador), reseta tudo (refresh)
-                window.location.reload();
+                // Volta para a seleção de função (Player/Master) sem deslogar
+                roleSelected = false;
+                isMaster = false;
+                isAdmin = false;
+                render();
             }
             return;
         }
@@ -1436,7 +1571,14 @@ function setupEvents() {
         // NAVEGAÇÃO DO Hub do Mestre (Abas)
         const mNavBtn = t.closest('.m-nav-btn');
         if (mNavBtn) {
-            if (mNavBtn.dataset.tab) switchMasterTab(mNavBtn.dataset.tab);
+            if (mNavBtn.dataset.tab) {
+                switchMasterTab(mNavBtn.dataset.tab);
+                
+                // Carregar usuários se for admin e clicar na aba users
+                if (mNavBtn.dataset.tab === 'users' && isAdmin) {
+                    loadUsers();
+                }
+            }
             
             // Em telas menores, fecha a sidebar automaticamente ao clicar em uma aba (exceto sair)
             if (window.innerWidth <= 900 && mNavBtn.id !== 'btn-master-exit') {

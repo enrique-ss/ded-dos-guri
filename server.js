@@ -14,6 +14,28 @@ let gamePlayers = {};
 
 app.use(express.static(path.join(__dirname, './')));
 
+// Rota para a página de admin
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Ponte para listar usuários reais do Supabase (Apenas para Admin)
+const { createClient } = require('@supabase/supabase-js');
+const supabaseAdmin = createClient(
+    'https://wnsjluwxqkgjttpsrrtp.supabase.co', 
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Induc2psdXd4cWtnanR0cHNycnRwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTc0NDI1NCwiZXhwIjoyMDkxMzIwMjU0fQ.Qlmhp4kG3y0_X6d2O7aetFj8eYLLfLhobotP-Kk8bCI'
+);
+
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
+        if (error) throw error;
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 io.on('connection', (socket) => {
     // Envia a lista atual de jogadores para quem acabou de conectar (útil para o Mestre)
     socket.emit('updatePlayersList', gamePlayers);
@@ -23,7 +45,7 @@ io.on('connection', (socket) => {
         gamePlayers[socket.id] = playerData;
         
         const identifier = playerData.userEmail ? `${playerData.name} (${playerData.userEmail})` : (playerData.name || 'Herói');
-        console.log(`[LOGIN] ${identifier} entrou na sessão.`);
+
 
         // Notifica todos (especialmente o mestre) sobre a lista atualizada
         io.emit('updatePlayersList', gamePlayers);
@@ -74,7 +96,7 @@ io.on('connection', (socket) => {
                 text: `🔴 <strong>${p.name || 'Herói'}</strong> desconectou.` 
             });
         }
-        console.log('Aventureiro desconectado:', socket.id);
+
         delete gamePlayers[socket.id];
         io.emit('updatePlayersList', gamePlayers);
     });
@@ -82,8 +104,7 @@ io.on('connection', (socket) => {
 
 // Escuta em 0.0.0.0 para permitir conexões externas na intranet
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`=========================================`);
-    console.log(`RPG dos Guri - Servidor Iniciado!`);
-    console.log(`PC: http://localhost:${PORT}`);
+    console.log(`D&D dos Guri - Servidor Iniciado!`);
+    console.log(`URL: http://localhost:${PORT}`);
     console.log(`=========================================`);
 });

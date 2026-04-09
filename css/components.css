@@ -1,0 +1,102 @@
+/* ===== Premium Components & UI Atoms ===== */
+
+.premium-card {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: var(--radius); padding: var(--p-card);
+    backdrop-filter: blur(25px); box-shadow: 0 12px 30px var(--bg-overlay);
+    position: relative;
+}
+@media (max-width: 600px) { .premium-card { padding: 0.9rem; } }
+
+/* BUTTONS */
+.btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, #ff9f1c 100%);
+    color: var(--txt-contrast); font-weight: 800; padding: 1.2rem;
+    border-radius: 50px; cursor: pointer; text-transform: uppercase;
+    box-shadow: 0 8px 20px var(--gold-glow);
+}
+.btn-ghost {
+    background: transparent; border: 1px solid var(--panel-border);
+    color: var(--txt); padding: 1rem; border-radius: 50px;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* INPUTS */
+.premium-input {
+    width: 100%; background: var(--bg-input) !important;
+    border: 1px solid var(--panel-border) !important;
+    padding: 1.1rem 1.2rem !important; border-radius: 12px !important;
+    color: var(--txt) !important; font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+.premium-input:focus {
+    border-color: var(--gold) !important;
+    background: rgba(255, 190, 11, 0.05) !important;
+    box-shadow: 0 0 15px var(--gold-glow) !important;
+}
+
+.gold-input {
+    font-weight: 800 !important; color: var(--gold) !important;
+    border: 1px solid var(--gold-glow) !important;
+    background: var(--bg-overlay) !important; height: 40px;
+    padding-left: 0.8rem !important;
+}
+
+/* THEME TOGGLE */
+.theme-toggle-btn {
+    position: fixed; bottom: 25px; right: 25px;
+    width: 55px; height: 55px; background: var(--bg-glass);
+    border: 1px solid var(--gold); border-radius: 50%;
+    color: var(--gold); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; z-index: 9999;
+    box-shadow: 0 0 20px var(--gold-glow), inset 0 0 10px var(--gold-glow);
+    backdrop-filter: blur(15px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.theme-toggle-btn:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 0 30px var(--gold), inset 0 0 15px var(--gold-glow); color: #fff; }
+.theme-toggle-btn svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px var(--gold-glow)); }
+
+/* INFO TOOLTIP */
+.info-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--gold-glow); border: 1px solid var(--gold);
+    color: var(--gold); font-size: 0.6rem; font-style: normal;
+    font-weight: 900; cursor: help; flex-shrink: 0; position: relative;
+    transition: background 0.2s; font-family: 'Outfit', sans-serif;
+    line-height: 1; z-index: 1;
+}
+.info-icon:hover { background: rgba(255, 190, 11, 0.3); }
+.info-icon::after {
+    content: attr(data-tip); position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) translateY(-80px);
+    background: var(--bg-glass); border: 1px solid var(--gold);
+    border-radius: 10px; padding: 0.7rem 1rem; font-size: 0.78rem;
+    color: var(--txt); line-height: 1.5; white-space: pre-line;
+    width: 260px; max-width: 90vw; text-align: left;
+    box-shadow: 0 8px 25px var(--bg-overlay); z-index: 9999999;
+    pointer-events: none; opacity: 0; transition: opacity 0.2s;
+}
+.info-icon:hover::after { opacity: 1; }
+
+.label-tiny {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--gold); display: block;
+    margin-bottom: 0.25rem; opacity: 0.9;
+}
+
+/* CONDITIONS */
+.conditions-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem 0; margin-top: 0.5rem; }
+.status-toggle-item {
+    display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.6rem;
+    background: transparent; border: 1px solid var(--border-glass);
+    border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 0.75rem;
+}
+.status-toggle-item:hover { background: rgba(255,255,255,0.06); border-color: var(--gold); }
+.status-toggle-item.active { background: var(--gold-glow); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+.status-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem;
+    background: var(--bg-overlay); border: 1px solid var(--panel-border);
+    border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+}
+.status-badge.active { border-color: var(--gold); color: var(--gold); }
