@@ -79,6 +79,23 @@ const SKILLS = [
 ];
 
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
+
+const CONDITIONS = {
+    blinded: { name: 'Cego', icon: '👁️', color: '#7f8c8d' },
+    charmed: { name: 'Enfeitiçado', icon: '💖', color: '#e84393' },
+    deafened: { name: 'Surdo', icon: '🔇', color: '#95a5a6' },
+    frightened: { name: 'Amedrontado', icon: '😨', color: '#6c5ce7' },
+    grappled: { name: 'Agarrado', icon: '🤝', color: '#d63031' },
+    incapacitated: { name: 'Incapacitado', icon: '🤕', color: '#fab1a0' },
+    invisible: { name: 'Invisível', icon: '👻', color: '#81ecec' },
+    paralyzed: { name: 'Paralisado', icon: '⚡', color: '#fdcb6e' },
+    petrified: { name: 'Petrificado', icon: '🗿', color: '#2d3436' },
+    poisoned: { name: 'Envenenado', icon: '🤢', color: '#27ae60' },
+    prone: { name: 'Caído', icon: '🛌', color: '#e67e22' },
+    restrained: { name: 'Imobilizado', icon: '⛓️', color: '#e17055' },
+    stunned: { name: 'Atordoado', icon: '💫', color: '#f1c40f' },
+    unconscious: { name: 'Inconsciente', icon: '💤', color: '#2980b9' }
+};
 const STORAGE_KEY = 'rpg_guri_v10';
 const MASTER_STORAGE_KEY = 'rpg_guri_master_v1';
 
@@ -138,7 +155,8 @@ function getDefaultState() {
         rpBonds: '',
         rpFlaws: '',
         rpFeats: '',
-        deathSaves: { success: 0, fail: 0 }
+        deathSaves: { success: 0, fail: 0 },
+        conditions: [] // Ids das condições ativas
     };
 }
 
@@ -386,6 +404,11 @@ function renderMasterPanel() {
                     <div class="hp-bar-container">
                         <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
                     </div>
+                    
+                    <div class="conditions-hub-display" style="display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; justify-content: center;">
+                        ${(p.conditions || []).map(id => `<span title="${CONDITIONS[id]?.name}">${CONDITIONS[id]?.icon}</span>`).join('')}
+                    </div>
+
                     <div style="margin-top: 0.5rem; font-size: 0.75rem; font-weight: 700;">
                         HP: ${p.hp.current} / ${p.hp.max}
                     </div>
@@ -491,6 +514,11 @@ function renderBestiary() {
                 <div class="hp-bar-container">
                     <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
                 </div>
+
+                <div class="conditions-hub-display" style="display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; justify-content: center;">
+                    ${(npc.conditions || []).map(id => `<span title="${CONDITIONS[id]?.name}">${CONDITIONS[id]?.icon}</span>`).join('')}
+                </div>
+
                 <div style="margin-top: 0.5rem; font-size: 0.75rem; font-weight: 700;">
                     HP: ${npc.hp.current} / ${npc.hp.max}
                 </div>
@@ -562,6 +590,7 @@ window.openPlayerSheet = function(id) {
     masterEditingId = id;
     masterEditingType = 'player';
     state = connectedPlayers[id];
+    currentView = 'sheet-view'; // Força a volta para a aba da ficha
     
     // Remove read-only para o mestre poder editar tudo
     const container = document.getElementById('sheet-container');
@@ -577,6 +606,7 @@ window.openNPCSheet = function(id) {
     masterEditingId = id;
     masterEditingType = 'npc';
     state = npc; // O NPC local vira o estado ativo para edição
+    currentView = 'sheet-view'; // Força a volta para a aba da ficha
 
     const container = document.getElementById('sheet-container');
     if (container) container.classList.remove('read-only');
@@ -682,6 +712,7 @@ function renderSheet() {
 
     renderSaves(profBonus);
     renderSkills(profBonus);
+    renderConditionsToggle();
 
     // 5. Combat
     const desMod = Math.floor((state.attr.des - 10) / 2);
@@ -845,6 +876,51 @@ function renderSkills(profBonus) {
         `;
     }).join('');
 }
+
+function renderConditionsToggle() {
+    const container = document.getElementById('conditions-toggle-grid');
+    if (!container) return;
+
+    if (!isMaster) {
+        // Se não for mestre, só mostra as condições ativas como badges, sem permitir clique
+        if ((state.conditions || []).length === 0) {
+            container.innerHTML = '<div class="muted-text" style="font-size:0.7rem; padding: 0.5rem;">Nenhuma condição ativa.</div>';
+            return;
+        }
+        container.innerHTML = (state.conditions || []).map(id => {
+            const c = CONDITIONS[id];
+            return `<div class="status-badge active" title="${c.name}">${c.icon} ${c.name}</div>`;
+        }).join('');
+        return;
+    }
+
+    // Se for mestre, mostra o grid de toggle
+    container.innerHTML = Object.entries(CONDITIONS).map(([id, c]) => {
+        const isActive = (state.conditions || []).includes(id);
+        return `
+            <div class="status-toggle-item ${isActive ? 'active' : ''}" onclick="toggleCondition('${id}')" title="${c.name}">
+                <span class="status-icon">${c.icon}</span>
+                <span class="status-name">${c.name}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+window.toggleCondition = function(id) {
+    if (!isMaster) return;
+    if (!state.conditions) state.conditions = [];
+    
+    if (state.conditions.includes(id)) {
+        state.conditions = state.conditions.filter(c => c !== id);
+    } else {
+        state.conditions.push(id);
+        sendSystemLog(`⚠️ <strong>${state.name}</strong> agora está sob efeito de: <strong>${CONDITIONS[id].name}</strong> ${CONDITIONS[id].icon}`);
+    }
+    
+    renderSheet();
+    broadcastChange();
+    saveState();
+};
 
 // ==================== WIZARD & BUILDER ====================
 function buildGrids() {
@@ -1217,10 +1293,23 @@ function setupEvents() {
             broadcastChange();
         }
 
+        // TOGGLE DA SIDEBAR DO MESTRE
+        if (t.closest('#master-sidebar-toggle') || t.closest('#master-sidebar-close')) {
+            const sidebar = document.getElementById('master-sidebar');
+            if (sidebar) sidebar.classList.toggle('sidebar-hidden');
+            return;
+        }
+
         // NAVEGAÇÃO DO Hub do Mestre (Abas)
         const mNavBtn = t.closest('.m-nav-btn');
         if (mNavBtn) {
-            switchMasterTab(mNavBtn.dataset.tab);
+            if (mNavBtn.dataset.tab) switchMasterTab(mNavBtn.dataset.tab);
+            
+            // Em telas menores, fecha a sidebar automaticamente ao clicar em uma aba (exceto sair)
+            if (window.innerWidth <= 900 && mNavBtn.id !== 'btn-master-exit') {
+                const sidebar = document.getElementById('master-sidebar');
+                if (sidebar) sidebar.classList.add('sidebar-hidden');
+            }
             return;
         }
 
