@@ -470,17 +470,7 @@
 }
 
 /* GLOBAL UI: LOG & ALERTS */
-/* Backgrounds para ficha de jogador/npc */
-#sheet-view, #items-view, #habilidades-view, #history-view {
-    background: url('../resources/jogador_dark.webp') center/cover no-repeat fixed !important;
-}
-
-[data-theme="light"] #sheet-view, 
-[data-theme="light"] #items-view, 
-[data-theme="light"] #habilidades-view, 
-[data-theme="light"] #history-view {
-    background: url('../resources/jogador_light.webp') center/cover no-repeat fixed !important;
-}
+/* Backgrounds movidos para components.css via ::before para ocupar toda a tela sem restrição do max-width */
 
 .alert-banner {
     position: fixed;

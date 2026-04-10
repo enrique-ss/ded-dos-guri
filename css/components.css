@@ -558,13 +558,13 @@
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
 /* ===== AUTH SCREEN (3D FLIP & PREMIUM) ===== */
-#auth-screen.active, #role-selection.active, #creation-screen.active {
+#auth-screen.active, #role-selection.active, #creation-screen.active, #character-selection.active {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#auth-screen, #role-selection, #creation-screen {
+#auth-screen, #role-selection, #creation-screen, #character-selection {
     display: none;
     position: relative;
     z-index: 1; /* Para o pseudo-elemento ficar atras */
@@ -572,7 +572,8 @@
 }
 
 /* Pseudo-elementos para os backgrounds ficarem 100% estáticos fixos na tela inteira */
-#auth-screen::before, #role-selection::before, #creation-screen::before, #master-panel::before {
+#auth-screen::before, #role-selection::before, #creation-screen::before, #character-selection::before, #master-panel::before,
+#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -597,6 +598,21 @@
     background-image: url('../resources/mestre_light.webp');
 }
 
+#sheet-view, #items-view, #habilidades-view, #history-view {
+    background: transparent !important;
+}
+
+#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before {
+    background-image: url('../resources/jogador_dark.webp');
+}
+
+[data-theme="light"] #sheet-view::before, 
+[data-theme="light"] #items-view::before, 
+[data-theme="light"] #habilidades-view::before, 
+[data-theme="light"] #history-view::before {
+    background-image: url('../resources/jogador_light.webp');
+}
+
 #auth-screen::before { 
     background-image: url('../resources/login_dark.webp'); 
 }
@@ -611,15 +627,15 @@
     background-image: url('../resources/role_light.webp'); 
 }
 
-#creation-screen::before { 
+#creation-screen::before, #character-selection::before { 
     background-image: url('../resources/heroi_dark.webp'); 
 }
-[data-theme="light"] #creation-screen::before { 
+[data-theme="light"] #creation-screen::before, [data-theme="light"] #character-selection::before { 
     background-image: url('../resources/heroi_light.webp'); 
 }
 
 @media (max-width: 600px) {
-    #creation-screen::before {
+    #creation-screen::before, #character-selection::before {
         background-position: 75% center;
     }
 }

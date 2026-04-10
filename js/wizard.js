@@ -157,9 +157,17 @@ function finalizeWizard(name, bg, align, photo) {
         char.rpBonds = wizardData.personality.bonds;
         char.rpFlaws = wizardData.personality.flaws;
         char.rpFeats = `[RAÇA: ${r.name}]\n- ${r.modsDesc}\n- ${r.feature}\n\n[CLASSE: ${c.name}]\n- Armaduras: ${c.armor}`;
-        saveState();
-        if (socket) socket.emit('playerIdentify', char);
-        render();
+        
+        state = char; // Define a ficha atual em RAM
+        wizardData.active = false;
+        
+        // Persiste a ficha de fato no banco
+        saveStateToSupabase().then(() => {
+            if (socket) socket.emit('playerIdentify', state);
+            roleSelected = true;
+            document.getElementById('creation-screen')?.classList.remove('active');
+            switchView('sheet-view');
+        });
     }
 }
 

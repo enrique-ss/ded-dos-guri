@@ -93,9 +93,11 @@ function renderInitiative() {
             icon = CLASSES[entity.cls]?.icon || '🛡️';
         }
 
+        const liveInit = (entity && entity.initiativeRoll !== undefined && entity.initiativeRoll !== '') ? entity.initiativeRoll : item.val;
+
         return `
         <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};">
-            <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${item.val}</div>
+            <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${liveInit}</div>
             <div class="init-name" style="flex: 1; ${dangerStr}">${icon} <strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
         </div>
         `;
