@@ -26,8 +26,8 @@
     --bg: #ffffff;
     --panel: rgba(255, 255, 255, 0.75);
     --panel-border: rgba(0, 0, 0, 0.15);
-    --gold: #06d6a0; /* Volta o verde vibrante antigo */
-    --gold-glow: rgba(6, 214, 160, 0.25);
+    --gold: #d49a00; /* Dourado adaptado para legibilidade no modo claro */
+    --gold-glow: rgba(212, 154, 0, 0.25);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #000000;
