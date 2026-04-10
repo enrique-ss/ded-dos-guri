@@ -20,7 +20,7 @@ window.handleMasterPhoto = (input) => {
 
 function setupEvents() {
 
-    document.addEventListener('click', e => {
+    document.addEventListener('click', async e => {
         const t = e.target;
 
         // Role Selection
@@ -34,13 +34,14 @@ function setupEvents() {
             }
             if (role === 'mestre') {
                 if (prompt("Código do Mestre:") === "4444") {
+                    if (user) await loadMasterStateFromSupabase(); // Força update do state do mestre
                     roleSelected = true; isMaster = true; masterState.activeTab = 'players'; 
-                    saveMasterState();
-                    loadState(); // Garante que começa com o estado limpo
+                    wipeActiveState(); // Garante que começa com o estado limpo sem ficha de player
                 } else alert("Código incorreto!");
             } else { 
-                roleSelected = true; wizardData.active = true; 
-                loadState(); // Carrega o personagem do jogador
+                roleSelected = true; 
+                if (user) await loadStateFromSupabase(); // Carrega a ficha atualizada do banco
+                wizardData.active = !state.isCreated; 
             }
             render(); return;
         }
@@ -51,17 +52,17 @@ function setupEvents() {
                 // Sair da ficha do jogador ou NPC
                 const prev = masterEditingType === 'npc' ? 'bestiary' : 'players';
                 masterEditingId = null; masterEditingType = 'player'; masterState.activeTab = prev;
-                loadState(); // RESTAURA O ESTADO ORIGINAL (JOGADOR OU MESTRE)
+                wipeActiveState(); // Limpa a ficha que estava sendo editada
             } else if (isMaster && isCreatingNPC) {
                 // Sair da criação do NPC e voltar pro bestiário
                 isCreatingNPC = false;
                 masterState.activeTab = 'bestiary';
-                loadState();
+                wipeActiveState();
             } else {
                 // Sair do app (jogador ou deslogar master default)
                 roleSelected = false; isMaster = false; isAdmin = false; wizardData.active = false;
                 masterEditingId = null; masterEditingType = 'player'; // Reset total
-                loadState();
+                // A state permanece em memória para caso ele clique em "Jogador" novamente mais rápido
             }
             render(); return;
         }

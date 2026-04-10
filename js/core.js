@@ -80,7 +80,7 @@ function saveMasterState() {
 
 async function saveMasterStateToSupabase() {
     if (!user || !supabaseClient) return;
-    const MASTER_ROW_ID = 'universal_master_data'; 
+    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000'; // Fixed UUID
     const { error } = await supabaseClient
         .from('master_data')
         .upsert({ id: MASTER_ROW_ID, data: masterState }, { onConflict: 'id' });
@@ -89,7 +89,7 @@ async function saveMasterStateToSupabase() {
 
 async function loadMasterStateFromSupabase() {
     if (!user || !supabaseClient) return;
-    const MASTER_ROW_ID = 'universal_master_data';
+    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000'; // Fixed UUID
     const { data, error } = await supabaseClient
         .from('master_data')
         .select('data')
@@ -212,7 +212,7 @@ async function init() {
             console.log('Setup de Admin Automático ignorado ou falhou:', e.message);
         }
     }
-    loadState();
+    // Removido loadState() vazio aqui para nao deletar a ficha que acabou de baixar da nuvem
     buildGrids();
     setupEvents();
     render();
@@ -222,6 +222,10 @@ async function init() {
 }
 
 function loadState() {
+    // Usar getDefaultState() para limpar, caso precise, mas agora é manual.
+}
+
+function wipeActiveState() {
     state = getDefaultState();
 }
 
@@ -245,7 +249,7 @@ async function saveStateToSupabase() {
 
 async function loadStateFromSupabase() {
     if (!user || !supabaseClient) return;
-    state = getDefaultState();
+    // Puxa a ficha, caso exista
     const { data, error } = await supabaseClient
         .from('characters')
         .select('data')
@@ -254,6 +258,8 @@ async function loadStateFromSupabase() {
     if (data && data.data) {
         state = data.data;
         saveState();
+    } else {
+        wipeActiveState(); // Nao possui ficha ainda
     }
 }
 
