@@ -509,37 +509,37 @@
 
 #auth-screen, #role-selection, #creation-screen {
     display: none;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+    background-image: none;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
-#auth-screen {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/login.webp');
+#auth-screen { 
+    background-image: url('../resources/login.webp'); 
+}
+[data-theme="light"] #auth-screen { 
+    background-image: url('../resources/login.webp'); 
 }
 
-#role-selection {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/role.webp');
+#role-selection { 
+    background-image: url('../resources/role.webp'); 
+}
+[data-theme="light"] #role-selection { 
+    background-image: url('../resources/role.webp'); 
 }
 
-#creation-screen {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/heroi.webp');
-}
-
-/* Screens forçadas no modo Dark (Auth/Role) */
-#auth-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/login.webp'); }
-#role-selection { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/role.webp'); }
-
-/* Creation Screen Dinâmico (Dark vs Light) */
 #creation-screen { 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/heroi_dark.webp'); 
+    background-image: url('../resources/heroi_dark.webp'); 
+}
+[data-theme="light"] #creation-screen { 
+    background-image: url('../resources/heroi_light.webp'); 
 }
 
-[data-theme="light"] #creation-screen { 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/heroi_light.webp'); 
-}
+/* Sincronizado */
+
+/* Fim */
 
 
 
@@ -596,11 +596,13 @@
     width: 100%;
     max-width: 420px;
     margin: 0 auto;
-    padding: 2.5rem !important;
-    border: 1px solid rgba(255, 190, 11, 0.15) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    background: var(--panel) !important;
-    backdrop-filter: blur(40px) !important;
+    padding: 2.5rem;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius);
 }
 
 .premium-input {

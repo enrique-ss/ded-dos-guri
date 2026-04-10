@@ -1,24 +1,12 @@
 /* ===== Master Hub Module ===== */
 #master-panel.full-screen-modal {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../resources/aventureiros.webp');
+    background-image: url('../resources/aventureiros.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
 
-/* BACKGROUNDS DINÂMICOS NO PAINEL PRINCIPAL */
-#master-panel[data-active-tab="bestiary"] {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../resources/npc.webp');
-}
-
-/* Light Mode Overrides (Mesma lógica do login/heroi) */
-[data-theme="light"] #master-panel.full-screen-modal {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/aventureiros.webp');
-}
-[data-theme="light"] #master-panel[data-active-tab="bestiary"] {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/npc.webp');
-}
 
 .master-hub-layout {
     display: flex; flex-direction: row; gap: 1.5rem;
@@ -37,11 +25,22 @@
     z-index: 1000; flex-shrink: 0;
 }
 
-.sidebar-hidden { margin-left: -320px; opacity: 0; pointer-events: none; }
+.sidebar-hidden { margin-left: -320px !important; opacity: 0 !important; pointer-events: none; }
+
+@media (max-width: 900px) {
+    .master-sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1005;
+        box-shadow: 10px 0 40px rgba(0,0,0,0.3);
+    }
+}
 
 .m-nav-btn {
     padding: 1rem 1.25rem; cursor: pointer; background: transparent;
-    color: #ffffff; /* SEMPRE BRANCO PARA CONTRASTE NO VIDRO */
+    color: var(--txt);
     font-size: 0.95rem; font-weight: 700;
     transition: all 0.2s; display: flex; align-items: center;
     border-radius: 10px; width: 100%; border: none;
@@ -49,10 +48,6 @@
 .m-nav-btn:hover { background: var(--bg-overlay); color: var(--gold); }
 .m-nav-btn.active { background: var(--gold) !important; color: #000 !important; box-shadow: 0 4px 15px var(--gold-glow); }
 
-/* Force White Text in Sidebar Light Mode */
-[data-theme="light"] .m-nav-btn {
-    color: #ffffff;
-}
 
 .master-content { 
     flex: 1; 

@@ -242,12 +242,29 @@
     }
 }
 
+/* ===== SELECTION GRID SYSTEM ===== */
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
 .nav-btn {
     background: transparent;
     border: none;
     color: var(--txt-muted);
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
     cursor: pointer;
     font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;

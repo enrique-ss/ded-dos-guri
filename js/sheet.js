@@ -154,7 +154,7 @@ function renderSheet() {
         const id = f.startsWith('rp') ? `rp-${f.slice(2).toLowerCase()}` : `display-${f}`;
         const el = $(id);
         if (el) {
-            el.value = state[f] || (f.length < 5 ? '---' : '');
+            el.value = state[f] || '';
             el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px';
         }
     });

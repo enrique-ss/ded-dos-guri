@@ -122,8 +122,8 @@ function finalizeWizard(name, bg, align, photo) {
     char.photo = photo;
     char.attr = { ...wizardData.attr };
     char.profs = [...wizardData.skills];
-    char.bg = bg || '---';
-    char.align = align || '---';
+    char.bg = bg || '';
+    char.align = align || '';
     
     const r = RACES[char.race];
     const c = CLASSES[char.cls];
