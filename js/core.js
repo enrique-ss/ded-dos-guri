@@ -176,6 +176,7 @@ if (socket) {
 
     socket.on('newLogEntry', ({ timestamp, text }) => {
         if (!isMaster) return;
+        if (!masterState.logHistory) masterState.logHistory = [];
         masterState.logHistory.push({ timestamp, text });
         saveMasterState();
         if (masterState.activeTab === 'log') renderLogHistory();
@@ -333,7 +334,7 @@ function render() {
     }
 
     if (isMaster) {
-        if (isCreatingNPC) {
+        if (isCreatingNPC || isPreCreatingPlayer) {
             const creation = $('creation-screen');
             if (creation) creation.classList.add('active');
         } else if (masterEditingId) {

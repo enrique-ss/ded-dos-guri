@@ -572,7 +572,7 @@
 }
 
 /* Pseudo-elementos para os backgrounds ficarem 100% estáticos fixos na tela inteira */
-#auth-screen::before, #role-selection::before, #creation-screen::before {
+#auth-screen::before, #role-selection::before, #creation-screen::before, #master-panel::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -584,15 +584,16 @@
     filter: brightness(0.8); /* Escurece as imagens de fundo específicas */
 }
 
-#master-panel.full-screen-modal {
-    background-image: url('../resources/mestre_dark.webp');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+#master-panel {
+    background: transparent !important;
 }
 
-[data-theme="light"] #master-panel.full-screen-modal {
+#master-panel::before {
+    background-image: url('../resources/mestre_dark.webp');
+    background-size: cover; /* Garantia de preenchimento total e proporcional */
+}
+
+[data-theme="light"] #master-panel::before {
     background-image: url('../resources/mestre_light.webp');
 }
 
