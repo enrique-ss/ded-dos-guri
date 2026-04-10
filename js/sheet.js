@@ -8,13 +8,14 @@ function renderHeader() {
         <header class="sheet-header premium-card read-only" style="margin-bottom: 1rem;">
             <div class="header-main">
                 <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <div class="char-portrait-container">
-                        👤
-                        <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'};">
+                    <div class="char-portrait-container" id="portrait-main" ${isMaster ? 'onclick="this.querySelector(\'input\').click()" style="cursor: pointer;"' : ''}>
+                        <span style="pointer-events: none;">👤</span>
+                        <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'}; pointer-events: none;">
+                        ${isMaster ? '<input type="file" accept="image/*" style="display:none" onchange="window.handleMasterPhoto(this)">' : ''}
                     </div>
 
                     <div class="header-identity">
-                        <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" readonly maxlength="25">
+                        <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" ${isMaster ? '' : 'readonly'} maxlength="25">
                         <div class="header-sub">
                             <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
                             <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
@@ -79,7 +80,7 @@ function renderSheet() {
     const container = document.getElementById('sheet-container') || document.querySelector('.sheet-container');
     if (!container) return;
 
-    const isEditing = isMaster || !container.classList.contains('read-only');
+    const isEditing = isMaster; // APENAS MESTRE EDITA APÓS CRIAÇÃO
 
     // 1. Text & Value Mapping (Radical Reduction)
     const mappings = {
@@ -87,7 +88,7 @@ function renderSheet() {
         'display-race': RACES[state.race]?.name || '',
         'display-level': `Nível ${state.level}`,
         'prof-bonus': '+' + (state.profBonusOverride || (Math.ceil(state.level / 4) + 1)),
-        'display-initiative': state.initiativeRoll || 0,
+        'display-initiative': state.initiativeRoll || Math.floor((state.attr.des - 10) / 2),
         'display-speed': state.speed + 'm',
         'hp-text': `${state.hp.current} / ${state.hp.max}`,
         'gold-po': state.gold
@@ -108,7 +109,7 @@ function renderSheet() {
 
     // 3. Status & Logic Batch
     document.querySelectorAll('input, textarea').forEach(el => {
-        if (!el.classList.contains('protected-field')) el.readOnly = !(isMaster || isEditing);
+        if (!el.classList.contains('protected-field')) el.readOnly = !isMaster;
     });
 
     const profBonus = state.profBonusOverride || (Math.ceil(state.level / 4) + 1);
@@ -140,7 +141,7 @@ function renderSheet() {
     });
 
     // Toggle master-editable batch
-    ['display-level', 'display-ac', 'display-initiative', 'display-speed', 'hp-text', 'display-hd', 'container-inspiration', 'container-prof-bonus'].forEach(id => {
+    ['display-level', 'display-ac', 'display-initiative', 'display-speed', 'hp-text', 'display-hd', 'container-inspiration', 'container-prof-bonus', 'display-name-header', 'display-photo-header'].forEach(id => {
         if ($(id)) $(id).classList.toggle('master-editable', isMaster);
     });
 
@@ -160,14 +161,14 @@ function renderSheet() {
         }
     });
 
-    // Global Lore (Shared between all)
-    const worldLore = JSON.parse(localStorage.getItem('rpg_world_lore') || '{}');
+    // Global Lore (Carregado do masterState vindo do servidor)
+    const worldLore = masterState.worldLore || {};
     ['group', 'world', 'npcs'].forEach(key => {
         const el = $(`lore-${key}`);
         if (el) {
             el.value = worldLore[key] || '';
             el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px';
-            if (!isMaster) el.readOnly = true; // Só mestre mexe no global
+            if (!isMaster) el.readOnly = true; 
         }
     });
 

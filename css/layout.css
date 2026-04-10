@@ -270,10 +270,10 @@
 /* NOVO GRID EXCLUSIVO DO MESTRE */
 .master-grid-layout {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, 185px) !important;
-    gap: 1rem !important;
+    grid-template-columns: repeat(auto-fill, 180px) !important;
+    gap: 2.5rem !important;
     width: 100% !important;
-    justify-content: center;
+    justify-content: start;
 }
 
 .header-nav {
@@ -542,4 +542,4 @@
         box-shadow: 10px 0 30px var(--bg-overlay);
     }
 }
-
+

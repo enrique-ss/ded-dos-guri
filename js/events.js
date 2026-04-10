@@ -1,6 +1,25 @@
 // ==================== EVENT LISTENERS & DELEGATION ====================
 
+const debounceMasterList = debounce(() => {
+    if (isMaster) renderMasterPanel();
+}, 1000);
+
+window.handleMasterPhoto = (input) => {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.photo = e.target.result;
+            renderSheet();
+            broadcastChange();
+            if (isMaster && masterEditingType === 'player') debounceMasterList();
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
 function setupEvents() {
+
     document.addEventListener('click', e => {
         const t = e.target;
 
@@ -9,15 +28,20 @@ function setupEvents() {
         if (rCard) {
             const role = rCard.dataset.role;
             if (role === 'admin') { 
-                localStorage.setItem('adminAuth', 'true'); 
+                sessionStorage.setItem('adminAuth', 'true'); 
                 window.location.href = '/admin'; 
                 return; 
             }
             if (role === 'mestre') {
                 if (prompt("Código do Mestre:") === "4444") {
-                    roleSelected = true; isMaster = true; masterState.activeTab = 'players'; saveMasterState();
+                    roleSelected = true; isMaster = true; masterState.activeTab = 'players'; 
+                    saveMasterState();
+                    loadState(); // Garante que começa com o estado limpo
                 } else alert("Código incorreto!");
-            } else { roleSelected = true; wizardData.active = true; }
+            } else { 
+                roleSelected = true; wizardData.active = true; 
+                loadState(); // Carrega o personagem do jogador
+            }
             render(); return;
         }
 
@@ -27,13 +51,17 @@ function setupEvents() {
                 // Sair da ficha do jogador ou NPC
                 const prev = masterEditingType === 'npc' ? 'bestiary' : 'players';
                 masterEditingId = null; masterEditingType = 'player'; masterState.activeTab = prev;
+                loadState(); // RESTAURA O ESTADO ORIGINAL (JOGADOR OU MESTRE)
             } else if (isMaster && isCreatingNPC) {
                 // Sair da criação do NPC e voltar pro bestiário
                 isCreatingNPC = false;
                 masterState.activeTab = 'bestiary';
+                loadState();
             } else {
                 // Sair do app (jogador ou deslogar master default)
                 roleSelected = false; isMaster = false; isAdmin = false; wizardData.active = false;
+                masterEditingId = null; masterEditingType = 'player'; // Reset total
+                loadState();
             }
             render(); return;
         }
@@ -106,6 +134,12 @@ function setupEvents() {
                     sendSystemLog(`⚔️ <strong>${state.name}</strong>: Iniciativa ${state.initiativeRoll}`);
                     renderSheet(); broadcastChange();
                 }
+            }
+        }
+
+        if (t.closest('#display-photo-header') || t.closest('.char-portrait-container')) {
+            if (isMaster) {
+                document.getElementById('master-photo-uploader')?.click();
             }
         }
 
@@ -311,19 +345,23 @@ function setupEvents() {
         if (!isMaster) return;
         const id = e.target.id;
         if (id.startsWith('lore-')) {
-            const worldLore = JSON.parse(localStorage.getItem('rpg_world_lore') || '{}');
-            worldLore[id.replace('lore-', '')] = e.target.value;
-            localStorage.setItem('rpg_world_lore', JSON.stringify(worldLore));
+            masterState.worldLore = masterState.worldLore || {};
+            masterState.worldLore[id.replace('lore-', '')] = e.target.value;
+            saveMasterState(); // Salva no Supabase
             broadcastChange(); // Notifica outros clientes que o lore mudou
         }
     });
 
     // Auto-save fields as they type
     document.addEventListener('input', (e) => {
+        if (!isMaster && !wizardData.active) return; // Bloqueio total de edição para jogadores
         const id = e.target.id;
         const val = e.target.value;
         if (id === 'master-private-notes') { masterState.notes = val; saveMasterState(); return; }
-        if (id === 'display-name') state.name = val;
+        if (id === 'display-name' || id === 'display-name-header') { 
+            state.name = val; 
+            if (isMaster && masterEditingType === 'player') debounceMasterList(); 
+        }
         if (id === 'display-ac') state.ac = parseInt(val) || 10;
         if (id === 'display-hd') state.hd = val;
         if (id === 'display-bg') state.bg = val;

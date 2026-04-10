@@ -44,7 +44,7 @@ function toggleAuthMode(mode) {
 async function logout() {
     if (supabaseClient) await supabaseClient.auth.signOut();
     user = null;
-    localStorage.removeItem('rpg_guest_mode');
+    sessionStorage.removeItem('adminAuth');
     location.reload();
 }
 
@@ -58,11 +58,7 @@ async function clearSession() {
     roleSelected = false;
     isMaster = false;
     isAdmin = false;
-    const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
-    localStorage.removeItem(key);
-    localStorage.removeItem(MASTER_STORAGE_KEY);
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('rpg_guest_mode');
+    sessionStorage.removeItem('adminAuth');
     window.location.href = window.location.origin + window.location.pathname;
 }
 

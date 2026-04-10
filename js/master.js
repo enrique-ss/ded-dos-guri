@@ -34,7 +34,7 @@ function renderMasterPanel() {
                         </div>
                         <div style="display:flex; flex-direction:column; align-items:center;">
                             <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.initiativeRoll || 0}</span>
+                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${(typeof npc !== 'undefined' ? npc : p).initiativeRoll || Math.floor(((typeof npc !== 'undefined' ? npc : p).attr.des - 10) / 2)}</span>
                         </div>
                         <div style="display:flex; flex-direction:column; align-items:center;">
                             <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
@@ -113,7 +113,7 @@ window.startBattleSetup = function() {
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Setup de Batalha</h2>
                 <p style="text-align:center; font-size:0.8rem; margin-bottom: 1.5rem;" class="muted-text">Selecione quem irá participar do combate.\nA ordem será gerada com base na rolagem de Iniciativa atual de cada um.</p>
                 <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 0.5rem;" id="battle-selection-list">
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">Aventureiros</h3>
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">Jogadores</h3>
                     ${players.length === 0 ? '<div class="muted-text" style="margin-bottom:1rem; font-size:0.8rem;">Nenhum jogador online.</div>' : ''}
                     ${players.map(p => `
                         <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
@@ -235,7 +235,7 @@ function renderBestiary() {
                     </div>
                     <div style="display:flex; flex-direction:column; align-items:center;">
                         <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.initiativeRoll || 0}</span>
+                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.initiativeRoll || Math.floor((npc.attr.des - 10) / 2)}</span>
                     </div>
                     <div style="display:flex; flex-direction:column; align-items:center;">
                         <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>

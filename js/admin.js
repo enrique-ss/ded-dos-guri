@@ -47,7 +47,7 @@ class AdminPanel {
 
         // Credenciais fixas para admin (Padronizadas com app.js)
         if (email === 'admin@rpg.com' && password === 'admin123') {
-            localStorage.setItem('adminAuth', 'true');
+            sessionStorage.setItem('adminAuth', 'true');
             this.showDashboard();
             this.initializeSupabase();
             await this.loadData();
@@ -69,12 +69,12 @@ class AdminPanel {
     }
 
     handleLogout() {
-        localStorage.removeItem('adminAuth');
+        sessionStorage.removeItem('adminAuth');
         window.location.href = '/'; // Volta para a tela inicial do RPG
     }
 
     async checkAuth() {
-        const localAuth = localStorage.getItem('adminAuth') === 'true';
+        const localAuth = sessionStorage.getItem('adminAuth') === 'true';
         
         if (localAuth) {
             this.showDashboard();
@@ -87,7 +87,7 @@ class AdminPanel {
         if (this.supabase) {
             const { data: { user } } = await this.supabase.auth.getUser();
             if (user && user.email === 'admin@rpg.com') {
-                localStorage.setItem('adminAuth', 'true');
+                sessionStorage.setItem('adminAuth', 'true');
                 this.showDashboard();
                 await this.loadData();
                 return;

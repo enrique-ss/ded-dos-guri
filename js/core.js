@@ -65,32 +65,44 @@ function getDefaultState() {
 }
 
 function loadMasterState() {
-    const defaults = {
+    return {
         activeTab: 'players',
         initiative: [], 
         notes: '',
-        logHistory: [],
-        npcs: [] 
+        npcs: [],
+        worldLore: { group: '', world: '', npcs: '' }
     };
-    const raw = localStorage.getItem(MASTER_STORAGE_KEY);
-    if (!raw) return defaults;
-    try {
-        const loaded = JSON.parse(raw);
-        return {
-            ...defaults,
-            ...loaded,
-            initiative: loaded.initiative || [],
-            logHistory: loaded.logHistory || [],
-            npcs: loaded.npcs || []
-        };
-    } catch (e) {
-        console.error("Erro ao carregar dados do Mestre:", e);
-        return defaults;
-    }
 }
 
 function saveMasterState() {
-    localStorage.setItem(MASTER_STORAGE_KEY, JSON.stringify(masterState));
+    if (user && supabaseClient) saveMasterStateToSupabase();
+}
+
+async function saveMasterStateToSupabase() {
+    if (!user || !supabaseClient) return;
+    const MASTER_ROW_ID = 'universal_master_data'; 
+    const { error } = await supabaseClient
+        .from('master_data')
+        .upsert({ id: MASTER_ROW_ID, data: masterState }, { onConflict: 'id' });
+    if (error) console.error("Erro ao salvar dados do Mestre no Supabase:", error);
+}
+
+async function loadMasterStateFromSupabase() {
+    if (!user || !supabaseClient) return;
+    const MASTER_ROW_ID = 'universal_master_data';
+    const { data, error } = await supabaseClient
+        .from('master_data')
+        .select('data')
+        .eq('id', MASTER_ROW_ID)
+        .maybeSingle();
+    
+    if (data && data.data) {
+        masterState = {
+            ...masterState,
+            ...data.data
+        };
+        if (isMaster) renderMasterPanel();
+    }
 }
 
 // ==================== SYNC LOGIC ====================
@@ -189,10 +201,12 @@ async function init() {
                 if (!loginError) { 
                     user = loginData.user; 
                     await loadStateFromSupabase(); 
+                    await loadMasterStateFromSupabase();
                 }
             } else {
                 user = existingUser;
                 await loadStateFromSupabase();
+                await loadMasterStateFromSupabase();
             }
         } catch (e) {
             console.log('Setup de Admin Automático ignorado ou falhou:', e.message);
@@ -208,10 +222,7 @@ async function init() {
 }
 
 function loadState() {
-    const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
-    const raw = localStorage.getItem(key);
-    if (raw) state = JSON.parse(raw);
-    else state = getDefaultState();
+    state = getDefaultState();
 }
 
 function saveState() {
@@ -221,9 +232,6 @@ function saveState() {
             masterState.npcs[idx] = { ...state };
             saveMasterState();
         }
-    } else {
-        const key = user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE;
-        localStorage.setItem(key, JSON.stringify(state));
     }
 }
 

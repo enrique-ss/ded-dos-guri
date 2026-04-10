@@ -102,3 +102,14 @@ const CONDITIONS = {
     flying: { name: 'Voando', icon: '🦅', color: '#9b59b6' },
     heroic: { name: 'Heroico', icon: '🌟', color: '#f39c12' }
 };
+
+const GALLERY = [
+    { name: 'Guerreiro Humano', url: 'https://img.freepik.com/premium-photo/human-male-fighter-character-fantasy-dnd-rpg-game_81048-2435.jpg' },
+    { name: 'Maga Elfa', url: 'https://img.freepik.com/premium-photo/elf-female-wizard-character-fantasy-dnd-rpg-game_81048-2415.jpg' },
+    { name: 'Anão Bárbaro', url: 'https://img.freepik.com/premium-photo/dwarf-male-barbarian-character-fantasy-dnd-rpg-game_81048-2422.jpg' },
+    { name: 'Ladino Tiefling', url: 'https://img.freepik.com/premium-photo/tiefling-male-rogue-character-fantasy-dnd-rpg-game_81048-2441.jpg' },
+    { name: 'Clériga Humana', url: 'https://img.freepik.com/premium-photo/human-female-cleric-character-fantasy-dnd-rpg-game_81048-2450.jpg' },
+    { name: 'Paladino Meio-Orc', url: 'https://img.freepik.com/premium-photo/half-orc-male-paladin-character-fantasy-dnd-rpg-game_81048-2455.jpg' },
+    { name: 'Bardo Halfling', url: 'https://img.freepik.com/premium-photo/halfling-male-bard-character-fantasy-dnd-rpg-game_81048-2460.jpg' },
+    { name: 'Bruxa Gnomo', url: 'https://img.freepik.com/premium-photo/gnome-female-warlock-character-fantasy-dnd-rpg-game_81048-2465.jpg' }
+];

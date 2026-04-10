@@ -721,6 +721,7 @@ body.is-master .read-only textarea {
     cursor: text;
 }
 
+body.is-master .char-portrait-container,
 body.is-master .read-only .attr-block,
 body.is-master .read-only .skill-row {
     pointer-events: auto !important;

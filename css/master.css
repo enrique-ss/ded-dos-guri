@@ -96,7 +96,7 @@
 .player-grid, #master-grid, #npcs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, 220px);
-    gap: 1.5rem;
+    gap: 2.5rem;
     justify-content: start;
     padding: 1rem 0;
 }
