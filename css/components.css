@@ -509,32 +509,48 @@
 
 #auth-screen, #role-selection, #creation-screen {
     display: none;
-    background-image: none;
+    position: relative;
+    z-index: 1; /* Para o pseudo-elemento ficar atras */
+    background: transparent !important; /* Remove background da div principal */
+}
+
+/* Pseudo-elementos para os backgrounds ficarem 100% estáticos fixos na tela inteira */
+#auth-screen::before, #role-selection::before, #creation-screen::before {
+    content: "";
+    position: fixed;
+    inset: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    z-index: -1;
+    pointer-events: none;
 }
 
-#auth-screen { 
+#auth-screen::before { 
     background-image: url('../resources/login.webp'); 
 }
-[data-theme="light"] #auth-screen { 
+[data-theme="light"] #auth-screen::before { 
     background-image: url('../resources/login.webp'); 
 }
 
-#role-selection { 
+#role-selection::before { 
     background-image: url('../resources/role.webp'); 
 }
-[data-theme="light"] #role-selection { 
+[data-theme="light"] #role-selection::before { 
     background-image: url('../resources/role.webp'); 
 }
 
-#creation-screen { 
+#creation-screen::before { 
     background-image: url('../resources/heroi_dark.webp'); 
 }
-[data-theme="light"] #creation-screen { 
+[data-theme="light"] #creation-screen::before { 
     background-image: url('../resources/heroi_light.webp'); 
+}
+
+@media (max-width: 600px) {
+    #creation-screen::before {
+        background-position: left center;
+    }
 }
 
 /* Sincronizado */

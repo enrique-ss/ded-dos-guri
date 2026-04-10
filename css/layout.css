@@ -15,9 +15,9 @@
     display: none !important;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
     .full-screen-modal {
-        padding: 0.5rem 0.4rem;
+        padding: 2rem 1.2rem;
     }
 }
 
