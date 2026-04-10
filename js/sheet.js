@@ -16,10 +16,10 @@ function renderHeader() {
                     <div class="header-identity">
                         <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" readonly maxlength="25">
                         <div class="header-sub">
-                            <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || '---'}</div>
-                            <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || '---'}</div>
-                            <div class="badge-role" id="display-level-header">Nível ${state.level || 1}</div>
-                            <div class="badge-role" id="display-xp-header" style="display: ${isMaster && masterEditingType === 'npc' ? 'none' : 'block'}">XP ${state.xp}</div>
+                            <div class="badge-role" id="display-class-header">${state.cls || '---'}</div>
+                            <div class="badge-role" id="display-race-header">${state.race || '---'}</div>
+                            <div class="badge-role" id="display-level-header">Nível ${state.level}</div>
+                            <div class="badge-role" id="display-xp-header">XP ${state.xp}</div>
                         </div>
                     </div>
                 </div>
@@ -32,9 +32,6 @@ function renderHeader() {
                 <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" data-view="items-view" onclick="switchView('items-view')">
                     <span>Itens</span>
                 </button>
-                <button class="nav-btn ${currentView === 'habilidades-view' ? 'active' : ''}" data-view="habilidades-view" onclick="switchView('habilidades-view')">
-                    <span>Magias</span>
-                </button>
                 <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
                     <span>História</span>
                 </button>
@@ -44,7 +41,7 @@ function renderHeader() {
                 </button>
                 
                 <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red); display: ${!isMaster ? 'block' : 'none'}">
-                    <span>Resetar</span>
+                    <span>Excluir</span>
                 </button>
             </div>
         </header>
@@ -170,7 +167,7 @@ function renderSheet() {
         }
     });
 
-    if ($('btn-reset-char')) $('btn-reset-char').style.display = !isMaster ? 'block' : 'none';
+    if ($('btn-reset-char')) $('btn-reset-char').style.display = (isMaster && masterEditingType === 'npc') || !isMaster ? 'block' : 'none';
 
     // Item creation visibility
     if ($('add-attack')) $('add-attack').style.display = isMaster ? 'block' : 'none';
@@ -219,14 +216,8 @@ function renderItems() {
         const sec = config[type];
         const el = document.getElementById(sec.id);
         if (!el) return;
-        
-        if (!sec.data || sec.data.length === 0) {
-            el.innerHTML = '';
-            return;
-        }
-
-        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
-            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeItem('${type}', ${i})">×</button>` : ''}</div>`).join('');
+        el.innerHTML = `<div class="attacks-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
+            (sec.data || []).map((item, i) => `<div class="attack-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button class="btn-ghost" onclick="removeItem('${type}', ${i})">×</button>` : ''}</div>`).join('');
     });
 }
 
@@ -243,37 +234,3 @@ window.toggleCondition = (id) => {
 };
 
 window.removeItem = (type, i) => { state[type.toLowerCase() === 'attack' ? 'attacks' : type.toLowerCase() + 's'].splice(i, 1); renderSheet(); broadcastChange(); };
-
-function renderHabilidades() {
-    const $ = id => document.getElementById(id);
-    renderHeader();
-    const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
-    const config = {
-        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Custo'] },
-        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Custo'] },
-        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Custo'] }
-    };
-    Object.keys(config).forEach(type => {
-        const sec = config[type];
-        const el = $(sec.id);
-        if (!el) return;
-
-        if (!sec.data || sec.data.length === 0) {
-            el.innerHTML = '';
-            return;
-        }
-
-        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
-            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeAbility('${type}', ${i})">×</button>` : ''}</div>`).join('');
-    });
-
-    if ($('add-cantrip')) $('add-cantrip').style.display = isMaster ? 'block' : 'none';
-    if ($('add-spell-active')) $('add-spell-active').style.display = isMaster ? 'block' : 'none';
-    if ($('add-spell-inactive')) $('add-spell-inactive').style.display = isMaster ? 'block' : 'none';
-}
-
-window.removeAbility = (type, i) => { 
-    const keyMap = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };
-    state[keyMap[type]].splice(i, 1); 
-    renderHabilidades(); broadcastChange(); 
-};

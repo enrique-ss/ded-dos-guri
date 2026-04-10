@@ -57,7 +57,6 @@ function getDefaultState() {
         attr: { for: 10, des: 10, con: 10, int: 10, sab: 10, car: 10 },
         profs: [], saves: [], inspiration: false,
         attacks: [], armors: [], utility: [], gold: 0,
-        cantrips: [], spellsActive: [], spellsInactive: [],
         rpTraits: '', rpIdeals: '', rpBonds: '', rpFlaws: '', rpFeats: '',
         deathSaves: { success: 0, fail: 0 },
         conditions: []
@@ -252,7 +251,7 @@ async function loadStateFromSupabase() {
 function render() {
     const $ = id => document.getElementById(id);
     document.body.classList.toggle('is-master', isMaster);
-    const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'habilidades-view', 'history-view'];
+    const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'history-view'];
     views.forEach(v => { const el = $(v); if (el) el.classList.remove('active'); });
 
     if (!user) {
@@ -312,14 +311,9 @@ function render() {
         }
     } else {
         const targetView = $(currentView) || $('sheet-view');
-        if (targetView) {
-            targetView.classList.remove('fade-in');
-            void targetView.offsetWidth; // Trigger reflow
-            targetView.classList.add('active', 'fade-in');
-        }
+        if (targetView) targetView.classList.add('active');
         renderSheet();
         if (currentView === 'items-view') renderItems();
-        if (currentView === 'habilidades-view') renderHabilidades();
     }
 
     document.querySelectorAll('.nav-btn').forEach(btn => {

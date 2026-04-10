@@ -80,25 +80,23 @@ const SKILLS = [
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
 
 const CONDITIONS = {
-    // NEGATIVOS (9)
     blinded: { name: 'Cego', icon: '👁️', color: '#7f8c8d' },
-    poisoned: { name: 'Envenenado', icon: '🤢', color: '#27ae60' },
+    charmed: { name: 'Enfeitiçado', icon: '💖', color: '#e84393' },
+    deafened: { name: 'Surdo', icon: '🔇', color: '#95a5a6' },
     frightened: { name: 'Amedrontado', icon: '😨', color: '#6c5ce7' },
-    restrained: { name: 'Imobilizado', icon: '⛓️', color: '#e17055' },
-    paralyzed: { name: 'Paralisado', icon: '⚡', color: '#fdcb6e' },
-    exhausted: { name: 'Exausto', icon: '🥱', color: '#d35400' },
-    prone: { name: 'Caído', icon: '🛌', color: '#e67e22' },
-    bleeding: { name: 'Sangrando', icon: '🩸', color: '#c0392b' },
-    cursed: { name: 'Amaldiçoado', icon: '🧿', color: '#8e44ad' },
-
-    // POSITIVOS (9)
-    blessed: { name: 'Abençoado', icon: '✨', color: '#f1c40f' },
-    hasted: { name: 'Acelerado', icon: '🏇', color: '#3498db' },
+    grappled: { name: 'Agarrado', icon: '🤝', color: '#d63031' },
+    incapacitated: { name: 'Incapacitado', icon: '🤕', color: '#fab1a0' },
     invisible: { name: 'Invisível', icon: '👻', color: '#81ecec' },
-    inspired: { name: 'Inspirado', icon: '💡', color: '#ffbe0b' },
-    shielded: { name: 'Protegido', icon: '🛡️', color: '#2980b9' },
-    enraged: { name: 'Fúria', icon: '💢', color: '#e74c3c' },
-    regenerating: { name: 'Regenerando', icon: '🌿', color: '#2ecc71' },
-    flying: { name: 'Voando', icon: '🦅', color: '#9b59b6' },
-    heroic: { name: 'Heroico', icon: '🌟', color: '#f39c12' }
+    paralyzed: { name: 'Paralisado', icon: '⚡', color: '#fdcb6e' },
+    petrified: { name: 'Petrificado', icon: '🗿', color: '#2d3436' },
+    poisoned: { name: 'Envenenado', icon: '🤢', color: '#27ae60' },
+    prone: { name: 'Caído', icon: '🛌', color: '#e67e22' },
+    restrained: { name: 'Imobilizado', icon: '⛓️', color: '#e17055' },
+    stunned: { name: 'Atordoado', icon: '💫', color: '#f1c40f' },
+    unconscious: { name: 'Inconsciente', icon: '💤', color: '#2980b9' },
+    exhausted: { name: 'Exausto', icon: '🥱', color: '#d35400' },
+    on_fire: { name: 'Em Chamas', icon: '🔥', color: '#e74c3c' },
+    frozen: { name: 'Congelado', icon: '❄️', color: '#3498db' },
+    cursed: { name: 'Amaldiçoado', icon: '🧿', color: '#8e44ad' },
+    blessed: { name: 'Abençoado', icon: '✨', color: '#f1c40f' }
 };
