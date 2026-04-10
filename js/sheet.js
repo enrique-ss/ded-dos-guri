@@ -19,7 +19,6 @@ function renderHeader() {
                             <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
                             <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
                             <div class="badge-role" id="display-level-header">Nível ${state.level || 1}</div>
-                            <div class="badge-role" id="display-xp-header" style="display: ${isMaster && masterEditingType === 'npc' ? 'none' : 'block'}">XP ${state.xp}</div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +86,6 @@ function renderSheet() {
         'display-class': CLASSES[state.cls]?.name || '',
         'display-race': RACES[state.race]?.name || '',
         'display-level': `Nível ${state.level}`,
-        'display-xp': `XP ${state.xp}`,
         'prof-bonus': '+' + (state.profBonusOverride || (Math.ceil(state.level / 4) + 1)),
         'display-initiative': state.initiativeRoll || 0,
         'display-speed': state.speed + 'm',
@@ -142,7 +140,7 @@ function renderSheet() {
     });
 
     // Toggle master-editable batch
-    ['display-xp', 'display-level', 'display-ac', 'display-initiative', 'display-speed', 'hp-text', 'display-hd', 'container-inspiration', 'container-prof-bonus'].forEach(id => {
+    ['display-level', 'display-ac', 'display-initiative', 'display-speed', 'hp-text', 'display-hd', 'container-inspiration', 'container-prof-bonus'].forEach(id => {
         if ($(id)) $(id).classList.toggle('master-editable', isMaster);
     });
 

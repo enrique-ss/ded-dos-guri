@@ -22,7 +22,18 @@
 
 @media (max-width: 600px) {
     .full-screen-modal {
-        padding: 2rem 1.2rem;
+        padding: 0.8rem !important;
+    }
+    .sheet-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    .combat-stats {
+        grid-template-columns: 1fr !important;
+    }
+    .sheet-body {
+        gap: 0.8rem !important;
     }
 }
 
