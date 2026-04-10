@@ -35,7 +35,7 @@ function renderHeader() {
                     <span>Magias</span>
                 </button>
                 <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
-                    <span>História</span>
+                    <span>Notas</span>
                 </button>
                 
                 <button class="nav-btn" id="btn-back-to-role" style="color: var(--txt-muted);">

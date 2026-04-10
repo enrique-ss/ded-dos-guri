@@ -24,21 +24,21 @@
 
 [data-theme="light"] {
     --bg: #ffffff;
-    --panel: rgba(255, 255, 255, 0.85);
+    --panel: rgba(255, 255, 255, 0.75);
     --panel-border: rgba(0, 0, 0, 0.15);
-    --gold: #ffbe0b;
-    --gold-glow: rgba(255, 190, 11, 0.2);
+    --gold: #06d6a0; /* Volta o verde vibrante antigo */
+    --gold-glow: rgba(6, 214, 160, 0.25);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #000000;
-    --txt-muted: #000000;
+    --txt-muted: #2d3436;
 
     /* GLASS REINFORCED */
     --bg-glass: rgba(255, 255, 255, 0.85);
-    --bg-overlay: rgba(0, 0, 0, 0.08);
-    --bg-accent: rgba(0, 0, 0, 0.03);
+    --bg-overlay: rgba(0, 0, 0, 0.05);
+    --bg-accent: rgba(0, 0, 0, 0.04);
     --bg-circle: #ffffff;
-    --glass-blur: blur(15px) saturate(180%);
+    --glass-blur: blur(20px) saturate(200%);
 }
 
 /* TELAS PRINCIPAIS AGORA SEGUEM O TEMA (LIGHT/DARK) */
@@ -109,9 +109,20 @@ h2,
 h3,
 .cinzel {
     font-family: 'Cinzel', serif;
-    letter-spacing: 1px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    color: var(--gold) !important; /* SEMPRE DOURADO EM AMBOS OS TEMAS */
+    letter-spacing: 1.2px;
+    font-weight: 900 !important;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    color: var(--gold) !important;
+}
+
+[data-theme="light"] body {
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Exceção: D&D dos guris segue o tema - dourado no dark, verde no light */
+.pocket-logo, .pocket-logo span, .main-title {
+    color: var(--gold) !important;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3) !important;
 }
 
 label {

@@ -400,8 +400,8 @@ window.generateRandomNPC = function(targetRace = 'random', targetCls = 'random',
     const cls = targetCls === 'random' ? classKeys[Math.floor(Math.random() * classKeys.length)] : targetCls;
     const level = targetLevel;
     
-    const bg = BACKGROUNDS[bgKeys[Math.floor(Math.random() * bgKeys.length)]].name;
-    const align = ALIGNMENTS[alignKeys[Math.floor(Math.random() * alignKeys.length)]].name;
+    const bg = "";
+    const align = "";
     
     // Attributes (Standard Array shuffled)
     const array = [...STANDARD_ARRAY];
