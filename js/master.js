@@ -68,7 +68,11 @@ function renderInitiative() {
     const list = document.getElementById('initiative-list');
     if (!list) return;
 
-    if (!masterState.battleOrder || masterState.battleOrder.length === 0) {
+    const hasBattle = masterState.battleOrder && masterState.battleOrder.length > 0;
+    const btnEnd = document.getElementById('btn-end-battle');
+    if (btnEnd) btnEnd.style.display = hasBattle ? 'block' : 'none';
+
+    if (!hasBattle) {
         list.classList.add('m-empty-state');
         list.innerHTML = '';
         return;
@@ -90,14 +94,13 @@ function renderInitiative() {
         }
 
         return `
-        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="cursor: pointer; display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};" onclick="${item.isPlayer ? `openPlayerSheet('${item.id}')` : `openNPCSheet('${item.id}')`}">
+        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};">
             <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${item.val}</div>
             <div class="init-name" style="flex: 1; ${dangerStr}">${icon} <strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
         </div>
         `;
     }).join('');
 
-    list.innerHTML += `<button class="btn-ghost" onclick="window.endBattle()" style="width: 100%; margin-top: 1.5rem; color: var(--red); border-color: var(--red); padding: 0.8rem; font-weight: 800;">Encerrar Batalha</button>`;
 }
 
 window.startBattleSetup = function() {

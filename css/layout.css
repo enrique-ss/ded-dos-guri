@@ -250,27 +250,18 @@
 /* ===== SELECTION GRID SYSTEM ===== */
 .selection-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1.25rem;
     width: 100%;
 }
 
-@media (min-width: 600px) {
-    .selection-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1000px) {
-    .selection-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 1300px) {
-    .selection-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+/* NOVO GRID EXCLUSIVO DO MESTRE */
+.master-grid-layout {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, 185px) !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    justify-content: center;
 }
 
 .header-nav {
@@ -312,9 +303,9 @@
 .master-hub-layout {
     display: flex;
     flex-direction: row;
-    gap: 1.5rem;
+    gap: 1.2rem;
     height: calc(100vh - 4rem);
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 0;
     position: relative;
@@ -322,7 +313,7 @@
 }
 
 .master-sidebar {
-    width: 260px;
+    width: 220px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -497,18 +488,19 @@
     to { transform: translateY(0); }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 900px) {
     .master-sidebar.sidebar-hidden {
         margin-left: 0 !important;
         opacity: 1 !important;
         pointer-events: auto !important;
+        position: relative !important;
     }
     .master-sidebar-toggle {
         display: none !important;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
     .master-sidebar {
         position: absolute;
         width: 80%;

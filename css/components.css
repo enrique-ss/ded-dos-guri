@@ -246,12 +246,11 @@
     text-align: center;
 }
 
-/* MASTER PANEL & PLAYER CARDS */
-.player-card {
+/* MASTER PANEL & PLAYER CARDS */.player-card {
     background: var(--bg-accent);
     border: 2px solid var(--panel-border);
     border-radius: 20px;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
     text-align: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
@@ -260,10 +259,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 400px;
+    
+    /* TAMANHOS FIXOS ABSOLUTOS */
+    width: 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+    height: 400px !important;
+    min-height: 400px !important;
+    max-height: 400px !important;
 }
 
 .player-card:hover {
+
     border-color: var(--gold);
     background: var(--gold-glow);
     transform: translateY(-10px);
@@ -282,6 +289,18 @@
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
     opacity: 0;
     transition: opacity 0.3s;
+}
+
+.card-stats-mini {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--panel-border);
+    gap: 0.5rem;
+    opacity: 1;
+    transform: none;
 }
 
 .player-card:hover::after {

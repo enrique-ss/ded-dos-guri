@@ -257,7 +257,7 @@ function renderGenericTable(containerId, data, headers, type, removeFn) {
     if (!el) return;
     if (!data || data.length === 0) { el.innerHTML = ''; return; }
 
-    const gridCols = isMaster ? '2fr 7fr 1fr 40px' : '2fr 7fr 1fr';
+    const gridCols = isMaster ? '3fr 5fr 2fr 40px' : '3fr 5fr 2fr';
     
     el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};">
         <span>${headers[0]}</span><span>${headers[1]}</span><span>${headers[2]}</span>${isMaster ? '<span></span>' : ''}

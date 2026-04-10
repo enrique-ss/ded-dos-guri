@@ -11,7 +11,7 @@
     <div class="master-hub-layout fade-in">
         
         <!-- Sidebar do Mestre -->
-        <aside id="master-sidebar" class="master-sidebar premium-card sidebar-hidden">
+        <aside id="master-sidebar" class="master-sidebar premium-card">
             
             <nav class="sidebar-nav">
                 <button class="m-nav-btn admin-only" data-tab="users" style="display: none;">
@@ -49,16 +49,18 @@
                 <div class="m-tab-header">
                     <h2 class="cinzel">Aventureiros</h2>
                 </div>
-                <div id="master-grid" class="selection-grid m-empty-state">
+                <div id="master-grid" class="master-grid-layout m-empty-state">
                     <p>Aguardando jogadores entrarem...</p>
                 </div>
             </div>
 
-            <!-- ABA: BATALHA -->
             <div id="m-tab-initiative" class="m-tab-content">
                 <div class="m-tab-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="cinzel">Batalha</h2>
-                    <button class="btn-primary" onclick="window.startBattleSetup()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Iniciar Batalha</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn-ghost" id="btn-end-battle" onclick="window.endBattle()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem; display: none;">Encerrar Batalha</button>
+                        <button class="btn-primary" onclick="window.startBattleSetup()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Iniciar Batalha</button>
+                    </div>
                 </div>
                 <div id="initiative-list" class="initiative-list m-empty-state">
                     <p>Nenhuma batalha ativa no momento.</p>
@@ -74,7 +76,7 @@
                         <button class="btn-ghost" onclick="window.openNPCGeneratorSetup()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Gerar NPC</button>
                     </div>
                 </div>
-                <div id="npcs-grid" class="selection-grid m-empty-state">
+                <div id="npcs-grid" class="master-grid-layout m-empty-state">
                     <p>Sua lista de NPCs está vazia. Gere novos desafios!</p>
                 </div>
             </div>
