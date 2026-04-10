@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 let gamePlayers = {};
 
 app.use(express.static(path.join(__dirname, './')));
+app.use(express.json());
 
 // Rota para a página de admin
 app.get('/admin', (req, res) => {
@@ -31,6 +32,24 @@ app.get('/api/admin/users', async (req, res) => {
         const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
         if (error) throw error;
         res.json(users);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Endpoint para mestre pré-criar personagem para jogador (bypassa RLS)
+app.post('/api/admin/characters/precreate', async (req, res) => {
+    try {
+        const { targetUserId, charData } = req.body;
+        const insertData = {
+           user_id: targetUserId,
+           name: charData.name,
+           data: charData,
+           updated_at: new Date().toISOString()
+        };
+        const { error } = await supabaseAdmin.from('characters').insert(insertData);
+        if (error) throw error;
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -58,6 +77,11 @@ io.on('connection', (socket) => {
         gamePlayers[socket.id] = updatedData;
         // Envia para todos os outros (Mestre e outros jogadores se necessário)
         socket.broadcast.emit('playerChanged', { id: socket.id, data: updatedData });
+    });
+
+    socket.on('playerLeave', () => {
+        delete gamePlayers[socket.id];
+        io.emit('updatePlayersList', gamePlayers);
     });
 
     // Mestre altera a ficha de um jogador específico

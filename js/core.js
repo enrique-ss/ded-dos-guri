@@ -15,6 +15,9 @@ let isCreatingNPC = false;
 let roleSelected = false; 
 let user = null;
 let currentView = 'sheet-view';
+let userCharacters = [];
+let isPreCreatingPlayer = false;
+let targetUserIdByMaster = null;
 
 // ==================== SUPABASE SETUP ====================
 let supabaseClient = null;
@@ -241,26 +244,51 @@ function saveState() {
 
 async function saveStateToSupabase() {
     if (!user || !supabaseClient || !state.isCreated) return;
-    const { error } = await supabaseClient
+    
+    const charData = { 
+        user_id: user.id, 
+        name: state.name, 
+        data: state,
+        updated_at: new Date().toISOString()
+    };
+
+    // Se já temos um ID, usamos ele para o upsert. Caso contrário, o Supabase criará um novo.
+    if (state.id) charData.id = state.id;
+
+    const { data, error } = await supabaseClient
         .from('characters')
-        .upsert({ user_id: user.id, name: state.name, data: state }, { onConflict: 'user_id' });
-    if (error) console.error("Erro ao salvar no Supabase:", error);
+        .upsert(charData)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Erro ao salvar no Supabase:", error);
+    } else if (data && !state.id) {
+        // Se for um novo personagem, salvamos o ID gerado pelo banco
+        state.id = data.id;
+        saveState();
+    }
+}
+
+async function loadAllCharactersFromSupabase() {
+    if (!user || !supabaseClient) return [];
+    const { data, error } = await supabaseClient
+        .from('characters')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+    
+    if (error) {
+        console.error("Erro ao carregar personagens:", error);
+        return [];
+    }
+    userCharacters = data || [];
+    return userCharacters;
 }
 
 async function loadStateFromSupabase() {
-    if (!user || !supabaseClient) return;
-    // Puxa a ficha, caso exista
-    const { data, error } = await supabaseClient
-        .from('characters')
-        .select('data')
-        .eq('user_id', user.id)
-        .maybeSingle();
-    if (data && data.data) {
-        state = data.data;
-        saveState();
-    } else {
-        wipeActiveState(); // Nao possui ficha ainda
-    }
+    // Agora o carregamento é disparado pela seleção do personagem.
+    // Esta função pode ser mantida para compatibilidade ou removida.
 }
 
 function render() {
@@ -277,6 +305,14 @@ function render() {
 
     if (!roleSelected) {
         const roleSel = $('role-selection');
+        const charSel = $('character-selection');
+        
+        // Se estamos autenticados mas não selecionamos a função nem o personagem ainda
+        if (charSel.classList.contains('active')) {
+            // Se o char-selection estiver ativo, não mostramos o role-selection
+            return;
+        }
+
         if (roleSel) {
             roleSel.classList.add('active');
             const isAdminUser = user && user.email === 'admin@rpg.com';

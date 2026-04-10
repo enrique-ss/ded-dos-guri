@@ -140,6 +140,17 @@ function finalizeWizard(name, bg, align, photo) {
         isCreatingNPC = false;
         masterState.activeTab = 'bestiary';
         switchView('master-panel');
+    } else if (isPreCreatingPlayer) {
+        // Fluxo de Pré-criação pelo Mestre
+        char.rpTraits = wizardData.personality.traits;
+        char.rpIdeals = wizardData.personality.ideals;
+        char.rpBonds = wizardData.personality.bonds;
+        char.rpFlaws = wizardData.personality.flaws;
+        char.rpFeats = `[RAÇA: ${r.name}]\n- ${r.modsDesc}\n- ${r.feature}\n\n[CLASSE: ${c.name}]\n- Armaduras: ${c.armor}`;
+        
+        // Abre modal para o mestre escolher o e-mail do alvo antes de salvar
+        openUserSelectionModal(char);
+        
     } else {
         char.rpTraits = wizardData.personality.traits;
         char.rpIdeals = wizardData.personality.ideals;
@@ -152,8 +163,97 @@ function finalizeWizard(name, bg, align, photo) {
     }
 }
 
+async function finalizePlayerPreCreation(char) {
+    if (!targetUserIdByMaster) return alert("Erro: ID de usuário alvo não definido.");
+    
+    try {
+        const response = await fetch('/api/admin/characters/precreate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                targetUserId: targetUserIdByMaster,
+                charData: char 
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(`Personagem "${char.name}" vinculado com sucesso!`);
+            isPreCreatingPlayer = false;
+            targetUserIdByMaster = null;
+            switchView('master-panel');
+        } else {
+            throw new Error(result.error || "Falha desconhecida no servidor");
+        }
+    } catch (error) {
+        console.error("Erro ao salvar personagem pré-criado via API:", error);
+        alert("Erro ao salvar personagem: " + error.message);
+    }
+}
+
+async function openUserSelectionModal(charData) {
+    const modalHtml = `
+        <div id="user-selection-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
+            <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Vincular ao Jogador</h2>
+                <p class="muted-text txt-center">Selecione o e-mail do jogador que usará este personagem.</p>
+                <div id="modal-users-list" style="max-height: 300px; overflow-y: auto; margin: 1.5rem 0; border: 1px solid var(--panel-border); border-radius: 8px; background: var(--bg-overlay);">
+                    <div class="txt-center" style="padding: 2rem;">Carregando usuários...</div>
+                </div>
+                <div style="display:flex; gap: 1rem;">
+                    <button class="btn-ghost" onclick="document.getElementById('user-selection-modal').remove()" style="flex:1;">Cancelar</button>
+                    <button class="btn-primary" id="btn-confirm-link" disabled style="flex:1;">Finalizar e Salvar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    try {
+        const response = await fetch('/api/admin/users');
+        const users = await response.json();
+        const listDiv = document.getElementById('modal-users-list');
+        
+        if (!users || !Array.isArray(users)) {
+            listDiv.innerHTML = '<div class="txt-center" style="padding: 2rem; color: var(--red);">Erro ao carregar lista de usuários.</div>';
+            return;
+        }
+
+        listDiv.innerHTML = users.map(u => `
+            <div class="user-item-link" data-id="${u.id}" style="padding: 1rem; cursor: pointer; border-bottom: 1px solid var(--panel-border); transition: 0.2s;">
+                <div style="font-weight: 700; color: var(--gold);">${u.email}</div>
+                <small class="muted-text">Criado em: ${new Date(u.created_at).toLocaleDateString()}</small>
+            </div>
+        `).join('');
+
+        let selectedId = null;
+        const items = document.querySelectorAll('.user-item-link');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                items.forEach(i => i.style.background = 'transparent');
+                item.style.background = 'rgba(255, 190, 11, 0.1)';
+                selectedId = item.dataset.id;
+                document.getElementById('btn-confirm-link').disabled = false;
+            });
+        });
+
+        document.getElementById('btn-confirm-link').onclick = async () => {
+            if (selectedId) {
+                targetUserIdByMaster = selectedId;
+                await finalizePlayerPreCreation(charData);
+                document.getElementById('user-selection-modal').remove();
+            }
+        };
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 window.startNPCCreation = function() {
     isCreatingNPC = true;
+    isPreCreatingPlayer = false;
     wizardData = {
         active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
         personality: { traits: '', ideals: '', bonds: '', flaws: '' },
@@ -167,5 +267,16 @@ window.startNPCCreation = function() {
         nameInput.style.pointerEvents = 'auto';
         nameInput.style.userSelect = 'text';
     }
+    buildGrids(); switchView('creation-screen'); goToStep(1);
+};
+
+window.startPlayerCreationByMaster = function() {
+    isPreCreatingPlayer = true;
+    isCreatingNPC = false;
+    wizardData = {
+        active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
+        personality: { traits: '', ideals: '', bonds: '', flaws: '' },
+        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
+    };
     buildGrids(); switchView('creation-screen'); goToStep(1);
 };

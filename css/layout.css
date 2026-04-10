@@ -115,6 +115,36 @@
     box-shadow: 0 2px 15px var(--gold-glow);
 }
 
+/* Character Selection Cards */
+.char-card {
+    flex-direction: column;
+    padding: 1.5rem !important;
+    gap: 0.5rem;
+    min-height: 120px !important;
+}
+
+.char-card .char-name {
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.char-card .char-meta {
+    font-size: 0.8rem;
+    color: var(--txt-muted);
+}
+
+.char-card-new {
+    border-style: dashed !important;
+    border-color: var(--gold) !important;
+    opacity: 0.7;
+}
+
+.char-card-new:hover {
+    opacity: 1;
+    background: var(--gold-glow) !important;
+}
+
 .desc-box {
     margin-top: 1.5rem;
     padding: 1.2rem;

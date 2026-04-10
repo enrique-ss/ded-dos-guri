@@ -37,13 +37,53 @@ function setupEvents() {
                     if (user) await loadMasterStateFromSupabase(); // Força update do state do mestre
                     roleSelected = true; isMaster = true; masterState.activeTab = 'players'; 
                     wipeActiveState(); // Garante que começa com o estado limpo sem ficha de player
+                    render();
                 } else alert("Código incorreto!");
             } else { 
-                roleSelected = true; 
-                if (user) await loadStateFromSupabase(); // Carrega a ficha atualizada do banco
-                wizardData.active = !state.isCreated; 
+                // Fluxo Jogador: Abre tela de seleção
+                renderCharacterSelection();
             }
-            render(); return;
+            return;
+        }
+
+        // Character Selection Logic
+        const charCard = t.closest('.char-card[data-id]');
+        if (charCard) {
+            const charId = charCard.dataset.id;
+            const charObj = userCharacters.find(c => c.id === charId);
+            if (charObj) {
+                state = charObj.data;
+                state.id = charId; // Garantir que o ID está no state
+                roleSelected = true;
+                isMaster = false;
+                wizardData.active = false;
+                document.getElementById('character-selection')?.classList.remove('active');
+                
+                // Identificar para o mestre
+                if (socket) {
+                    socket.emit('playerIdentify', { ...state, userEmail: user.email });
+                }
+                
+                render();
+            }
+            return;
+        }
+
+        if (t.closest('#btn-new-character')) {
+            wipeActiveState();
+            roleSelected = true;
+            isMaster = false;
+            wizardData.active = true;
+            wizardData.step = 1;
+            document.getElementById('character-selection')?.classList.remove('active');
+            render();
+            return;
+        }
+
+        if (t.closest('#btn-back-to-role-from-selection')) {
+            document.getElementById('character-selection')?.classList.remove('active');
+            document.getElementById('role-selection')?.classList.add('active');
+            return;
         }
 
         // Common Nav
@@ -61,10 +101,11 @@ function setupEvents() {
             } else {
                 // Sair do app (jogador ou deslogar master default)
                 roleSelected = false; isMaster = false; isAdmin = false; wizardData.active = false;
-                masterEditingId = null; masterEditingType = 'player'; // Reset total
-                // A state permanece em memória para caso ele clique em "Jogador" novamente mais rápido
+                masterEditingId = null; masterEditingType = 'player'; 
+                if (socket) socket.emit('playerLeave');
+                render();
             }
-            render(); return;
+            return;
         }
 
         // Sheet Actions
@@ -378,4 +419,39 @@ function setupEvents() {
         }
         debounceSync();
     });
+}
+
+async function renderCharacterSelection() {
+    const list = await loadAllCharactersFromSupabase();
+    const container = document.getElementById('characters-list-grid');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    // Lista de personagens existentes
+    list.forEach(char => {
+        const data = char.data;
+        const card = document.createElement('div');
+        card.className = 'choice-card char-card';
+        card.dataset.id = char.id;
+        card.innerHTML = `
+            <div class="char-name">${data.name || 'Herói Sem Nome'}</div>
+            <div class="char-meta">${data.race} ${data.cls} - Nível ${data.level}</div>
+        `;
+        container.appendChild(card);
+    });
+
+    // Botão de Novo Personagem
+    const newCard = document.createElement('div');
+    newCard.className = 'choice-card char-card char-card-new';
+    newCard.id = 'btn-new-character';
+    newCard.innerHTML = `
+        <div class="char-name" style="color: var(--gold);">+ Novo Personagem</div>
+        <div class="char-meta">Comece uma nova lenda</div>
+    `;
+    container.appendChild(newCard);
+
+    // Trocar telas
+    document.getElementById('role-selection')?.classList.remove('active');
+    document.getElementById('character-selection')?.classList.add('active');
 }
