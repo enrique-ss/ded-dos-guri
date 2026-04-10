@@ -9,7 +9,6 @@ try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
 let isMaster = false;
 let isAdmin = false; 
 let connectedPlayers = {}; // { socketId: state }
-let allCharacters = []; // List of all chars from DB + active ones
 let masterEditingId = null; 
 let masterEditingType = 'player'; 
 let isCreatingNPC = false; 
@@ -131,13 +130,11 @@ function debounce(func, wait) {
 if (socket) {
     socket.on('updatePlayersList', (players) => {
         connectedPlayers = players;
-        syncAllCharacters();
         if (isMaster) renderMasterPanel();
     });
 
     socket.on('playerChanged', ({ id, data }) => {
         connectedPlayers[id] = data;
-        syncAllCharacters();
         if (isMaster) {
             renderMasterPanel();
             if (masterEditingId === id) { state = data; renderSheet(); }
@@ -206,7 +203,7 @@ async function init() {
     setupEvents();
     render();
     if (socket && state.isCreated && !isMaster) {
-        socket.emit('playerIdentify', { ...state, userId: user ? user.id : null, userEmail: user ? user.email : 'Convidado' });
+        socket.emit('playerIdentify', { ...state, userEmail: user ? user.email : 'Convidado' });
     }
 }
 
@@ -247,53 +244,8 @@ async function loadStateFromSupabase() {
         .eq('user_id', user.id)
         .maybeSingle();
     if (data && data.data) {
-        state = { ...data.data, user_id: user.id };
+        state = data.data;
         saveState();
-    }
-}
-
-async function syncAllCharacters() {
-    if (!isMaster || !supabaseClient) return;
-    try {
-        const { data, error } = await supabaseClient.from('characters').select('*');
-        if (error) throw error;
-
-        // Map from DB
-        const dbChars = data.map(c => ({ 
-            syncId: c.user_id, 
-            ...c.data, 
-            isOnline: false,
-            socketId: null 
-        }));
-
-        // Merge with Online (Using name as deduplicator if necessary, but ideally user_id)
-        // Note: connectedPlayers keys are socketIds.
-        const onlineList = Object.keys(connectedPlayers).map(sId => ({
-            ...connectedPlayers[sId],
-            socketId: sId,
-            isOnline: true
-        }));
-
-        const finalMap = {};
-        
-        // Add DB chars first
-        dbChars.forEach(c => {
-            if (!c.isDeleted) finalMap[c.syncId || c.name] = c;
-        });
-
-        // Override with Online data (more recent)
-        onlineList.forEach(c => {
-            if (!c.isDeleted) {
-                // Se o player está online em múltiplos sockets, o último sobrescreve mas usamos o mesmo syncId
-                const key = c.user_id || c.userId || c.name;
-                finalMap[key] = { ...finalMap[key], ...c, isOnline: true };
-            }
-        });
-
-        allCharacters = Object.values(finalMap);
-        renderMasterPanel();
-    } catch (e) {
-        console.warn("Erro ao sincronizar lista completa de personagens:", e);
     }
 }
 
@@ -343,7 +295,6 @@ function render() {
             const masterPanel = $('master-panel');
             if (masterPanel) {
                 masterPanel.classList.add('active');
-                syncAllCharacters();
                 renderMasterPanel();
                 if (isAdmin) {
                     document.querySelectorAll('.admin-only').forEach(tab => tab.style.display = 'block');
