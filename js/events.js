@@ -24,18 +24,29 @@ function setupEvents() {
         // Common Nav
         if (t.closest('#btn-master-exit') || t.closest('#btn-back-to-role')) {
             if (isMaster && masterEditingId) {
+                // Sair da ficha do jogador ou NPC
                 const prev = masterEditingType === 'npc' ? 'bestiary' : 'players';
                 masterEditingId = null; masterEditingType = 'player'; masterState.activeTab = prev;
-            } else { roleSelected = false; isMaster = false; isAdmin = false; }
+            } else if (isMaster && isCreatingNPC) {
+                // Sair da criação do NPC e voltar pro bestiário
+                isCreatingNPC = false;
+                masterState.activeTab = 'bestiary';
+            } else {
+                // Sair do app (jogador ou deslogar master default)
+                roleSelected = false; isMaster = false; isAdmin = false; wizardData.active = false;
+            }
             render(); return;
         }
 
         // Sheet Actions
         if (t.closest('#container-inspiration')) {
             if (isMaster) {
-                state.inspiration = !state.inspiration;
-                sendSystemLog(`✨ <strong>${state.name}</strong> ${state.inspiration ? 'ganhou' : 'usou'} Inspiração!`);
-                renderSheet(); broadcastChange();
+                const current = state.inspiration === true ? 1 : (parseInt(state.inspiration) || 0);
+                const val = prompt("Pontos de Inspiração:", current);
+                if (val !== null) {
+                    state.inspiration = parseInt(val) || 0;
+                    renderSheet(); broadcastChange();
+                }
             }
         }
         if (t.id === 'hp-text') {
@@ -155,7 +166,7 @@ function setupEvents() {
                 const val = prompt(`${key.toUpperCase()}:`, state.attr[key]);
                 if (val !== null) { state.attr[key] = parseInt(val) || 0; renderSheet(); broadcastChange(); }
             }
-            if (t.id === 'display-level') {
+            if (t.id === 'display-level-header') {
                 const val = prompt("Nível:", state.level);
                 if (val !== null) { 
                     state.level = parseInt(val) || 1; 
@@ -163,7 +174,7 @@ function setupEvents() {
                     renderSheet(); broadcastChange(); 
                 }
             }
-            if (t.id === 'display-xp') {
+            if (t.id === 'display-xp-header') {
                 const val = prompt("XP:", state.xp);
                 if (val !== null) {
                     state.xp = parseInt(val) || 0;
@@ -171,13 +182,45 @@ function setupEvents() {
                     renderSheet(); broadcastChange();
                 }
             }
-            if (t.id === 'display-class') {
+            if (t.id === 'display-class-header') {
                 const val = prompt("Alterar Classe:", state.cls);
                 if (val !== null) { state.cls = val; renderSheet(); broadcastChange(); }
             }
-            if (t.id === 'display-race') {
+            if (t.id === 'display-race-header') {
                 const val = prompt("Alterar Raça:", state.race);
                 if (val !== null) { state.race = val; renderSheet(); broadcastChange(); }
+            }
+            
+            // Criação de Itens pelo Mestre
+            if (t.id === 'add-attack') {
+                const name = prompt("Nome:");
+                if (name) {
+                    const bonus = prompt("Dano:");
+                    const qty = prompt("Tipo:");
+                    state.attacks = state.attacks || [];
+                    state.attacks.push({ name, bonus, qty });
+                    renderSheet(); broadcastChange();
+                }
+            }
+            if (t.id === 'add-armor') {
+                const name = prompt("Nome:");
+                if (name) {
+                    const bonus = prompt("Bonus:");
+                    const qty = prompt("Peso:");
+                    state.armors = state.armors || [];
+                    state.armors.push({ name, bonus, qty });
+                    renderSheet(); broadcastChange();
+                }
+            }
+            if (t.id === 'add-utility') {
+                const name = prompt("Nome:");
+                if (name) {
+                    const bonus = prompt("Bonus:");
+                    const qty = prompt("Quantidade:");
+                    state.utility = state.utility || [];
+                    state.utility.push({ name, bonus, qty });
+                    renderSheet(); broadcastChange();
+                }
             }
         }
 

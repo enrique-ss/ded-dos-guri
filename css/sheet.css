@@ -26,6 +26,9 @@
     white-space: nowrap;
     overflow: hidden;
     color: var(--txt);
+    pointer-events: auto !important;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
 }
 
 @media (max-width: 600px) {

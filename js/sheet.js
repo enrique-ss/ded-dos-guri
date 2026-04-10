@@ -119,7 +119,11 @@ function renderSheet() {
     });
 
     // 5. Consolidated Logic
-    if ($('check-inspiration')) $('check-inspiration').className = 'attr-circle' + (state.inspiration ? ' active' : '');
+    if ($('check-inspiration')) {
+        const insp = state.inspiration === true ? 1 : (parseInt(state.inspiration) || 0);
+        $('check-inspiration').textContent = insp;
+        $('check-inspiration').className = 'attr-circle' + (insp > 0 ? ' active' : '');
+    }
     if ($('display-ac')) $('display-ac').value = state.ac || (10 + Math.floor((state.attr.des - 10) / 2) + (state.armors || []).reduce((acc, arm) => acc + (parseInt(arm.bonus) || 0), 0));
     if ($('display-hd')) $('display-hd').value = state.hd;
 
@@ -200,11 +204,17 @@ function renderConditionsToggle() {
 
 function renderItems() {
     const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
-    [{ id: 'attacks-list', data: state.attacks, type: 'Attack' }, { id: 'armors-list', data: state.armors, type: 'Armor' }, { id: 'utility-list', data: state.utility, type: 'Utility' }].forEach(sec => {
+    const config = {
+        'Attack': { id: 'attacks-list', data: state.attacks, headers: ['Nome', 'Dano', 'Tipo'] },
+        'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bonus', 'Peso'] },
+        'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bonus', 'Quantidade'] }
+    };
+    Object.keys(config).forEach(type => {
+        const sec = config[type];
         const el = document.getElementById(sec.id);
         if (!el) return;
-        el.innerHTML = `<div class="attacks-header" style="grid-template-columns: ${gridCols};"><span>Nome</span><span>Bônus</span><span>Qtde</span>${isMaster ? '<span></span>' : ''}</div>` + 
-            (sec.data || []).map((item, i) => `<div class="attack-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button class="btn-ghost" onclick="removeItem('${sec.type}', ${i})">×</button>` : ''}</div>`).join('');
+        el.innerHTML = `<div class="attacks-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
+            (sec.data || []).map((item, i) => `<div class="attack-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button class="btn-ghost" onclick="removeItem('${type}', ${i})">×</button>` : ''}</div>`).join('');
     });
 }
 

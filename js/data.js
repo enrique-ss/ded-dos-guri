@@ -93,5 +93,9 @@ const CONDITIONS = {
     prone: { name: 'Caído', icon: '🛌', color: '#e67e22' },
     restrained: { name: 'Imobilizado', icon: '⛓️', color: '#e17055' },
     stunned: { name: 'Atordoado', icon: '💫', color: '#f1c40f' },
-    unconscious: { name: 'Inconsciente', icon: '💤', color: '#2980b9' }
+    exhausted: { name: 'Exausto', icon: '🥱', color: '#d35400' },
+    on_fire: { name: 'Em Chamas', icon: '🔥', color: '#e74c3c' },
+    frozen: { name: 'Congelado', icon: '❄️', color: '#3498db' },
+    cursed: { name: 'Amaldiçoado', icon: '🧿', color: '#8e44ad' },
+    blessed: { name: 'Abençoado', icon: '✨', color: '#f1c40f' }
 };

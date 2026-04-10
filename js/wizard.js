@@ -160,6 +160,12 @@ window.startNPCCreation = function() {
         attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
     };
     const nameInput = document.getElementById('create-name');
-    if (nameInput) nameInput.value = '';
+    if (nameInput) {
+        nameInput.value = '';
+        nameInput.readOnly = false;
+        nameInput.removeAttribute('readonly');
+        nameInput.style.pointerEvents = 'auto';
+        nameInput.style.userSelect = 'text';
+    }
     buildGrids(); switchView('creation-screen'); goToStep(1);
 };

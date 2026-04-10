@@ -159,13 +159,18 @@ function renderBestiary() {
     grid.classList.remove('m-empty-state');
     grid.innerHTML = (masterState.npcs || []).filter(n => !n.isDeleted).map(npc => {
         const hpPercent = Math.max(0, Math.min(100, (npc.hp.current / npc.hp.max) * 100));
+        const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
         return `
             <div class="player-card" onclick="openNPCSheet('${npc.id}')">
-                <button class="btn-ghost" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})" style="position: absolute; top: 10px; right: 10px; color: var(--red);">🗑️</button>
-                <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">${npc.photo ? `<img src="${npc.photo}" class="char-portrait">` : '👾'}</div>
-                <strong style="font-size: 1.2rem; color: var(--gold);">${npc.name}</strong>
-                <div class="hp-bar-container"><div class="hp-bar-fill" style="width: ${hpPercent}%"></div></div>
+                <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                    ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
+                </div>
+                <strong>${npc.name || 'Sem Nome'}</strong>
+                <div class="label-tiny" style="margin-top: 0.2rem;">${npc.race || 'Criatura'} • Nível ${npc.level || 1}</div>
+                <div class="hp-bar-container"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
+                <div class="conditions-hub-display" style="margin-top: 0.5rem;">${(npc.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}</div>
                 <div style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700;">${npc.hp.current} / ${npc.hp.max} HP</div>
+                <button class="btn-reset-discrete" style="width:100%; margin-top: 1.5rem; font-size: 0.7rem;" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})">Remover NPC</button>
             </div>
         `;
     }).join('');
