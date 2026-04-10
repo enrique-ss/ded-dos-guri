@@ -1,8 +1,90 @@
-// ==================== RADICAL CHARACTER SHEET ENGINE ====================
+function renderHeader() {
+    const activeView = document.querySelector('.full-screen-modal.active');
+    if (!activeView) return;
+    const placeholder = activeView.querySelector('.character-header-placeholder');
+    if (!placeholder) return;
+
+    placeholder.innerHTML = `
+        <header class="sheet-header premium-card read-only" style="margin-bottom: 1rem;">
+            <div class="header-main">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="char-portrait-container">
+                        👤
+                        <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'};">
+                    </div>
+
+                    <div class="header-identity">
+                        <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" readonly maxlength="25">
+                        <div class="header-sub">
+                            <div class="badge-role" id="display-class-header">${state.cls || '---'}</div>
+                            <div class="badge-role" id="display-race-header">${state.race || '---'}</div>
+                            <div class="badge-role" id="display-level-header">Nível ${state.level}</div>
+                            <div class="badge-role" id="display-xp-header">XP ${state.xp}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-nav">
+                <button class="nav-btn ${currentView === 'sheet-view' ? 'active' : ''}" onclick="switchView('sheet-view')">
+                    <span>Ficha</span>
+                </button>
+                <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" onclick="switchView('items-view')">
+                    <span>Itens</span>
+                </button>
+                <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" onclick="switchView('history-view')">
+                    <span>História</span>
+                </button>
+                
+                <button class="nav-btn" id="btn-back-to-role" style="color: var(--txt-muted);">
+                    <span>Voltar</span>
+                </button>
+                
+                <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red); display: ${!isMaster ? 'block' : 'none'}">
+                    <span>Excluir</span>
+                </button>
+            </div>
+        </header>
+    `;
+
+    // Rebind do botão voltar (Mestre e Jogador)
+    const btnBack = document.getElementById('btn-back-to-role');
+    if (btnBack) {
+        btnBack.onclick = () => {
+            if (isMaster) {
+                if (masterEditingType === 'npc') {
+                    masterEditingId = null; masterState.activeTab = 'bestiary'; render();
+                } else {
+                    masterEditingId = null; masterState.activeTab = 'players'; render();
+                }
+            } else {
+                roleSelected = false; render();
+            }
+        };
+    }
+    
+    // Rebind do botão excluir (Jogador)
+    const btnReset = document.getElementById('btn-reset-char');
+    if (btnReset) {
+        btnReset.onclick = () => {
+            if (!isMaster && confirm('EXCLUIR personagem permanentemente?')) {
+                const key = user ? `rpg_guri_v10_${user.id}` : 'rpg_guri_v10';
+                localStorage.removeItem(key);
+                location.reload();
+            }
+        };
+    }
+}
 
 function renderSheet() {
     const $ = id => document.getElementById(id);
-    const isEditing = isMaster || !$('sheet-container').classList.contains('read-only');
+    renderHeader();
+    
+    // Procura o container principal (pode ser ID ou Classe dependendo da aba)
+    const container = document.getElementById('sheet-container') || document.querySelector('.sheet-container');
+    if (!container) return;
+
+    const isEditing = isMaster || !container.classList.contains('read-only');
 
     // 1. Text & Value Mapping (Radical Reduction)
     const mappings = {

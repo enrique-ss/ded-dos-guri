@@ -230,9 +230,8 @@
 }
 
 [data-theme="light"] .auth-card .highlight-text,
-[data-theme="light"] .auth-card .label-tiny,
-[data-theme="light"] .choice-card strong {
-    color: #000;
+[data-theme="light"] .auth-card .label-tiny {
+    color: var(--gold);
 }
 
 .txt-center {
@@ -494,25 +493,49 @@
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
 }
 /* ===== AUTH SCREEN (3D FLIP & PREMIUM) ===== */
-#auth-screen.active, #role-selection.active {
+#auth-screen.active, #role-selection.active, #creation-screen.active {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#auth-screen, #role-selection {
+#auth-screen, #role-selection, #creation-screen {
     display: none;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 #auth-screen {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/resources/login.jpeg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/login.webp');
 }
 
 #role-selection {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/resources/role.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/role.webp');
+}
+
+#creation-screen {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/heroi.webp');
+}
+
+/* Light Mode Overrides para backgrounds (Removendo o branco estourado) */
+[data-theme="light"] #auth-screen, 
+[data-theme="light"] #role-selection, 
+[data-theme="light"] #creation-screen {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)); /* Filtro escuro leve no fundo mesmo no light */
+}
+
+/* Re-aplicando as imagens no light sem o filtro branco */
+[data-theme="light"] #auth-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/login.webp'); }
+[data-theme="light"] #role-selection { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/role.webp'); }
+[data-theme="light"] #creation-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/heroi.webp'); }
+
+.choice-card {
+    background: var(--panel) !important;
+    color: var(--gold) !important;
+    font-weight: 700;
 }
 
 .auth-card-container {

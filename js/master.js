@@ -1,27 +1,32 @@
 // ==================== MASTER HUB LOGIC ====================
 
 function renderMasterPanel() {
+    const panel = document.getElementById('master-panel');
+    if (panel) panel.setAttribute('data-active-tab', masterState.activeTab);
+
     const grid = document.getElementById('master-grid');
     if (!grid) return;
     const ids = Object.keys(connectedPlayers);
     if (ids.length === 0) {
-        grid.innerHTML = '<div class="muted-text cinzel" style="grid-column: 1/-1; text-align: center; padding: 3rem;">Aguardando jogadores entrarem...</div>';
+        grid.classList.add('m-empty-state');
+        grid.innerHTML = '<p>Aguardando players entrarem...</p>';
     } else {
+        grid.classList.remove('m-empty-state');
         grid.innerHTML = ids.map(id => {
             const p = connectedPlayers[id];
             const hpPercent = Math.max(0, Math.min(100, (p.hp.current / p.hp.max) * 100));
             const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
             return `
-                <div class="choice-card player-card" onclick="openPlayerSheet('${id}')">
-                    <div class="char-portrait-container" style="width: 50px; height: 50px; margin: 0 auto 1rem;">
+                <div class="player-card" onclick="openPlayerSheet('${id}')">
+                    <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                         ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
                     </div>
                     <strong>${p.name || 'Sem Nome'}</strong>
-                    <div class="muted-text" style="font-size: 0.65rem;">${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}</div>
+                    <div class="label-tiny" style="margin-top: 0.2rem;">${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}</div>
                     <div class="hp-bar-container"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
-                    <div class="conditions-hub-display">${(p.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.75rem;">HP: ${p.hp.current} / ${p.hp.max}</div>
-                    <button class="btn-reset-discrete" style="width:100%; margin-top: 1rem;" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')">☠️ Excluir Personagem</button>
+                    <div class="conditions-hub-display" style="margin-top: 0.5rem;">${(p.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}</div>
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700;">${p.hp.current} / ${p.hp.max} HP</div>
+                    <button class="btn-reset-discrete" style="width:100%; margin-top: 1.5rem; font-size: 0.7rem;" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')">Remover Personagem</button>
                 </div>
             `;
         }).join('');
@@ -47,7 +52,12 @@ function renderInitiative() {
     const playerInits = Object.values(connectedPlayers).filter(p => p.initiativeRoll > 0).map(p => ({ id: p.id, name: p.name, val: p.initiativeRoll, isPlayer: true }));
     const npcInits = (masterState.npcs || []).filter(n => n.initiativeRoll > 0 && !n.isDeleted).map(n => ({ id: n.id, name: n.name, val: n.initiativeRoll, isPlayer: false }));
     const all = [...playerInits, ...npcInits].sort((a, b) => b.val - a.val);
-    if (all.length === 0) { list.innerHTML = '<div class="muted-text txt-center">Ninguém em combate.</div>'; return; }
+    if (all.length === 0) { 
+        list.classList.add('m-empty-state');
+        list.innerHTML = '<p>Ninguém em combate.</p>'; 
+        return; 
+    }
+    list.classList.remove('m-empty-state');
     list.innerHTML = all.map(item => `
         <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}">
             <div class="init-score">${item.val}</div>
@@ -59,16 +69,21 @@ function renderInitiative() {
 function renderBestiary() {
     const grid = document.getElementById('npcs-grid');
     if (!grid) return;
-    if (masterState.npcs.length === 0) { grid.innerHTML = '<div class="muted-text txt-center">Bestiário vazio.</div>'; return; }
+    if (masterState.npcs.length === 0) { 
+        grid.classList.add('m-empty-state');
+        grid.innerHTML = '<p>Bestiário vazio.</p>'; 
+        return; 
+    }
+    grid.classList.remove('m-empty-state');
     grid.innerHTML = (masterState.npcs || []).filter(n => !n.isDeleted).map(npc => {
         const hpPercent = Math.max(0, Math.min(100, (npc.hp.current / npc.hp.max) * 100));
         return `
-            <div class="choice-card player-card" onclick="openNPCSheet('${npc.id}')">
+            <div class="player-card" onclick="openNPCSheet('${npc.id}')">
                 <button class="btn-ghost" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})" style="position: absolute; top: 10px; right: 10px; color: var(--red);">🗑️</button>
-                <div class="char-portrait-container" style="width: 50px; height: 50px; margin: 0 auto 1rem;">${npc.photo ? `<img src="${npc.photo}" class="char-portrait">` : '👾'}</div>
-                <strong>${npc.name}</strong>
+                <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">${npc.photo ? `<img src="${npc.photo}" class="char-portrait">` : '👾'}</div>
+                <strong style="font-size: 1.2rem; color: var(--gold);">${npc.name}</strong>
                 <div class="hp-bar-container"><div class="hp-bar-fill" style="width: ${hpPercent}%"></div></div>
-                <div style="margin-top: 0.5rem; font-size: 0.75rem;">HP: ${npc.hp.current} / ${npc.hp.max}</div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700;">${npc.hp.current} / ${npc.hp.max} HP</div>
             </div>
         `;
     }).join('');

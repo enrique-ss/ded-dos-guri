@@ -45,15 +45,15 @@
         </aside>
 
         <!-- Área de Conteúdo Dinâmica -->
-        <section class="master-content premium-card">
+        <section class="master-content">
             
             <!-- ABA: AVENTUREIROS -->
             <div id="m-tab-players" class="m-tab-content active">
                 <div class="m-tab-header">
                     <h2 class="cinzel">Aventureiros</h2>
                 </div>
-                <div id="master-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
-                    <!-- Cards injetados via JS -->
+                <div id="master-grid" class="selection-grid m-empty-state">
+                    <p>Aguardando jogadores entrarem...</p>
                 </div>
             </div>
 
@@ -62,8 +62,8 @@
                 <div class="m-tab-header">
                     <h2 class="cinzel">Iniciativa</h2>
                 </div>
-                <div id="initiative-list" class="initiative-list">
-                    <!-- Linhas injetadas via JS -->
+                <div id="initiative-list" class="initiative-list m-empty-state">
+                    <p>Ninguém em combate no momento.</p>
                 </div>
             </div>
 
@@ -73,35 +73,35 @@
                     <h2 class="cinzel">Bestiário</h2>
                     <button class="btn-primary" onclick="startNPCCreation()" style="padding: 0.5rem 1.5rem;">+ Novo NPC</button>
                 </div>
-                <div id="npcs-grid" class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
-                    <!-- NPCs criados injetados aqui -->
+                <div id="npcs-grid" class="selection-grid m-empty-state">
+                    <p>Bestiário vazio. Gere novos desafios!</p>
                 </div>
             </div>
 
-            <!-- ABA: HISTÓRICO -->
             <div id="m-tab-log" class="m-tab-content">
-                <h2 class="cinzel" style="margin-bottom: 1.5rem;">Histórico</h2>
-                <div id="master-log-history" class="log-history">
-                    <!-- Histórico de logs automáticos injetado aqui -->
-                    <div class="muted-text txt-center" style="padding: 3rem;">Nenhuma atividade registrada ainda.</div>
+                <div class="m-tab-header">
+                    <h2 class="cinzel">Histórico</h2>
+                </div>
+                <div id="master-log-history" class="log-history m-empty-state">
+                    <p>Nenhuma atividade registrada ainda.</p>
                 </div>
             </div>
 
-            <!-- ABA: USUÁRIOS (ADMIN) -->
             <div id="m-tab-users" class="m-tab-content">
                 <div class="m-tab-header">
-                    <h2 class="cinzel">Usuários Cadastrados</h2>
-                    <button class="btn-primary" onclick="loadUsers()" style="padding: 0.5rem 1.5rem;">Atualizar</button>
+                    <h2 class="cinzel">Usuários</h2>
+                    <button class="btn-primary" onclick="loadUsers()">Atualizar</button>
                 </div>
-                <div id="users-list" style="margin-top: 1.5rem;">
-                    <div class="muted-text txt-center" style="padding: 3rem;">Carregando usuários...</div>
+                <div id="users-list" class="m-empty-state">
+                    <p>Configurando banco de dados...</p>
                 </div>
             </div>
 
-            <!-- ABA: NOTAS -->
             <div id="m-tab-notes" class="m-tab-content">
-                <h2 class="cinzel" style="margin-bottom: 1.5rem;">Notas</h2>
-                <textarea id="master-private-notes" class="rp-textarea" placeholder="História, NPCs secretos, tesouros escondidos..." style="min-height: 60vh; width: 100%; border-radius: 12px; padding: 1rem; background: var(--bg-input); border: 1px solid var(--panel-border); color: var(--txt);"></textarea>
+                <div class="m-tab-header">
+                    <h2 class="cinzel">Notas</h2>
+                </div>
+                <textarea id="master-private-notes" class="rp-textarea" placeholder="História, NPCs secretos, tesouros escondidos..." style="min-height: 60vh; width: 100%; border-radius: 12px; padding: 1.5rem;"></textarea>
             </div>
 
         </section>

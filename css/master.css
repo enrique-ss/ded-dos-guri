@@ -1,4 +1,24 @@
 /* ===== Master Hub Module ===== */
+#master-panel.full-screen-modal {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/aventureiros.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* BACKGROUNDS DINÂMICOS NO PAINEL PRINCIPAL */
+#master-panel[data-active-tab="bestiary"] {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/npc.webp');
+}
+
+/* Light Mode Overrides (Mesma lógica do login/heroi) */
+[data-theme="light"] #master-panel.full-screen-modal {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/aventureiros.webp');
+}
+[data-theme="light"] #master-panel[data-active-tab="bestiary"] {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/npc.webp');
+}
 
 .master-hub-layout {
     display: flex; flex-direction: row; gap: 1.5rem;
@@ -17,24 +37,69 @@
 
 .m-nav-btn {
     padding: 1rem 1.25rem; cursor: pointer; background: transparent;
-    color: var(--txt-muted); font-size: 0.95rem; font-weight: 600;
+    color: var(--txt); font-size: 0.95rem; font-weight: 700;
     transition: all 0.2s; display: flex; align-items: center;
-    border-radius: 10px; width: 100%;
+    border-radius: 10px; width: 100%; border: none;
 }
-.m-nav-btn:hover { background: var(--gold-glow); color: var(--gold); }
-.m-nav-btn.active { background: var(--gold); color: var(--txt-contrast); box-shadow: 0 4px 15px var(--gold-glow); }
+.m-nav-btn:hover { background: var(--bg-overlay); color: var(--gold); }
+.m-nav-btn.active { background: var(--gold) !important; color: #000 !important; box-shadow: 0 4px 15px var(--gold-glow); }
 
-.master-content { flex: 1; overflow-y: auto; height: 100%; }
-.m-tab-content { display: none; animation: fadeIn 0.3s ease-out; }
-.m-tab-content.active { display: block; }
+.master-content { 
+    flex: 1; 
+    height: 100%; 
+    background: var(--bg-glass); /* Efeito glass para ver o fundo do layout com blur */
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    border: 1px solid var(--panel-border);
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.m-tab-content { 
+    display: none; 
+    animation: fadeIn 0.3s ease-out; 
+    min-height: 100%;
+    padding: 2rem;
+}
+
+.m-tab-content.active { 
+    display: block; 
+}
+
+/* MASTER HEADERS & EMPTY STATES */
+.m-tab-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 2rem; padding-bottom: 1rem;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.m-tab-header h2 {
+    font-size: 2.2rem; margin: 0; color: var(--gold);
+    text-transform: uppercase; letter-spacing: 2px;
+}
+
+.m-empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 5rem 2rem; text-align: center; gap: 1rem;
+    color: var(--txt); opacity: 0.6; /* Uso opacidade para 'muted' sem sair das 5 cores */
+}
+
+.m-empty-state p {
+    font-size: 1.1rem; margin: 0; font-weight: 500;
+}
+
+.m-empty-state i {
+    font-size: 3rem; color: var(--gold); margin-bottom: 1rem;
+}
 
 /* MASTER PLAYER CARDS */
 .player-card {
-    background: var(--bg-accent); border: 2px solid var(--panel-border);
+    background: var(--panel); border: 2px solid var(--panel-border);
     border-radius: 20px; padding: 2.5rem 1.5rem; text-align: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer; position: relative; overflow: hidden;
     display: flex; flex-direction: column; align-items: center;
+    color: var(--txt);
 }
 .player-card:hover { border-color: var(--gold); background: var(--gold-glow); transform: translateY(-10px); box-shadow: 0 20px 40px var(--bg-overlay), 0 0 25px var(--gold-glow); }
 

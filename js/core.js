@@ -250,6 +250,7 @@ async function loadStateFromSupabase() {
 
 function render() {
     const $ = id => document.getElementById(id);
+    document.body.classList.toggle('is-master', isMaster);
     const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'history-view'];
     views.forEach(v => { const el = $(v); if (el) el.classList.remove('active'); });
 

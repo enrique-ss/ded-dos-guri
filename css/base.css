@@ -9,7 +9,7 @@
     --gold-glow: rgba(255, 190, 11, 0.25);
     --red: #ff3e4d;
     --green: #06d6a0;
-    --txt: #e1e1e1;
+    --txt: #ffffff;
     --txt-muted: #888bab;
     --radius: 14px;
     --gap: 0.8rem;
@@ -20,29 +20,28 @@
     --bg-overlay: rgba(0, 0, 0, 0.4);
     --bg-accent: rgba(255, 255, 255, 0.03);
     --bg-input: rgba(0, 0, 0, 0.4);
-    --bg-circle: #000;
+    --bg-circle: #000000;
     --border-glass: rgba(255, 255, 255, 0.1);
-    --txt-contrast: #000;
-    /* For gold buttons */
+    --txt-contrast: #000000;
 }
 
 [data-theme="light"] {
-    --bg: #f5f6fa;
-    --panel: rgba(255, 255, 255, 0.85);
-    --panel-border: rgba(0, 0, 0, 0.1);
-    --gold: #d49a00;
-    --gold-glow: rgba(212, 154, 0, 0.15);
-    --red: #e63946;
-    --green: #05b083;
-    --txt: #2b2d42;
-    --txt-muted: #6c7086;
+    --bg: #ffffff;
+    --panel: rgba(255, 255, 255, 0.95);
+    --panel-border: rgba(0, 0, 0, 0.15);
+    --gold: #ffbe0b;
+    --gold-glow: rgba(255, 190, 11, 0.15);
+    --red: #ff3e4d;
+    --green: #06d6a0;
+    --txt: #000000;
+    --txt-muted: #555555;
 
-    /* GLASS PATTERNS (Light Swaps) */
-    --bg-glass: rgba(255, 255, 255, 0.85);
-    --bg-overlay: rgba(0, 0, 0, 0.03);
+    /* GLASS PATTERNS (Proper Inversion) */
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-overlay: rgba(0, 0, 0, 0.05);
     --bg-accent: rgba(0, 0, 0, 0.02);
-    --bg-input: rgba(0, 0, 0, 0.03);
-    --bg-circle: #fff;
+    --bg-input: rgba(255, 255, 255, 0.8);
+    --bg-circle: #ffffff;
     --border-glass: rgba(0, 0, 0, 0.1);
 }
 

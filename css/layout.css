@@ -221,11 +221,24 @@
     .header-nav {
         justify-content: flex-start;
         gap: 0.4rem;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scrollbar-width: none; /* Firefox */
     }
+    .header-nav::-webkit-scrollbar { display: none; } /* Chrome/Safari */
     
     .nav-btn {
-        padding: 0.5rem 0.7rem;
-        font-size: 0.8rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+        background: var(--bg-overlay);
+        border: 1px solid var(--panel-border);
+    }
+
+    .badge-role {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.65rem;
     }
 }
 

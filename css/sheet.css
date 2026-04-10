@@ -25,6 +25,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    color: var(--gold);
 }
 
 @media (max-width: 600px) {
@@ -719,6 +720,19 @@ body.is-master .read-only textarea {
 .read-only .skill-row:hover {
     background: var(--bg-overlay);
     border-color: var(--panel-border);
+}
+
+/* AUTORIDADE DO MESTRE: Destrava cliques mesmo em containers read-only */
+body.is-master .read-only input,
+body.is-master .read-only textarea {
+    pointer-events: auto !important;
+    cursor: text;
+}
+
+body.is-master .read-only .attr-block,
+body.is-master .read-only .skill-row {
+    pointer-events: auto !important;
+    cursor: pointer;
 }
 
 /* HP compacto */
