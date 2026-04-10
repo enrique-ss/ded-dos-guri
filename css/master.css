@@ -63,7 +63,7 @@
 
 .m-tab-content { 
     display: none; 
-    animation: fadeIn 0.3s ease-out; 
+    animation: fadeIn 0.15s ease-out; 
     min-height: 100%;
     padding: 2rem;
     color: var(--txt);
@@ -100,13 +100,25 @@
 }
 
 /* MASTER PLAYER CARDS */
+.player-grid, #master-grid, #npcs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 220px);
+    gap: 1.5rem;
+    justify-content: start;
+    padding: 1rem 0;
+}
+
 .player-card {
     background: var(--panel); border: 2px solid var(--panel-border);
-    border-radius: 20px; padding: 2.5rem 1.5rem; text-align: center;
+    border-radius: 20px; padding: 1.5rem; text-align: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer; position: relative; overflow: hidden;
     display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between;
+    width: 220px;
+    height: 220px;
     color: var(--txt);
+    flex-shrink: 0;
 }
 .player-card:hover { border-color: var(--gold); background: var(--gold-glow); transform: translateY(-10px); box-shadow: 0 20px 40px var(--bg-overlay), 0 0 25px var(--gold-glow); }
 

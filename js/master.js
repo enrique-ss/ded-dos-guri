@@ -6,10 +6,10 @@ function renderMasterPanel() {
 
     const grid = document.getElementById('master-grid');
     if (!grid) return;
-    const ids = Object.keys(connectedPlayers);
+    const ids = Object.keys(connectedPlayers).filter(id => !connectedPlayers[id].isDeleted);
     if (ids.length === 0) {
         grid.classList.add('m-empty-state');
-        grid.innerHTML = '<p>Aguardando players entrarem...</p>';
+        grid.innerHTML = '';
     } else {
         grid.classList.remove('m-empty-state');
         grid.innerHTML = ids.map(id => {
@@ -18,15 +18,34 @@ function renderMasterPanel() {
             const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
             return `
                 <div class="player-card" onclick="openPlayerSheet('${id}')">
+                    <button class="btn-delete-card" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')" title="Excluir Jogador">×</button>
                     <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                         ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
                     </div>
                     <strong>${p.name || 'Sem Nome'}</strong>
-                    <div class="label-tiny" style="margin-top: 0.2rem;">${CLASSES[p.cls]?.name || '---'} • Nível ${p.level}</div>
-                    <div class="hp-bar-container"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
-                    <div class="conditions-hub-display" style="margin-top: 0.5rem;">${(p.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700;">${p.hp.current} / ${p.hp.max} HP</div>
-                    <button class="btn-reset-discrete" style="width:100%; margin-top: 1.5rem; font-size: 0.7rem;" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')">Remover Personagem</button>
+                    <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[p.race]?.name || '---'} • ${CLASSES[p.cls]?.name || '---'} • Nv.${p.level}</div>
+                    
+                    <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
+                    <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
+
+                    <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
+                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.ac || 10}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
+                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.initiativeRoll || 0}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
+                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.speed}m</span>
+                        </div>
+                    </div>
+
+                    <div class="conditions-hub-display" style="margin-top: 0.6rem; min-height: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;">
+                        ${(p.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}
+                    </div>
                 </div>
             `;
         }).join('');
@@ -52,32 +71,42 @@ function renderInitiative() {
 
     if (!masterState.battleOrder || masterState.battleOrder.length === 0) {
         list.classList.add('m-empty-state');
-        list.innerHTML = '<p>Nenhuma batalha ativa.</p>';
+        list.innerHTML = '';
         return;
     }
 
     list.classList.remove('m-empty-state');
     list.innerHTML = masterState.battleOrder.map(item => {
-        let entity = item.isPlayer ? connectedPlayers[item.id] : masterState.npcs.find(n => n.id == item.id);
-        const hpStr = entity ? `<span style="font-size:0.8rem; opacity:0.7; margin-left: 10px;">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
-        const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through;' : 'color: var(--txt);';
+        // Fallback: Tenta achar por ID, se não conseguir (ex: reconexão), tenta pelo nome
+        let entity = item.isPlayer 
+            ? (connectedPlayers[item.id] || Object.values(connectedPlayers).find(p => p.name === item.name))
+            : masterState.npcs.find(n => n.id == item.id);
+            
+        const hpStr = entity ? `<span style="font-size:0.85rem; opacity:0.8; font-weight: 500; margin-left: 12px; color: var(--gold);">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
+        const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through; opacity: 0.6;' : 'color: var(--txt);';
+        
+        let icon = '👾'; 
+        if (item.isPlayer && entity) {
+            icon = CLASSES[entity.cls]?.icon || '🛡️';
+        }
+
         return `
-        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="cursor: pointer;" onclick="${item.isPlayer ? `openPlayerSheet('${item.id}')` : `openNPCSheet('${item.id}')`}">
-            <div class="init-score">${item.val}</div>
-            <div class="init-name" style="${dangerStr}">${item.isPlayer ? '🛡️' : '👾'} <strong>${item.name}</strong> ${hpStr}</div>
+        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="cursor: pointer; display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};" onclick="${item.isPlayer ? `openPlayerSheet('${item.id}')` : `openNPCSheet('${item.id}')`}">
+            <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${item.val}</div>
+            <div class="init-name" style="flex: 1; ${dangerStr}">${icon} <strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
         </div>
         `;
     }).join('');
 
-    list.innerHTML += `<button class="btn-ghost" onclick="window.endBattle()" style="width: 100%; margin-top: 1.5rem; color: var(--red); border-color: var(--red);">Encerrar Batalha</button>`;
+    list.innerHTML += `<button class="btn-ghost" onclick="window.endBattle()" style="width: 100%; margin-top: 1.5rem; color: var(--red); border-color: var(--red); padding: 0.8rem; font-weight: 800;">Encerrar Batalha</button>`;
 }
 
 window.startBattleSetup = function() {
-    const players = Object.values(connectedPlayers).map(p => ({id: p.id, name: p.name, init: p.initiativeRoll||0, type: 'player'}));
+    const players = Object.values(connectedPlayers).filter(p => !p.isDeleted).map(p => ({id: p.id, name: p.name, init: p.initiativeRoll||0, type: 'player'}));
     const npcs = (masterState.npcs||[]).filter(n => !n.isDeleted).map(n => ({id: n.id, name: n.name, init: n.initiativeRoll||0, type: 'npc'}));
     
     const html = `
-        <div id="battle-setup-modal" class="full-screen-modal active" style="background: rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:99999;">
+        <div id="battle-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
             <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Setup de Batalha</h2>
                 <p style="text-align:center; font-size:0.8rem; margin-bottom: 1.5rem;" class="muted-text">Selecione quem irá participar do combate.\nA ordem será gerada com base na rolagem de Iniciativa atual de cada um.</p>
@@ -134,6 +163,19 @@ window.confirmBattleSetup = function() {
     masterState.battleOrder = combatants;
     saveMasterState();
     
+    // Atualiza o estado individual dos participantes
+    combatants.forEach(c => {
+        if (c.isPlayer) {
+            const pData = connectedPlayers[c.id];
+            if (pData) socket.emit('masterUpdatePlayer', { targetId: c.id, data: { inBattle: true } });
+        } else {
+            const npc = masterState.npcs.find(n => n.id == c.id);
+            if (npc) npc.inBattle = true;
+        }
+    });
+
+    sendSystemLog(`⚔️ <strong>Início de Combate!</strong>`);
+    
     const m = document.getElementById('battle-setup-modal');
     if(m) m.remove();
     
@@ -141,9 +183,21 @@ window.confirmBattleSetup = function() {
 };
 
 window.endBattle = function() {
-    if(!confirm("Encerrar esta batalha?")) return;
+    if(!confirm("Encerrar a batalha atual?")) return;
+    
+    // Limpa estado de batalha de todos
+    masterState.battleOrder.forEach(c => {
+        if (c.isPlayer) {
+            socket.emit('masterUpdatePlayer', { targetId: c.id, data: { inBattle: false } });
+        } else {
+            const npc = masterState.npcs.find(n => n.id == c.id);
+            if (npc) npc.inBattle = false;
+        }
+    });
+
     masterState.battleOrder = [];
     saveMasterState();
+    sendSystemLog(`🏁 <strong>Batalha encerrada!</strong>`);
     renderInitiative();
 };
 
@@ -153,7 +207,7 @@ function renderBestiary() {
     if (!grid) return;
     if (masterState.npcs.length === 0) { 
         grid.classList.add('m-empty-state');
-        grid.innerHTML = '<p>Bestiário vazio.</p>'; 
+        grid.innerHTML = ''; 
         return; 
     }
     grid.classList.remove('m-empty-state');
@@ -162,15 +216,34 @@ function renderBestiary() {
         const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
         return `
             <div class="player-card" onclick="openNPCSheet('${npc.id}')">
+                <button class="btn-delete-card" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})" title="Excluir NPC">×</button>
                 <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                     ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
                 </div>
                 <strong>${npc.name || 'Sem Nome'}</strong>
-                <div class="label-tiny" style="margin-top: 0.2rem;">${npc.race || 'Criatura'} • Nível ${npc.level || 1}</div>
-                <div class="hp-bar-container"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
-                <div class="conditions-hub-display" style="margin-top: 0.5rem;">${(npc.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}</div>
-                <div style="margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700;">${npc.hp.current} / ${npc.hp.max} HP</div>
-                <button class="btn-reset-discrete" style="width:100%; margin-top: 1.5rem; font-size: 0.7rem;" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})">Remover NPC</button>
+                <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[npc.race]?.name || npc.race || '---'} • ${CLASSES[npc.cls]?.name || '---'} • Nv.${npc.level || 1}</div>
+                
+                <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
+                <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${npc.hp.current} / ${npc.hp.max} HP</div>
+
+                <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
+                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.ac || 10}</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
+                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.initiativeRoll || 0}</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
+                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.speed}m</span>
+                    </div>
+                </div>
+
+                <div class="conditions-hub-display" style="margin-top: 0.6rem; min-height: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;">
+                    ${(npc.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}
+                </div>
             </div>
         `;
     }).join('');
@@ -218,8 +291,17 @@ window.softDeleteNPC = function(id) {
 
 window.masterSoftDeletePlayer = function(id) {
     const p = connectedPlayers[id];
-    if (p && confirm(`APAGAR a ficha de ${p.name}?`)) {
-        socket.emit('masterUpdatePlayer', { targetId: id, data: { _forceDelete: true } });
+    if (!p) return;
+    
+    // Verifica se está em batalha
+    const inBattle = masterState.battleOrder.some(i => i.id == id);
+    if (inBattle) {
+        alert(`❌ Não é possível remover ${p.name} enquanto estiver em uma batalha ativa!`);
+        return;
+    }
+
+    if (confirm(`APAGAR a ficha de ${p.name}?`)) {
+        socket.emit('masterUpdatePlayer', { targetId: id, data: { isDeleted: true } });
     }
 };
 

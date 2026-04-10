@@ -26,13 +26,13 @@ function renderHeader() {
             </div>
 
             <div class="header-nav">
-                <button class="nav-btn ${currentView === 'sheet-view' ? 'active' : ''}" onclick="switchView('sheet-view')">
+                <button class="nav-btn ${currentView === 'sheet-view' ? 'active' : ''}" data-view="sheet-view" onclick="switchView('sheet-view')">
                     <span>Ficha</span>
                 </button>
-                <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" onclick="switchView('items-view')">
+                <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" data-view="items-view" onclick="switchView('items-view')">
                     <span>Itens</span>
                 </button>
-                <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" onclick="switchView('history-view')">
+                <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
                     <span>História</span>
                 </button>
                 
@@ -64,6 +64,9 @@ function renderHeader() {
     }
     
     // A exclusão agora é gerenciada exclusivamente pelo events.js
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === currentView);
+    });
 }
 
 function renderSheet() {
@@ -183,7 +186,7 @@ function renderSkillBlock(containerId, dataSource, stateKey, profBonus) {
             <div class="skill-row ${isMaster ? 'master-editable' : ''}" onclick="${containerId === 'saves-list' ? 'toggleSave' : 'toggleSkill'}('${s.id}')">
                 <div class="dot-check ${isProf ? 'active' : ''}"></div>
                 <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${s.name} ${s.attr !== s.id ? `<small>(${s.attr.toUpperCase()})</small>` : ''}</span>
+                <span class="skill-name">${s.name} ${s.attr !== s.id ? `<small style="color: var(--gold); margin-left: 0.2rem;">(${s.attr.toUpperCase()})</small>` : ''}</span>
             </div>`;
     }).join('');
 }
@@ -193,10 +196,10 @@ function renderConditionsToggle() {
     if (!container) return;
     const conds = state.conditions || [];
     if (!isMaster) {
-        container.innerHTML = conds.length ? conds.map(id => `<div class="status-badge active">${CONDITIONS[id].icon} ${CONDITIONS[id].name}</div>`).join('') : '<div class="muted-text">Nenhuma condição ativa.</div>';
+        container.innerHTML = conds.length ? conds.map(id => `<div class="status-badge active" data-condition="${id}">${CONDITIONS[id].icon} ${CONDITIONS[id].name}</div>`).join('') : '';
     } else {
         container.innerHTML = Object.entries(CONDITIONS).map(([id, c]) => `
-            <div class="status-toggle-item ${conds.includes(id) ? 'active' : ''}" onclick="toggleCondition('${id}')">
+            <div class="status-toggle-item ${conds.includes(id) ? 'active' : ''}" data-condition="${id}" onclick="toggleCondition('${id}')">
                 <span class="status-icon">${c.icon}</span><span class="status-name">${c.name}</span>
             </div>`).join('');
     }

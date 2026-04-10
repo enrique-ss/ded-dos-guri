@@ -112,26 +112,25 @@ function setupEvents() {
         if (t.closest('#btn-reset-char')) {
             if (isMaster && masterEditingType === 'npc') {
                 masterEditingId = null; masterState.activeTab = 'bestiary'; render();
-            } else if (!isMaster && confirm('EXCLUIR personagem permanentemente?')) {
-                const old = state.name; 
-                state = getDefaultState(); 
-                
-                // Limpa o localStorage local
-                const key = window.user ? `rpg_guri_v10_${window.user.id}` : 'rpg_guri_v10';
-                localStorage.removeItem(key);
-                
-                sendSystemLog(`☠️ <strong>${old}</strong> apagou sua ficha.`);
-                
-                setTimeout(() => {
-                    if (window.user && window.supabaseClient) {
-                        // Hard delete no Supabase e depois recarrega
-                        window.supabaseClient.from('characters').delete().eq('user_id', window.user.id).then(() => {
-                            location.reload();
-                        });
-                    } else {
+            } else if (!isMaster) {
+                if (state.inBattle) {
+                    alert("❌ Você não pode apagar sua ficha durante um combate ativo!");
+                    return;
+                }
+                if (confirm('Deseja realmente APAGAR este personagem?')) {
+                    const old = state.name; 
+                    state.isDeleted = true;
+                    
+                    sendSystemLog(`☠️ <strong>${old}</strong> se foi... sua lenda termina aqui.`);
+                    
+                    broadcastChange();
+                    saveState();
+                    if (user) saveStateToSupabase();
+                    
+                    setTimeout(() => {
                         location.reload();
-                    }
-                }, 100);
+                    }, 500);
+                }
             }
             return;
         }
@@ -239,6 +238,11 @@ function setupEvents() {
 
             const boxId = k === 'race' ? 'race-desc-box' : 'class-desc-box';
             const val = k === 'race' ? RACES[wizardData[k]] : CLASSES[wizardData[k]];
+            if (k === 'cls' && val.icon) {
+                const titleHeading = document.getElementById('class-title-step');
+                if (titleHeading) titleHeading.textContent = `Classe: ${val.icon}`;
+            }
+
             const box = document.getElementById(boxId);
             if (box) {
                 if(k==='race') box.innerHTML = `<strong>${val.name}</strong><br><span>${val.modsDesc}</span>`;

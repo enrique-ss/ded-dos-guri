@@ -301,7 +301,7 @@ function render() {
                 }
             }
         }
-    } else if (!state.isCreated) {
+    } else if (!state.isCreated || state.isDeleted) {
         if (wizardData.active) {
             const creation = $('creation-screen');
             if(creation) creation.classList.add('active');
@@ -319,7 +319,6 @@ function render() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === currentView);
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function switchView(viewId) {

@@ -85,7 +85,7 @@ function loadSkillChoices() {
             if (allowed !== 'all' && !allowed.includes(s.id)) return '';
             return `
                 <div class="choice-card choice-skill ${wizardData.skills.includes(s.id) ? 'selected' : ''}" data-skill="${s.id}">
-                    <strong>${s.name}</strong> <small>(${s.attr.toUpperCase()})</small>
+                    <strong>${s.name}</strong> <small style="color: var(--gold); margin-left: 0.2rem;">(${s.attr.toUpperCase()})</small>
                 </div>
             `;
         }).join('');
