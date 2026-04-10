@@ -299,25 +299,35 @@
     color: var(--txt-contrast);
 }
 
+.master-panel-container.active {
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ===== MASTER HUB LAYOUT ===== */
 .master-hub-layout {
     display: flex;
     flex-direction: row;
     gap: 1.2rem;
-    height: calc(100vh - 4rem);
-    max-width: 100%;
+    min-height: 80vh;
+    width: 100%;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0;
     position: relative;
-    overflow: hidden;
 }
 
 .master-sidebar {
     width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1rem;
+    padding: 1rem;
     background: var(--panel);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
@@ -366,7 +376,7 @@
 }
 
 .m-nav-btn {
-    padding: 1rem 1.25rem;
+    padding: 0.8rem 1rem;
     cursor: pointer;
     background: transparent;
     border: none;
@@ -418,6 +428,18 @@
 }
 
 /* GLOBAL UI: LOG & ALERTS */
+/* Backgrounds para ficha de jogador/npc */
+#sheet-view, #items-view, #habilidades-view, #history-view {
+    background: url('../resources/jogador_dark.webp') center/cover no-repeat fixed !important;
+}
+
+[data-theme="light"] #sheet-view, 
+[data-theme="light"] #items-view, 
+[data-theme="light"] #habilidades-view, 
+[data-theme="light"] #history-view {
+    background: url('../resources/jogador_light.webp') center/cover no-repeat fixed !important;
+}
+
 .alert-banner {
     position: fixed;
     top: 0;

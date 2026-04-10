@@ -261,12 +261,12 @@
     align-items: center;
     
     /* TAMANHOS FIXOS ABSOLUTOS */
-    width: 185px !important;
-    min-width: 185px !important;
-    max-width: 185px !important;
-    height: 400px !important;
-    min-height: 400px !important;
-    max-height: 400px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+    height: 350px !important;
+    min-height: 350px !important;
+    max-height: 350px !important;
 }
 
 .player-card:hover {

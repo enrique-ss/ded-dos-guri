@@ -131,7 +131,10 @@ function renderSheet() {
         $('check-inspiration').className = 'attr-circle' + (insp > 0 ? ' active' : '');
     }
     if ($('display-ac')) $('display-ac').value = state.ac || (10 + Math.floor((state.attr.des - 10) / 2) + (state.armors || []).reduce((acc, arm) => acc + (parseInt(arm.bonus) || 0), 0));
-    if ($('display-hd')) $('display-hd').value = state.hd;
+    if ($('display-hd')) {
+        const defaultHD = (state.level || 1) + ' ' + (CLASSES[state.cls]?.hd || 'd8');
+        $('display-hd').textContent = state.hd || defaultHD;
+    }
 
     // Death Saves
     ['success', 'fail'].forEach(type => {

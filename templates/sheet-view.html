@@ -65,70 +65,60 @@
 
             <!-- ================= COLUNA CENTRAL ================= -->
             <div class="sheet-col">
-                       <!-- 5. BLOCO DE COMBATE -->
+                <!-- 5. BLOCO DE COMBATE -->
                 <div class="premium-card">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Combate</label>
                         <span class="info-icon" data-tip="REGRA DE SOBREVIVÊNCIA:&#10;&#10;• Vida (HP): Sua 'energia vital'. Se chegar a 0, você cai inconsciente.&#10;&#10;• Armadura (CA): O número que o inimigo precisa atingir para te dar dano.&#10;Cálculo: 10 + Mod. Destreza + Bônus de Itens (Escudo, Armadura).&#10;&#10;• Iniciativa: Sua velocidade em perceber o perigo. Decide quem joga primeiro no combate (Mod. Destreza).&#10;&#10;• Deslocamento: Quantos metros você corre em um turno.&#10;&#10;• Dados de Vida: Seus 'kits médicos' naturais. Em um Descanso Curto, role-os para recuperar vida sem gastar poções.&#10;&#10;• Resgate da Morte: Se cair a 0 HP, role d20 todo turno. 10+ é sucesso, <10 é falha. 3 sucessos estabilizam; 3 falhas matam seu herói.">i</span>
                     </div>
 
-                    <div class="combat-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
-                        
-                        <!-- Coluna 1 -->
-                        <div class="combat-col-left" style="display: flex; flex-direction: column; gap: 0.6rem;">
-                            <!-- 1. Pontos de Vida -->
-                            <div class="combat-stat-item" style="background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3);">
-                                <label class="label-tiny" style="color: var(--red);">Pontos de Vida</label>
-                                <div id="hp-text" class="stat-big" style="color: var(--red); cursor: pointer;">10 / 10</div>
-                            </div>
+                    <div class="combat-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <!-- 1. Pontos de Vida -->
+                        <div class="combat-stat-item" style="background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3); grid-column: span 2;">
+                            <label class="label-tiny" style="color: var(--red);">Pontos de Vida</label>
+                            <div id="hp-text" class="stat-big" style="color: var(--red); cursor: pointer;">10 / 10</div>
+                        </div>
 
-                            <!-- 3. Armadura -->
-                            <div class="combat-stat-item">
-                                <label class="label-tiny">Armadura</label>
-                                <input type="number" id="display-ac" class="stat-big" value="10" readonly title="Classe de Armadura" style="padding: 0;">
-                            </div>
+                        <!-- 2. Armadura -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Armadura</label>
+                            <input type="number" id="display-ac" class="stat-big" value="10" readonly title="Classe de Armadura" style="padding: 0;">
+                        </div>
 
-                            <!-- 4. Iniciativa -->
-                            <div class="combat-stat-item">
-                                <label class="label-tiny">Iniciativa</label>
-                                <div id="display-initiative" class="stat-big" style="cursor: pointer;">0</div>
-                            </div>
+                        <!-- 3. Iniciativa -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Iniciativa</label>
+                            <div id="display-initiative" class="stat-big" style="cursor: pointer;">0</div>
+                        </div>
 
-                            <!-- 5. Deslocamento -->
-                            <div class="combat-stat-item">
-                                <label class="label-tiny">Deslocamento</label>
-                                <div id="display-speed" class="stat-big">9m</div>
-                            </div>
+                        <!-- 4. Deslocamento -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Deslocamento</label>
+                            <div id="display-speed" class="stat-big">9m</div>
+                        </div>
 
-                            <!-- 6. Resgate da Morte -->
-                            <div class="combat-stat-item">
-                                <label class="label-tiny" style="margin-bottom:0.5rem;">Resgate da Morte</label>
-                                <div class="death-saves" style="flex-direction: column; gap: 0.3rem;">
-                                    <div class="d-save-group">
-                                        <div class="dot-check ds-success"></div>
-                                        <div class="dot-check ds-success"></div>
-                                        <div class="dot-check ds-success"></div>
-                                    </div>
-                                    <div class="d-save-group">
-                                        <div class="dot-check ds-fail"></div>
-                                        <div class="dot-check ds-fail"></div>
-                                        <div class="dot-check ds-fail"></div>
-                                    </div>
+                        <!-- 5. Dados de Vida (HD) -->
+                        <div class="combat-stat-item">
+                            <label class="label-tiny">Dados de Vida</label>
+                            <div id="display-hd" class="stat-big" style="font-size: 1.2rem; cursor: pointer;">1 d10</div>
+                        </div>
+
+                        <!-- 6. Resgate da Morte -->
+                        <div class="combat-stat-item" style="grid-column: span 2;">
+                            <label class="label-tiny" style="margin-bottom:0.5rem;">Resgate da Morte</label>
+                            <div class="death-saves" style="flex-direction: row; gap: 1rem; justify-content: center;">
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                    <div class="dot-check ds-success"></div>
+                                </div>
+                                <div class="d-save-group">
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
+                                    <div class="dot-check ds-fail"></div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Coluna 2 -->
-                        <div class="combat-col-right" style="display: flex; flex-direction: column; gap: 0.6rem;">
-                            <!-- 7. Condições / Status -->
-                            <div class="combat-stat-item" style="flex: 1; justify-content: flex-start; align-items: stretch; padding: 0.8rem;">
-                                <label class="label-tiny" style="margin-bottom: 1rem; text-align: center;">Condições e Estados</label>
-                                <div id="conditions-toggle-grid" class="conditions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; justify-items: start;">
-                                    <!-- Renderizado via JS -->
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
@@ -172,6 +162,17 @@
                         <label class="label-tiny" style="margin-bottom:0;">Salvaguardas</label>
                     </div>
                     <div class="skills-list saves-list" id="saves-list"></div>
+                </div>
+
+                <!-- CONDIÇÕES E ESTADOS -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Condições e Estados</label>
+                        <span class="info-icon" data-tip="ESTADOS E EFEITOS:&#10;&#10;Representam bônus ou penalidades temporárias aplicadas ao herói por magias, venenos ou situações ambientais.&#10;&#10;DICA: O mestre pode ativar ou desativar esses estados conforme a aventura progride.">i</span>
+                    </div>
+                    <div id="conditions-toggle-grid" class="conditions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; justify-items: start;">
+                        <!-- Renderizado via JS -->
+                    </div>
                 </div>
 
             </div>
