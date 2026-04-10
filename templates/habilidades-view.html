@@ -1,0 +1,37 @@
+<main id="habilidades-view" class="full-screen-modal">
+    <div class="sheet-container fade-in">
+        <!-- CABEÇALHO COM NAVEGAÇÃO (Injetado via JS) -->
+        <div class="character-header-placeholder"></div>
+        <div class="sheet-body items-grid-layout">
+            <!-- Truques -->
+            <div class="premium-card group-flex">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Truques</label>
+                    <span class="info-icon" data-tip="MAGIAS BÁSICAS (CANTRIPS):&#10;&#10;Magias simples que não gastam espaços de magia e podem ser usadas à vontade.&#10;&#10;CAMPOS:&#10;• Efeito: O que ela faz.&#10;• Custo: Tempo de conjuração ou componentes.">i</span>
+                </div>
+                <div id="cantrips-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-cantrip" style="border-style: dashed; padding: 0.6rem 1rem; font-size: 0.8rem;">+ Truque</button>
+            </div>
+
+            <!-- Magias Ativas -->
+            <div class="premium-card group-flex" style="flex: 1;">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Magias Ativas</label>
+                    <span class="info-icon" data-tip="MAGIAS PREPARADAS:&#10;&#10;Magias que você tem prontas para uso imediato hoje.&#10;&#10;DICA: Lembre-se de conferir seus espaços de magia disponíveis!">i</span>
+                </div>
+                <div id="spells-active-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-spell-active" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Magia</button>
+            </div>
+
+            <!-- Magias Inativas -->
+            <div class="premium-card group-flex" style="flex: 1;">
+                <div class="section-title">
+                    <label class="label-tiny" style="margin-bottom:0;">Magias no Grimório</label>
+                    <span class="info-icon" data-tip="CONHECIMENTO ADORMECIDO:&#10;&#10;Magias que você conhece ou tem no livro, mas não estão preparadas no momento.">i</span>
+                </div>
+                <div id="spells-inactive-list" class="attacks-list"></div>
+                <button class="btn-ghost" id="add-spell-inactive" style="border-style: dashed; padding: 0.5rem; font-size: 0.75rem;">+ Magia</button>
+            </div>
+        </div>
+    </div>
+</main>
