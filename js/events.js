@@ -117,6 +117,11 @@ function setupEvents() {
                     alert("❌ Você não pode apagar sua ficha durante um combate ativo!");
                     return;
                 }
+                const isOwner = state.ownerEmail === (user ? user.email : '');
+                if (!isOwner) {
+                    alert("❌ Você só pode apagar personagens que você criou (Email correspondente).");
+                    return;
+                }
                 if (confirm('Deseja realmente APAGAR este personagem?')) {
                     const old = state.name; 
                     state.isDeleted = true;

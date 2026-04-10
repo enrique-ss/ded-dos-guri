@@ -78,13 +78,17 @@ body {
 
 body::before {
     content: "";
-    position: fixed;
-    inset: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
     background-image:
         radial-gradient(circle at 1% 1%, rgba(255, 190, 11, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 99% 99%, rgba(0, 132, 255, 0.08) 0%, transparent 40%);
-    background-attachment: fixed;
-    z-index: -2;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    z-index: -2 !important;
 }
 
 body::after {

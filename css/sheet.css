@@ -585,8 +585,21 @@ input[type=number] {
     align-items: stretch;
 }
 
+.tecnicas-two-columns {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+    align-items: start;
+}
+
+.tecnicas-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
 @media (max-width: 1000px) {
-    .items-grid-layout {
+    .items-grid-layout, .tecnicas-two-columns {
         grid-template-columns: 1fr;
     }
 }
@@ -709,6 +722,113 @@ body.is-master .read-only .attr-block,
 body.is-master .read-only .skill-row {
     pointer-events: auto !important;
     cursor: pointer;
+}
+
+/* MOBILE MASTER OVERHAUL */
+@media (max-width: 600px) {
+    html, body {
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    #app {
+        padding: 0 0.5rem;
+    }
+
+    .sheet-container {
+        padding: 1rem !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box;
+    }
+
+    /* Header 3-Layer Structure */
+    .sheet-header {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+
+    /* Layer 1: Portrait & Name */
+    .header-main {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.8rem !important;
+        width: 100%;
+        margin: 0 !important;
+    }
+    
+    .char-portrait-container {
+        width: 55px !important;
+        height: 55px !important;
+    }
+
+    .char-name-input {
+        font-size: 1.25rem !important;
+        margin: 0 !important;
+    }
+
+    /* Layer 2: Stats Grid (Class, Race, Level, XP) */
+    .header-identity {
+        width: 100%;
+    }
+
+    .header-sub {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+        width: 100%;
+    }
+
+    .badge-role {
+        width: 100%;
+        padding: 0.4rem 0.2rem !important;
+        font-size: 0.65rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Layer 3: Navigation */
+    .header-nav {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .header-nav .nav-btn {
+        width: 100% !important;
+        font-size: 0.8rem !important;
+        padding: 0.7rem 0 !important;
+        margin: 0 !important;
+        justify-content: center;
+    }
+
+    .btn-reset {
+        grid-column: span 2; /* Reset button stays at the bottom center */
+    }
+
+    /* Other Containers */
+    .premium-card {
+        padding: 1.25rem !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .tecnicas-two-columns {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    .skill-row {
+        grid-template-columns: 14px 28px 1fr !important;
+        padding: 0.4rem !important;
+    }
 }
 
 /* HP compacto */

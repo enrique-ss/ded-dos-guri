@@ -232,9 +232,10 @@ function saveState() {
 
 async function saveStateToSupabase() {
     if (!user || !supabaseClient || !state.isCreated) return;
+    const dataToSave = { ...state, ownerEmail: user.email };
     const { error } = await supabaseClient
         .from('characters')
-        .upsert({ user_id: user.id, name: state.name, data: state }, { onConflict: 'user_id' });
+        .upsert({ user_id: user.id, name: state.name, data: dataToSave }, { onConflict: 'user_id' });
     if (error) console.error("Erro ao salvar no Supabase:", error);
 }
 
@@ -300,7 +301,7 @@ async function syncAllCharacters() {
 function render() {
     const $ = id => document.getElementById(id);
     document.body.classList.toggle('is-master', isMaster);
-    const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'habilidades-view', 'history-view'];
+    const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'tecnicas-view', 'history-view'];
     views.forEach(v => { const el = $(v); if (el) el.classList.remove('active'); });
 
     if (!user) {
@@ -367,8 +368,7 @@ function render() {
             targetView.classList.add('active', 'fade-in');
         }
         renderSheet();
-        if (currentView === 'items-view') renderItems();
-        if (currentView === 'habilidades-view') renderHabilidades();
+        if (currentView === 'tecnicas-view') renderTecnicas();
     }
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
