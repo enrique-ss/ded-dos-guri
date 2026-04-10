@@ -552,6 +552,7 @@
     background-repeat: no-repeat;
     z-index: -1;
     pointer-events: none;
+    filter: brightness(0.8); /* Escurece as imagens de fundo específicas */
 }
 
 #auth-screen::before { 
@@ -598,7 +599,11 @@
 .choice-card:hover {
     border-color: var(--gold);
     color: var(--gold);
-    background: var(--bg-overlay);
+    background: var(--bg-accent);
+}
+
+[data-theme="light"] .choice-card:hover {
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .auth-card-container {

@@ -2,9 +2,14 @@
 .full-screen-modal {
     background: var(--bg);
     display: none;
-    padding: 1rem;
-    /* 1rem on ALL edges, no touching the borders */
+    padding: 1.5rem;
     min-height: 100vh;
+}
+
+@media (min-width: 1400px) {
+    .full-screen-modal {
+        padding: 3rem 5rem;
+    }
 }
 
 .full-screen-modal.active {
@@ -136,7 +141,7 @@
 
 /* ===== SHEET LAYOUT: 3 COLUMNS ===== */
 .sheet-container {
-    max-width: 1400px;
+    max-width: 1280px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -290,8 +295,8 @@
     display: flex;
     flex-direction: row;
     gap: 1.5rem;
-    height: calc(100vh - 2rem);
-    max-width: 1800px; /* Expand layout to use full monitor space well */
+    height: calc(100vh - 4rem);
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0;
     position: relative;

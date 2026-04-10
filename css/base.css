@@ -91,13 +91,13 @@ body::after {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.25); /* Filtro escuro suave universal */
+    background: rgba(0, 0, 0, 0.5); /* Filtro escuro mais forte para melhor legibilidade */
     pointer-events: none;
     z-index: -1;
 }
 
 #app {
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 0 auto;
     width: 100%;
     min-height: 100vh;
