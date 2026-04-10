@@ -221,6 +221,38 @@ function setupEvents() {
                     renderSheet(); broadcastChange();
                 }
             }
+
+            // Habilidades
+            if (t.id === 'add-cantrip') {
+                const name = prompt("Nome do Truque:");
+                if (name) {
+                    const bonus = prompt("Efeito:");
+                    const qty = prompt("Custo/Conjuração:");
+                    state.cantrips = state.cantrips || [];
+                    state.cantrips.push({ name, bonus, qty });
+                    renderHabilidades(); broadcastChange();
+                }
+            }
+            if (t.id === 'add-spell-active') {
+                const name = prompt("Nome da Magia:");
+                if (name) {
+                    const bonus = prompt("Efeito:");
+                    const qty = prompt("Custo/Espaço:");
+                    state.spellsActive = state.spellsActive || [];
+                    state.spellsActive.push({ name, bonus, qty });
+                    renderHabilidades(); broadcastChange();
+                }
+            }
+            if (t.id === 'add-spell-inactive') {
+                const name = prompt("Nome da Magia:");
+                if (name) {
+                    const bonus = prompt("Efeito:");
+                    const qty = prompt("Custo/Nível:");
+                    state.spellsInactive = state.spellsInactive || [];
+                    state.spellsInactive.push({ name, bonus, qty });
+                    renderHabilidades(); broadcastChange();
+                }
+            }
         }
 
         // Wizard steps
