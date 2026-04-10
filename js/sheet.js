@@ -16,8 +16,8 @@ function renderHeader() {
                     <div class="header-identity">
                         <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" readonly maxlength="25">
                         <div class="header-sub">
-                            <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || '---'}</div>
-                            <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || '---'}</div>
+                            <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
+                            <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
                             <div class="badge-role" id="display-level-header">Nível ${state.level || 1}</div>
                             <div class="badge-role" id="display-xp-header" style="display: ${isMaster && masterEditingType === 'npc' ? 'none' : 'block'}">XP ${state.xp}</div>
                         </div>
@@ -84,8 +84,8 @@ function renderSheet() {
 
     // 1. Text & Value Mapping (Radical Reduction)
     const mappings = {
-        'display-class': CLASSES[state.cls]?.name || '---',
-        'display-race': RACES[state.race]?.name || '---',
+        'display-class': CLASSES[state.cls]?.name || '',
+        'display-race': RACES[state.race]?.name || '',
         'display-level': `Nível ${state.level}`,
         'display-xp': `XP ${state.xp}`,
         'prof-bonus': '+' + (state.profBonusOverride || (Math.ceil(state.level / 4) + 1)),
@@ -209,24 +209,14 @@ function renderConditionsToggle() {
 }
 
 function renderItems() {
-    const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
     const config = {
         'Attack': { id: 'attacks-list', data: state.attacks, headers: ['Nome', 'Dano', 'Tipo'] },
-        'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bonus', 'Peso'] },
-        'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bonus', 'Quantidade'] }
+        'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bônus', 'Peso'] },
+        'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bônus', 'Qtd'] }
     };
     Object.keys(config).forEach(type => {
         const sec = config[type];
-        const el = document.getElementById(sec.id);
-        if (!el) return;
-        
-        if (!sec.data || sec.data.length === 0) {
-            el.innerHTML = '';
-            return;
-        }
-
-        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
-            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeItem('${type}', ${i})">×</button>` : ''}</div>`).join('');
+        renderGenericTable(sec.id, sec.data, sec.headers, type, (t, i) => removeItem(t, i));
     });
 }
 
@@ -245,32 +235,50 @@ window.toggleCondition = (id) => {
 window.removeItem = (type, i) => { state[type.toLowerCase() === 'attack' ? 'attacks' : type.toLowerCase() + 's'].splice(i, 1); renderSheet(); broadcastChange(); };
 
 function renderHabilidades() {
-    const $ = id => document.getElementById(id);
     renderHeader();
-    const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
     const config = {
-        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Custo'] },
-        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Custo'] },
-        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Custo'] }
+        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Dano'] },
+        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Dano'] },
+        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Dano'] }
     };
     Object.keys(config).forEach(type => {
         const sec = config[type];
-        const el = $(sec.id);
-        if (!el) return;
-
-        if (!sec.data || sec.data.length === 0) {
-            el.innerHTML = '';
-            return;
-        }
-
-        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
-            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeAbility('${type}', ${i})">×</button>` : ''}</div>`).join('');
+        renderGenericTable(sec.id, sec.data, sec.headers, type, (t, i) => removeAbility(t, i));
     });
 
+    const $ = id => document.getElementById(id);
     if ($('add-cantrip')) $('add-cantrip').style.display = isMaster ? 'block' : 'none';
     if ($('add-spell-active')) $('add-spell-active').style.display = isMaster ? 'block' : 'none';
     if ($('add-spell-inactive')) $('add-spell-inactive').style.display = isMaster ? 'block' : 'none';
 }
+
+function renderGenericTable(containerId, data, headers, type, removeFn) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!data || data.length === 0) { el.innerHTML = ''; return; }
+
+    const gridCols = isMaster ? '2fr 7fr 1fr 40px' : '2fr 7fr 1fr';
+    
+    el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};">
+        <span>${headers[0]}</span><span>${headers[1]}</span><span>${headers[2]}</span>${isMaster ? '<span></span>' : ''}
+    </div>` + 
+    data.map((item, i) => `
+        <div class="premium-table-row" style="grid-template-columns: ${gridCols};">
+            <span class="wrap-text">${item.name}</span>
+            <span class="wrap-text">${item.bonus || ''}</span>
+            <span class="wrap-text">${item.qty || ''}</span>
+            ${isMaster ? `<button onclick="removeGenericItem('${type}', ${i}, '${containerId}')">×</button>` : ''}
+        </div>`).join('');
+}
+
+window.removeGenericItem = (type, i, containerId) => {
+    // Determine which removal function to use based on containerId or type
+    if (['attacks-list', 'armors-list', 'utility-list'].includes(containerId)) {
+        removeItem(type, i);
+    } else {
+        removeAbility(type, i);
+    }
+};
 
 window.removeAbility = (type, i) => { 
     const keyMap = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };

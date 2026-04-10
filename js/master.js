@@ -18,12 +18,11 @@ function renderMasterPanel() {
             const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
             return `
                 <div class="player-card" onclick="openPlayerSheet('${id}')">
-                    <button class="btn-delete-card" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')" title="Excluir Jogador">×</button>
                     <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                         ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
                     </div>
                     <strong>${p.name || 'Sem Nome'}</strong>
-                    <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[p.race]?.name || '---'} • ${CLASSES[p.cls]?.name || '---'} • Nv.${p.level}</div>
+                    <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[p.race]?.name || ''} • ${CLASSES[p.cls]?.name || ''} • Nv.${p.level}</div>
                     
                     <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
                     <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
@@ -221,7 +220,7 @@ function renderBestiary() {
                     ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
                 </div>
                 <strong>${npc.name || 'Sem Nome'}</strong>
-                <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[npc.race]?.name || npc.race || '---'} • ${CLASSES[npc.cls]?.name || '---'} • Nv.${npc.level || 1}</div>
+                <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[npc.race]?.name || npc.race || ''} • ${CLASSES[npc.cls]?.name || ''} • Nv.${npc.level || 1}</div>
                 
                 <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
                 <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${npc.hp.current} / ${npc.hp.max} HP</div>
@@ -289,21 +288,6 @@ window.softDeleteNPC = function(id) {
     if (npc) { npc.isDeleted = true; saveMasterState(); render(); }
 };
 
-window.masterSoftDeletePlayer = function(id) {
-    const p = connectedPlayers[id];
-    if (!p) return;
-    
-    // Verifica se está em batalha
-    const inBattle = masterState.battleOrder.some(i => i.id == id);
-    if (inBattle) {
-        alert(`❌ Não é possível remover ${p.name} enquanto estiver em uma batalha ativa!`);
-        return;
-    }
-
-    if (confirm(`APAGAR a ficha de ${p.name}?`)) {
-        socket.emit('masterUpdatePlayer', { targetId: id, data: { isDeleted: true } });
-    }
-};
 
 window.handleAdminCredentials = function(e) {
     e.preventDefault();
@@ -342,4 +326,113 @@ window.clearMasterLog = function() {
         saveMasterState();
         renderLogHistory();
     }
+};
+
+window.openNPCGeneratorSetup = function() {
+    const raceOps = Object.keys(RACES).map(k => `<option value="${k}">${RACES[k].name}</option>`).join('');
+    const classOps = Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k].name}</option>`).join('');
+    
+    const html = `
+        <div id="npc-gen-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
+            <div class="premium-card" style="width: 100%; max-width: 450px; padding: 2.5rem;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">Gerador de NPC</h2>
+                
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <div>
+                        <label class="label-tiny">Raça</label>
+                        <select id="gen-npc-race" class="premium-input full-width" style="background: var(--bg-overlay) !important;">
+                            <option value="random">🎲 Aleatória</option>
+                            ${raceOps}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-tiny">Classe</label>
+                        <select id="gen-npc-class" class="premium-input full-width" style="background: var(--bg-overlay) !important;">
+                            <option value="random">🎲 Aleatória</option>
+                            ${classOps}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-tiny">Nível</label>
+                        <input type="number" id="gen-npc-level" class="premium-input full-width" value="1" min="1" max="20" style="background: var(--bg-overlay) !important;">
+                    </div>
+                </div>
+
+                <div style="display:flex; gap: 1rem;">
+                    <button class="btn-ghost" onclick="document.getElementById('npc-gen-modal').remove()" style="flex:1;">Cancelar</button>
+                    <button class="btn-primary" onclick="window.confirmNPCGeneration()" style="flex:1;">Gerar NPC</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.confirmNPCGeneration = function() {
+    const race = document.getElementById('gen-npc-race').value;
+    const cls = document.getElementById('gen-npc-class').value;
+    const level = parseInt(document.getElementById('gen-npc-level').value) || 1;
+    
+    window.generateRandomNPC(race, cls, level);
+    
+    const m = document.getElementById('npc-gen-modal');
+    if(m) m.remove();
+};
+
+window.generateRandomNPC = function(targetRace = 'random', targetCls = 'random', targetLevel = 1) {
+    const NAMES = [
+        "Tharivol", "Eberk", "Gimble", "Adrik", "Brodert", "Kildrak", "Vondal", "Zook", "Frug", "Milo",
+        "Lia", "Sarya", "Mialee", "Keyleth", "Valerius", "Kaelen", "Kethra", "Dorn", "Oakhart", "Ravana",
+        "Gromm", "Ursh", "Korg", "Brak", "Thokk", "Malakor", "Xanos", "Silas", "Elora", "Myrtle"
+    ];
+    
+    const raceKeys = Object.keys(RACES);
+    const classKeys = Object.keys(CLASSES);
+    const bgKeys = Object.keys(BACKGROUNDS);
+    const alignKeys = Object.keys(ALIGNMENTS);
+
+    // Pick randoms or use targets
+    const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+    const race = targetRace === 'random' ? raceKeys[Math.floor(Math.random() * raceKeys.length)] : targetRace;
+    const cls = targetCls === 'random' ? classKeys[Math.floor(Math.random() * classKeys.length)] : targetCls;
+    const level = targetLevel;
+    
+    const bg = BACKGROUNDS[bgKeys[Math.floor(Math.random() * bgKeys.length)]].name;
+    const align = ALIGNMENTS[alignKeys[Math.floor(Math.random() * alignKeys.length)]].name;
+    
+    // Attributes (Standard Array shuffled)
+    const array = [...STANDARD_ARRAY];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    
+    const attrNames = ['for', 'des', 'con', 'int', 'sab', 'car'];
+    const attr = {};
+    attrNames.forEach((n, i) => attr[n] = array[i]);
+    
+    // Calculate HP
+    const hpMax = (CLASSES[cls].hp + Math.floor((attr.con - 10) / 2)) * level;
+    
+    const npc = {
+        ...getDefaultState(),
+        id: Date.now(),
+        isCreated: true,
+        name: name,
+        race: race,
+        cls: cls,
+        bg: bg,
+        align: align,
+        level: level,
+        hp: { current: hpMax, max: hpMax },
+        attr: attr,
+        speed: RACES[race].speed || 9,
+        hd: `${level}${CLASSES[cls].hd}`,
+        ac: 10 + Math.floor((attr.des - 10) / 2)
+    };
+    
+    masterState.npcs.push(npc);
+    saveMasterState();
+    renderBestiary();
+    sendSystemLog(`🎭 Novo NPC Gerado: <strong>${npc.name}</strong> | ${RACES[npc.race].name} • ${CLASSES[npc.cls].name} • Nível ${level}`);
 };

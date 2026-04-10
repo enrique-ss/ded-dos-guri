@@ -492,7 +492,8 @@ input[type=number] {
     justify-content: center;
 }
 
-.premium-table-header span:first-child {
+.premium-table-header span:first-child,
+.premium-table-header span:nth-child(2) {
     justify-content: flex-start;
 }
 
@@ -520,10 +521,24 @@ input[type=number] {
     font-size: 0.9rem;
     color: var(--txt);
     min-height: 45px;
+    word-break: break-word;
+    text-align: center;
+}
+
+.wrap-text {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    line-height: 1.4;
+}
+
+.premium-table-row span:first-child,
+.premium-table-row span:nth-child(2) {
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .premium-table-row span:first-child {
-    justify-content: flex-start;
     font-weight: 600;
 }
 

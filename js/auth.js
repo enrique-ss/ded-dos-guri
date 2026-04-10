@@ -1,5 +1,3 @@
-// ==================== AUTH LOGIC ====================
-
 async function handleAuth(mode) {
     const email = mode === 'login' ? document.getElementById('auth-email').value : document.getElementById('signup-email').value;
     const password = mode === 'login' ? document.getElementById('auth-password').value : document.getElementById('signup-password').value;

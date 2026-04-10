@@ -148,7 +148,7 @@ class AdminPanel {
         }
 
         this.users.forEach(user => {
-            const lastDate = user.lastSignIn ? new Date(user.lastSignIn).toLocaleDateString() : '---';
+            const lastDate = user.lastSignIn ? new Date(user.lastSignIn).toLocaleDateString() : '';
             const row = document.createElement('div');
             row.className = 'user-row fade-in';
             row.innerHTML = `

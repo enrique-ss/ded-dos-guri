@@ -28,7 +28,7 @@ function renderAttributeDrafter() {
         const attr = slot.dataset.attr;
         const val = wizardData.attr[attr];
         slot.className = `attr-slot ${val !== 0 ? 'filled' : ''} ${wizardSelection ? 'active-target' : ''}`;
-        slot.querySelector('.slot-display').textContent = val !== 0 ? val : '---';
+        slot.querySelector('.slot-display').textContent = val !== 0 ? val : '';
         slot.onclick = () => assignToSlot(attr);
     });
 }

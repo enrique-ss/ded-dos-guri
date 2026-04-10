@@ -227,7 +227,7 @@ function setupEvents() {
                 const name = prompt("Nome do Truque:");
                 if (name) {
                     const bonus = prompt("Efeito:");
-                    const qty = prompt("Custo/Conjuração:");
+                    const qty = prompt("Dano:");
                     state.cantrips = state.cantrips || [];
                     state.cantrips.push({ name, bonus, qty });
                     renderHabilidades(); broadcastChange();
@@ -237,7 +237,7 @@ function setupEvents() {
                 const name = prompt("Nome da Magia:");
                 if (name) {
                     const bonus = prompt("Efeito:");
-                    const qty = prompt("Custo/Espaço:");
+                    const qty = prompt("Dano:");
                     state.spellsActive = state.spellsActive || [];
                     state.spellsActive.push({ name, bonus, qty });
                     renderHabilidades(); broadcastChange();
@@ -247,7 +247,7 @@ function setupEvents() {
                 const name = prompt("Nome da Magia:");
                 if (name) {
                     const bonus = prompt("Efeito:");
-                    const qty = prompt("Custo/Nível:");
+                    const qty = prompt("Dano:");
                     state.spellsInactive = state.spellsInactive || [];
                     state.spellsInactive.push({ name, bonus, qty });
                     renderHabilidades(); broadcastChange();

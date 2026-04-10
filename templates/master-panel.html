@@ -69,7 +69,10 @@
             <div id="m-tab-bestiary" class="m-tab-content">
                 <div class="m-tab-header">
                     <h2 class="cinzel">NPCs</h2>
-                    <button class="btn-primary" onclick="startNPCCreation()" style="padding: 0.5rem 1.5rem;">+ Novo NPC</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn-primary" onclick="startNPCCreation()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Criar NPC</button>
+                        <button class="btn-ghost" onclick="window.openNPCGeneratorSetup()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Gerar NPC</button>
+                    </div>
                 </div>
                 <div id="npcs-grid" class="selection-grid m-empty-state">
                     <p>Sua lista de NPCs está vazia. Gere novos desafios!</p>

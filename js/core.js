@@ -291,6 +291,7 @@ function render() {
             if (targetView) targetView.classList.add('active');
             renderSheet();
             if (currentView === 'items-view') renderItems();
+            if (currentView === 'habilidades-view') renderHabilidades();
         } else {
             const masterPanel = $('master-panel');
             if (masterPanel) {
