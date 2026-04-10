@@ -225,9 +225,9 @@ function renderTecnicas() {
         'Attack': { id: 'attacks-list', data: state.attacks, headers: ['Nome', 'Dano', 'Tipo'], type: 'item' },
         'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bonus', 'Peso'], type: 'item' },
         'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bonus', 'Qtd'], type: 'item' },
-        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' },
-        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' },
-        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' }
+        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Dano'], type: 'ability' },
+        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Dano'], type: 'ability' },
+        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Dano'], type: 'ability' }
     };
 
     Object.entries(config).forEach(([id, sec]) => {
