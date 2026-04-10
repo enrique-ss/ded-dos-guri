@@ -776,23 +776,19 @@ body.is-master .read-only .skill-row {
     }
 
     .header-sub {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        gap: 0.3rem !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
         width: 100%;
-        overflow-x: auto;
-        padding-bottom: 2px;
     }
 
     .badge-role {
-        flex: 1;
-        min-width: 0;
-        padding: 0.3rem 0.2rem !important;
-        font-size: 0.55rem !important;
+        width: 100%;
+        padding: 0.4rem 0.2rem !important;
+        font-size: 0.65rem !important;
         white-space: nowrap;
-        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     /* Layer 3: Navigation */

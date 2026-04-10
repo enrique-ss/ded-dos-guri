@@ -18,6 +18,7 @@ function renderMasterPanel() {
             const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
             return `
                 <div class="player-card" onclick="openPlayerSheet('${id}')" style="position:relative;">
+                    <button class="btn-delete-card" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')" title="Excluir Jogador">×</button>
                     <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                         ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
                     </div>
