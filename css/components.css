@@ -549,10 +549,9 @@
 
 @media (max-width: 600px) {
     #creation-screen::before {
-        background-position: left center;
+        background-position: 75% center;
     }
 }
-
 /* Sincronizado */
 
 /* Fim */

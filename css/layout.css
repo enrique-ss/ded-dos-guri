@@ -58,7 +58,7 @@
     text-transform: uppercase;
     margin-top: -0.5rem;
     color: #ffbe0b;
-    text-shadow: 0 0 5px rgba(255, 190, 11, 0.4);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .selection-grid {
