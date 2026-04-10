@@ -101,11 +101,26 @@ function setupEvents() {
         if (t.closest('#btn-reset-char')) {
             if (isMaster && masterEditingType === 'npc') {
                 masterEditingId = null; masterState.activeTab = 'bestiary'; render();
-            } else if (!isMaster && confirm('EXCLUIR personagem?')) {
-                const old = state.name; state = getDefaultState(); saveState();
-                if (user && supabaseClient) supabaseClient.from('characters').update({ name: null, data: state }).eq('user_id', user.id).then();
+            } else if (!isMaster && confirm('EXCLUIR personagem permanentemente?')) {
+                const old = state.name; 
+                state = getDefaultState(); 
+                
+                // Limpa o localStorage local
+                const key = window.user ? `rpg_guri_v10_${window.user.id}` : 'rpg_guri_v10';
+                localStorage.removeItem(key);
+                
                 sendSystemLog(`☠️ <strong>${old}</strong> apagou sua ficha.`);
-                roleSelected = false; isMaster = false; isAdmin = false; render();
+                
+                setTimeout(() => {
+                    if (window.user && window.supabaseClient) {
+                        // Hard delete no Supabase e depois recarrega
+                        window.supabaseClient.from('characters').delete().eq('user_id', window.user.id).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        location.reload();
+                    }
+                }, 100);
             }
             return;
         }

@@ -50,12 +50,7 @@ io.on('connection', (socket) => {
         // Notifica todos (especialmente o mestre) sobre a lista atualizada
         io.emit('updatePlayersList', gamePlayers);
         
-        // --- LOG AUTOMÁTICO ---
-        
-        io.emit('newLogEntry', { 
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            text: `🟢 <strong>${identifier}</strong> entrou na aventura!` 
-        });
+        // --- LOG AUTOMÁTICO REMOVIDO A PEDIDO DO USUÁRIO ---
     });
 
     // Jogador atualiza sua própria ficha (ex: mudou HP no celular dele)
@@ -90,12 +85,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         const p = gamePlayers[socket.id];
-        if (p) {
-            io.emit('newLogEntry', { 
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                text: `🔴 <strong>${p.name || 'Herói'}</strong> desconectou.` 
-            });
-        }
+        // LOG DE DESCONEXÃO REMOVIDO
 
         delete gamePlayers[socket.id];
         io.emit('updatePlayersList', gamePlayers);

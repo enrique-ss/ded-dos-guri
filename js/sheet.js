@@ -63,17 +63,7 @@ function renderHeader() {
         };
     }
     
-    // Rebind do botão excluir (Jogador)
-    const btnReset = document.getElementById('btn-reset-char');
-    if (btnReset) {
-        btnReset.onclick = () => {
-            if (!isMaster && confirm('EXCLUIR personagem permanentemente?')) {
-                const key = user ? `rpg_guri_v10_${user.id}` : 'rpg_guri_v10';
-                localStorage.removeItem(key);
-                location.reload();
-            }
-        };
-    }
+    // A exclusão agora é gerenciada exclusivamente pelo events.js
 }
 
 function renderSheet() {

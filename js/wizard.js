@@ -138,7 +138,6 @@ function finalizeWizard(name, bg, align, photo) {
         masterState.npcs.push(char);
         saveMasterState();
         isCreatingNPC = false;
-        sendSystemLog(`👾 NPC Criado: <strong>${name}</strong>.`);
         masterState.activeTab = 'bestiary';
         switchView('master-panel');
     } else {
@@ -149,7 +148,6 @@ function finalizeWizard(name, bg, align, photo) {
         char.rpFeats = `[RAÇA: ${r.name}]\n- ${r.modsDesc}\n- ${r.feature}\n\n[CLASSE: ${c.name}]\n- Armaduras: ${c.armor}`;
         saveState();
         if (socket) socket.emit('playerIdentify', char);
-        sendSystemLog(`📜 <strong>${char.name}</strong> (${c.name}) entrou na aventura!`);
         render();
     }
 }

@@ -21,7 +21,7 @@
                     <span>Aventureiros</span>
                 </button>
                 <button class="m-nav-btn" data-tab="initiative">
-                    <span>Iniciativa</span>
+                    <span>Batalha</span>
                 </button>
                 <button class="m-nav-btn" data-tab="bestiary">
                     <span>NPCs</span>
@@ -54,13 +54,14 @@
                 </div>
             </div>
 
-            <!-- ABA: INICIATIVA -->
+            <!-- ABA: BATALHA -->
             <div id="m-tab-initiative" class="m-tab-content">
-                <div class="m-tab-header">
-                    <h2 class="cinzel">Iniciativa</h2>
+                <div class="m-tab-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="cinzel">Batalha</h2>
+                    <button class="btn-primary" onclick="window.startBattleSetup()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Iniciar Batalha</button>
                 </div>
                 <div id="initiative-list" class="initiative-list m-empty-state">
-                    <p>Ninguém em combate no momento.</p>
+                    <p>Nenhuma batalha ativa no momento.</p>
                 </div>
             </div>
 
@@ -76,8 +77,9 @@
             </div>
 
             <div id="m-tab-log" class="m-tab-content">
-                <div class="m-tab-header">
+                <div class="m-tab-header" style="justify-content: space-between; display: flex; align-items: center;">
                     <h2 class="cinzel">Histórico</h2>
+                    <button class="btn-ghost" onclick="clearMasterLog()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem;">Limpar Histórico</button>
                 </div>
                 <div id="master-log-history" class="log-history m-empty-state">
                     <p>Nenhuma atividade registrada ainda.</p>

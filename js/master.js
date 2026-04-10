@@ -49,22 +49,104 @@ window.switchMasterTab = function(tabId) {
 function renderInitiative() {
     const list = document.getElementById('initiative-list');
     if (!list) return;
-    const playerInits = Object.values(connectedPlayers).filter(p => p.initiativeRoll > 0).map(p => ({ id: p.id, name: p.name, val: p.initiativeRoll, isPlayer: true }));
-    const npcInits = (masterState.npcs || []).filter(n => n.initiativeRoll > 0 && !n.isDeleted).map(n => ({ id: n.id, name: n.name, val: n.initiativeRoll, isPlayer: false }));
-    const all = [...playerInits, ...npcInits].sort((a, b) => b.val - a.val);
-    if (all.length === 0) { 
+
+    if (!masterState.battleOrder || masterState.battleOrder.length === 0) {
         list.classList.add('m-empty-state');
-        list.innerHTML = '<p>Ninguém em combate.</p>'; 
-        return; 
+        list.innerHTML = '<p>Nenhuma batalha ativa.</p>';
+        return;
     }
+
     list.classList.remove('m-empty-state');
-    list.innerHTML = all.map(item => `
-        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}">
+    list.innerHTML = masterState.battleOrder.map(item => {
+        let entity = item.isPlayer ? connectedPlayers[item.id] : masterState.npcs.find(n => n.id == item.id);
+        const hpStr = entity ? `<span style="font-size:0.8rem; opacity:0.7; margin-left: 10px;">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
+        const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through;' : 'color: var(--txt);';
+        return `
+        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="cursor: pointer;" onclick="${item.isPlayer ? `openPlayerSheet('${item.id}')` : `openNPCSheet('${item.id}')`}">
             <div class="init-score">${item.val}</div>
-            <div class="init-name">${item.isPlayer ? '🛡️' : '👾'} ${item.name}</div>
+            <div class="init-name" style="${dangerStr}">${item.isPlayer ? '🛡️' : '👾'} <strong>${item.name}</strong> ${hpStr}</div>
         </div>
-    `).join('');
+        `;
+    }).join('');
+
+    list.innerHTML += `<button class="btn-ghost" onclick="window.endBattle()" style="width: 100%; margin-top: 1.5rem; color: var(--red); border-color: var(--red);">Encerrar Batalha</button>`;
 }
+
+window.startBattleSetup = function() {
+    const players = Object.values(connectedPlayers).map(p => ({id: p.id, name: p.name, init: p.initiativeRoll||0, type: 'player'}));
+    const npcs = (masterState.npcs||[]).filter(n => !n.isDeleted).map(n => ({id: n.id, name: n.name, init: n.initiativeRoll||0, type: 'npc'}));
+    
+    const html = `
+        <div id="battle-setup-modal" class="full-screen-modal active" style="background: rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:99999;">
+            <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Setup de Batalha</h2>
+                <p style="text-align:center; font-size:0.8rem; margin-bottom: 1.5rem;" class="muted-text">Selecione quem irá participar do combate.\nA ordem será gerada com base na rolagem de Iniciativa atual de cada um.</p>
+                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 0.5rem;" id="battle-selection-list">
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">Aventureiros</h3>
+                    ${players.length === 0 ? '<div class="muted-text" style="margin-bottom:1rem; font-size:0.8rem;">Nenhum jogador online.</div>' : ''}
+                    ${players.map(p => `
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
+                            <span style="font-weight:700;">
+                                <input type="checkbox" class="battle-check player-check" value="${p.id}" data-name="${p.name}" data-init="${p.init}" checked style="margin-right: 10px;"> 
+                                ${p.name}
+                            </span>
+                            <span class="label-tiny">Init: ${p.init}</span>
+                        </label>
+                    `).join('')}
+                    
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">NPCs</h3>
+                    ${npcs.length === 0 ? '<div class="muted-text" style="font-size:0.8rem;">Nenhum NPC disponível.</div>' : ''}
+                    ${npcs.map(n => `
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
+                            <span style="font-weight:700;">
+                                <input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> 
+                                ${n.name}
+                            </span>
+                            <span class="label-tiny">Init: ${n.init}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div style="display:flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn-ghost" onclick="document.getElementById('battle-setup-modal').remove()" style="flex:1;">Cancelar</button>
+                    <button class="btn-primary" onclick="window.confirmBattleSetup()" style="flex:1;">Gerar Ordem</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.confirmBattleSetup = function() {
+    const checks = document.querySelectorAll('.battle-check:checked');
+    const combatants = [];
+    checks.forEach(c => {
+        combatants.push({
+            id: c.value,
+            name: c.dataset.name,
+            val: parseInt(c.dataset.init) || 0,
+            isPlayer: c.classList.contains('player-check')
+        });
+    });
+    
+    // Filtra e organiza quem tem maior iniciativa primeiro
+    combatants.sort((a,b) => b.val - a.val);
+    
+    masterState.battleOrder = combatants;
+    saveMasterState();
+    
+    const m = document.getElementById('battle-setup-modal');
+    if(m) m.remove();
+    
+    renderInitiative();
+};
+
+window.endBattle = function() {
+    if(!confirm("Encerrar esta batalha?")) return;
+    masterState.battleOrder = [];
+    saveMasterState();
+    renderInitiative();
+};
+
 
 function renderBestiary() {
     const grid = document.getElementById('npcs-grid');
@@ -165,4 +247,12 @@ window.showAdminCredentials = function() {
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.clearMasterLog = function() {
+    if (confirm('Tem certeza que deseja apagar todo o histórico desta aventura?')) {
+        masterState.logHistory = [];
+        saveMasterState();
+        renderLogHistory();
+    }
 };
