@@ -29,8 +29,11 @@ function renderHeader() {
                 <button class="nav-btn ${currentView === 'sheet-view' ? 'active' : ''}" data-view="sheet-view" onclick="switchView('sheet-view')">
                     <span>Ficha</span>
                 </button>
-                <button class="nav-btn ${currentView === 'tecnicas-view' ? 'active' : ''}" data-view="tecnicas-view" onclick="switchView('tecnicas-view')">
-                    <span>Técnicas</span>
+                <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" data-view="items-view" onclick="switchView('items-view')">
+                    <span>Itens</span>
+                </button>
+                <button class="nav-btn ${currentView === 'habilidades-view' ? 'active' : ''}" data-view="habilidades-view" onclick="switchView('habilidades-view')">
+                    <span>Magias</span>
                 </button>
                 <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
                     <span>História</span>
@@ -144,6 +147,7 @@ function renderSheet() {
     renderSkillBlock('saves-list', ['for', 'des', 'con', 'int', 'sab', 'car'], 'saves', profBonus);
     renderSkillBlock('skills-list', SKILLS, 'profs', profBonus);
     renderConditionsToggle();
+    renderItems();
 
     // Individual RP fields (History Tab)
     ['bg', 'align', 'rpTraits', 'rpIdeals', 'rpBonds', 'rpFlaws'].forEach(f => {
@@ -204,6 +208,28 @@ function renderConditionsToggle() {
     }
 }
 
+function renderItems() {
+    const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
+    const config = {
+        'Attack': { id: 'attacks-list', data: state.attacks, headers: ['Nome', 'Dano', 'Tipo'] },
+        'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bonus', 'Peso'] },
+        'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bonus', 'Quantidade'] }
+    };
+    Object.keys(config).forEach(type => {
+        const sec = config[type];
+        const el = document.getElementById(sec.id);
+        if (!el) return;
+        
+        if (!sec.data || sec.data.length === 0) {
+            el.innerHTML = '';
+            return;
+        }
+
+        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
+            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeItem('${type}', ${i})">×</button>` : ''}</div>`).join('');
+    });
+}
+
 // Global Handlers
 window.toggleSave = (a) => toggleList('saves', a);
 window.toggleSkill = (s) => toggleList('profs', s);
@@ -216,54 +242,38 @@ window.toggleCondition = (id) => {
     renderSheet(); broadcastChange(); saveState();
 };
 
-function renderTecnicas() {
+window.removeItem = (type, i) => { state[type.toLowerCase() === 'attack' ? 'attacks' : type.toLowerCase() + 's'].splice(i, 1); renderSheet(); broadcastChange(); };
+
+function renderHabilidades() {
+    const $ = id => document.getElementById(id);
     renderHeader();
     const gridCols = isMaster ? '2fr 1fr 1fr 40px' : '2fr 1fr 1fr';
-    
-    // Configuração unificada para todas as tabelas na aba Técnicas
     const config = {
-        'Attack': { id: 'attacks-list', data: state.attacks, headers: ['Nome', 'Dano', 'Tipo'], type: 'item' },
-        'Armor': { id: 'armors-list', data: state.armors, headers: ['Nome', 'Bonus', 'Peso'], type: 'item' },
-        'Utility': { id: 'utility-list', data: state.utility, headers: ['Nome', 'Bonus', 'Qtd'], type: 'item' },
-        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' },
-        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' },
-        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Custo'], type: 'ability' }
+        'Cantrip': { id: 'cantrips-list', data: state.cantrips, headers: ['Nome', 'Efeito', 'Custo'] },
+        'SpellActive': { id: 'spells-active-list', data: state.spellsActive, headers: ['Nome', 'Efeito', 'Custo'] },
+        'SpellInactive': { id: 'spells-inactive-list', data: state.spellsInactive, headers: ['Nome', 'Efeito', 'Custo'] }
     };
-
-    Object.entries(config).forEach(([id, sec]) => {
-        const el = document.getElementById(sec.id);
+    Object.keys(config).forEach(type => {
+        const sec = config[type];
+        const el = $(sec.id);
         if (!el) return;
 
         if (!sec.data || sec.data.length === 0) {
             el.innerHTML = '';
-        } else {
-            el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
-                sec.data.map((item, i) => `
-                    <div class="premium-table-row" style="grid-template-columns: ${gridCols};">
-                        <span>${item.name}</span>
-                        <span>${item.bonus || ''}</span>
-                        <span>${item.qty || ''}</span>
-                        ${isMaster ? `<button onclick="${sec.type === 'item' ? 'removeItem' : 'removeAbility'}('${id}', ${i})">×</button>` : ''}
-                    </div>`).join('');
+            return;
         }
+
+        el.innerHTML = `<div class="premium-table-header" style="grid-template-columns: ${gridCols};"><span>${sec.headers[0]}</span><span>${sec.headers[1]}</span><span>${sec.headers[2]}</span>${isMaster ? '<span></span>' : ''}</div>` + 
+            (sec.data || []).map((item, i) => `<div class="premium-table-row" style="grid-template-columns: ${gridCols};"><span>${item.name}</span><span>${item.bonus || ''}</span><span>${item.qty || ''}</span>${isMaster ? `<button onclick="removeAbility('${type}', ${i})">×</button>` : ''}</div>`).join('');
     });
 
-    // Visibilidade dos botões de adição
-    const addButtons = ['add-attack', 'add-armor', 'add-utility', 'add-cantrip', 'add-spell-active', 'add-spell-inactive'];
-    addButtons.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.style.display = isMaster ? 'block' : 'none';
-    });
+    if ($('add-cantrip')) $('add-cantrip').style.display = isMaster ? 'block' : 'none';
+    if ($('add-spell-active')) $('add-spell-active').style.display = isMaster ? 'block' : 'none';
+    if ($('add-spell-inactive')) $('add-spell-inactive').style.display = isMaster ? 'block' : 'none';
 }
 
-window.removeItem = (type, i) => { 
-    const map = { 'Attack': 'attacks', 'Armor': 'armors', 'Utility': 'utility' };
-    state[map[type]].splice(i, 1); 
-    renderTecnicas(); broadcastChange(); 
-};
-
 window.removeAbility = (type, i) => { 
-    const map = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };
-    state[map[type]].splice(i, 1); 
-    renderTecnicas(); broadcastChange(); 
+    const keyMap = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };
+    state[keyMap[type]].splice(i, 1); 
+    renderHabilidades(); broadcastChange(); 
 };
