@@ -1,49 +1,59 @@
 /* ===== RPG dos Guri – Design System v13.0 ===== */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@300;400;600;700&display=swap');
 
-:root {
+[data-theme="dark"], :root {
     --bg: #0b0c14;
-    --panel: rgba(20, 22, 35, 0.85);
-    --panel-border: rgba(255, 255, 255, 0.1);
+    --panel: rgba(11, 12, 20, 0.4);
+    --panel-border: rgba(255, 255, 255, 0.08);
     --gold: #ffbe0b;
     --gold-glow: rgba(255, 190, 11, 0.25);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #ffffff;
-    --txt-muted: #888bab;
-    --radius: 14px;
-    --gap: 0.8rem;
-    --p-card: 1rem;
+    --txt-muted: #ffffff; 
+    --radius: 20px;
+    --gap: 1.25rem;
 
-    /* GLASS PATTERNS (Themed) */
-    --bg-glass: rgba(20, 22, 35, 0.85);
+    /* GLASS DEFINITIVE */
+    --bg-glass: rgba(11, 12, 20, 0.35);
     --bg-overlay: rgba(0, 0, 0, 0.4);
     --bg-accent: rgba(255, 255, 255, 0.03);
-    --bg-input: rgba(0, 0, 0, 0.4);
     --bg-circle: #000000;
-    --border-glass: rgba(255, 255, 255, 0.1);
-    --txt-contrast: #000000;
+    --glass-blur: blur(10px) saturate(160%);
 }
 
 [data-theme="light"] {
     --bg: #ffffff;
-    --panel: rgba(255, 255, 255, 0.95);
-    --panel-border: rgba(0, 0, 0, 0.15);
+    --panel: rgba(255, 255, 255, 0.3);
+    --panel-border: rgba(0, 0, 0, 0.1);
     --gold: #ffbe0b;
     --gold-glow: rgba(255, 190, 11, 0.15);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #000000;
-    --txt-muted: #555555;
+    --txt-muted: #000000;
 
-    /* GLASS PATTERNS (Proper Inversion) */
-    --bg-glass: rgba(255, 255, 255, 0.9);
+    /* GLASS DEFINITIVE */
+    --bg-glass: rgba(255, 255, 255, 0.3);
     --bg-overlay: rgba(0, 0, 0, 0.05);
     --bg-accent: rgba(0, 0, 0, 0.02);
-    --bg-input: rgba(255, 255, 255, 0.8);
     --bg-circle: #ffffff;
-    --border-glass: rgba(0, 0, 0, 0.1);
+    --glass-blur: blur(10px) saturate(160%);
 }
+
+/* VOLTAR LOGICA DE TEMA NA CRIAÇÃO DE PERSONAGEM */
+#auth-screen, #role-selection {
+    --bg: #121111 !important;
+    --txt: #f8f8f8 !important;
+    --txt-muted: #f8f8f8 !important;
+    --panel: rgba(18, 17, 17, 0.45) !important;
+    --bg-glass: rgba(18, 17, 17, 0.35) !important;
+    --panel-border: rgba(255, 255, 255, 0.08) !important;
+    --bg-circle: #000000 !important;
+}
+
+/* #creation-screen agora aceita modo light com fundo proprio no components.css */
+
 
 [data-theme="light"] body {
     background-image:
@@ -81,6 +91,17 @@ h3,
     font-family: 'Cinzel', serif;
     letter-spacing: 1px;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    color: var(--gold) !important; /* SEMPRE DOURADO EM AMBOS OS TEMAS */
+}
+
+label {
+    color: var(--txt);
+    font-weight: 700;
+}
+
+
+.gold-text {
+    color: var(--gold) !important;
 }
 
 input,

@@ -88,7 +88,7 @@
 }
 
 .choice-card strong {
-    color: var(--gold);
+    color: inherit;
     transition: color 0.3s;
 }
 

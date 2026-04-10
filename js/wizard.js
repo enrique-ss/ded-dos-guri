@@ -75,7 +75,7 @@ function loadSkillChoices() {
     const limitText = document.getElementById('skills-limit-text');
     if (limitText) {
         const faltam = maxPicks - wizardData.skills.length;
-        limitText.innerHTML = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (<strong style="color: ${faltam > 0 ? '#4CAF50' : '#ff3333'};">Faltam ${faltam}</strong>):`;
+        limitText.innerHTML = `Escolha ${wizardData.skills.length} / ${maxPicks} perícias (<strong style="color: ${faltam > 0 ? 'var(--green)' : 'var(--red)'};">Faltam ${faltam}</strong>):`;
         limitText.dataset.max = maxPicks;
     }
 

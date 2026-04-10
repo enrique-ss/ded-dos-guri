@@ -1,8 +1,8 @@
 /* ATRIBUTO DRAFTER (Wizard Step 4) */
 .array-chip {
-    background: var(--gold-glow);
-    border: 2px solid var(--gold);
-    color: var(--gold);
+    background: var(--bg-glass);
+    border: 2px solid var(--panel-border);
+    color: var(--txt);
     border-radius: 12px;
     padding: 1rem 0.5rem;
     text-align: center;
@@ -14,13 +14,13 @@
 }
 
 .array-chip:hover {
-    background: rgba(255, 190, 11, 0.15);
+    border-color: var(--gold);
     transform: translateY(-2px);
 }
 
 .array-chip.selected {
     background: var(--gold);
-    color: var(--txt-contrast);
+    color: #000 !important;
     box-shadow: 0 0 20px var(--gold-glow);
 }
 
@@ -28,7 +28,6 @@
     opacity: 0.15;
     pointer-events: none;
     border-color: var(--panel-border);
-    color: var(--txt-muted);
 }
 
 .attr-slot {
@@ -36,9 +35,9 @@
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
-    background: var(--bg-overlay);
+    background: var(--bg-glass);
     padding: 1.2rem 0.5rem;
-    border-radius: 15px;
+    border-radius: var(--radius);
     border: 1px solid var(--panel-border);
     cursor: pointer;
     transition: all 0.2s;
@@ -46,30 +45,35 @@
 
 .attr-slot:hover {
     border-color: var(--gold);
-    background: rgba(255, 190, 11, 0.05);
 }
 
 .slot-display {
     width: 65px;
     height: 65px;
     background: var(--bg-circle);
-    border: 2px solid var(--border-glass);
+    border: 2px solid var(--panel-border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
     font-weight: 900;
-    color: var(--txt-muted);
+    color: var(--txt); /* PRETO NO LIGHT / BRANCO NO DARK */
     transition: all 0.3s;
 }
 
 .attr-slot.filled .slot-display {
     border-color: var(--gold);
-    color: var(--gold);
-    background: var(--gold-glow);
-    box-shadow: inset 0 0 8px var(--gold-glow);
+    color: var(--txt);
+    background: var(--bg-glass);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+
+/* Forçar label dentro do slot a ser legível */
+.attr-slot .label-tiny {
+    color: var(--txt) !important;
+}
+
 
 .attr-slot.active-target {
     border-color: var(--gold);
@@ -143,7 +147,8 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     z-index: 1001;
     transition: all 0.3s ease;
 }
@@ -171,7 +176,8 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     z-index: 9999;
     transition: all 0.3s ease;
 }
@@ -194,12 +200,13 @@
 
 /* ===== PREMIUM UI BASE ===== */
 .premium-card {
-    background: var(--panel);
+    background: var(--bg-glass);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
-    padding: var(--p-card);
-    backdrop-filter: blur(25px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    padding: var(--gap);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     position: relative;
 }
 
@@ -214,14 +221,15 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--gold);
+    color: var(--gold) !important; /* SEMPRE DOURADO EM AMBOS OS TEMAS */
     display: block;
     margin-bottom: 0.25rem;
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .muted-text {
-    color: var(--txt-muted);
+    color: var(--txt);
+    opacity: 0.6;
 }
 
 .highlight-text {
@@ -231,7 +239,7 @@
 
 [data-theme="light"] .auth-card .highlight-text,
 [data-theme="light"] .auth-card .label-tiny {
-    color: var(--gold);
+    color: var(--txt);
 }
 
 .txt-center {
@@ -520,22 +528,34 @@
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/heroi.webp');
 }
 
-/* Light Mode Overrides para backgrounds (Removendo o branco estourado) */
-[data-theme="light"] #auth-screen, 
-[data-theme="light"] #role-selection, 
-[data-theme="light"] #creation-screen {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)); /* Filtro escuro leve no fundo mesmo no light */
+/* Screens forçadas no modo Dark (Auth/Role) */
+#auth-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/login.webp'); }
+#role-selection { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/role.webp'); }
+
+/* Creation Screen Dinâmico (Dark vs Light) */
+#creation-screen { 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/heroi_dark.webp'); 
 }
 
-/* Re-aplicando as imagens no light sem o filtro branco */
-[data-theme="light"] #auth-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/login.webp'); }
-[data-theme="light"] #role-selection { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/role.webp'); }
-[data-theme="light"] #creation-screen { background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/heroi.webp'); }
+[data-theme="light"] #creation-screen { 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/heroi_light.webp'); 
+}
+
+
 
 .choice-card {
-    background: var(--panel) !important;
-    color: var(--gold) !important;
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    color: var(--txt);
     font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.choice-card:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: var(--bg-overlay);
 }
 
 .auth-card-container {
@@ -584,13 +604,41 @@
 }
 
 .premium-input {
-    background: var(--bg-input) !important;
+    background: var(--bg-glass) !important;
     border: 1px solid var(--panel-border) !important;
     padding: 1.1rem !important;
-    border-radius: 12px !important;
+    border-radius: var(--radius) !important;
     font-size: 1rem !important;
-    color: var(--txt) !important;
+    color: var(--txt) !important; /* PRETO NO LIGHT, BRANCO NO DARK */
+    transition: all 0.3s ease;
 }
+
+.premium-input[type="file"] {
+    padding: 0.5rem !important;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.premium-input[type="file"]::file-selector-button {
+    background: var(--gold);
+    color: var(--bg); /* Usa a cor de fundo do tema para contraste no botão */
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    margin-right: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px var(--gold-glow);
+}
+
+.premium-input[type="file"]::file-selector-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+
 
 .premium-input:focus {
     border-color: var(--gold) !important;

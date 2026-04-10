@@ -1,6 +1,6 @@
 /* ===== Master Hub Module ===== */
 #master-panel.full-screen-modal {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/aventureiros.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../resources/aventureiros.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -9,15 +9,15 @@
 
 /* BACKGROUNDS DINÂMICOS NO PAINEL PRINCIPAL */
 #master-panel[data-active-tab="bestiary"] {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../resources/npc.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../resources/npc.webp');
 }
 
 /* Light Mode Overrides (Mesma lógica do login/heroi) */
 [data-theme="light"] #master-panel.full-screen-modal {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/aventureiros.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/aventureiros.webp');
 }
 [data-theme="light"] #master-panel[data-active-tab="bestiary"] {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../resources/npc.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('../resources/npc.webp');
 }
 
 .master-hub-layout {
@@ -28,7 +28,11 @@
 
 .master-sidebar {
     width: 260px; display: flex; flex-direction: column; gap: 1.5rem;
-    padding: 1.5rem; background: var(--panel); border: 1px solid var(--panel-border);
+    padding: 1.5rem; 
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--panel-border);
     border-radius: var(--radius); height: 100%; transition: margin-left 0.3s ease, opacity 0.3s ease;
     z-index: 1000; flex-shrink: 0;
 }
@@ -37,18 +41,25 @@
 
 .m-nav-btn {
     padding: 1rem 1.25rem; cursor: pointer; background: transparent;
-    color: var(--txt); font-size: 0.95rem; font-weight: 700;
+    color: #ffffff; /* SEMPRE BRANCO PARA CONTRASTE NO VIDRO */
+    font-size: 0.95rem; font-weight: 700;
     transition: all 0.2s; display: flex; align-items: center;
     border-radius: 10px; width: 100%; border: none;
 }
 .m-nav-btn:hover { background: var(--bg-overlay); color: var(--gold); }
 .m-nav-btn.active { background: var(--gold) !important; color: #000 !important; box-shadow: 0 4px 15px var(--gold-glow); }
 
+/* Force White Text in Sidebar Light Mode */
+[data-theme="light"] .m-nav-btn {
+    color: #ffffff;
+}
+
 .master-content { 
     flex: 1; 
     height: 100%; 
-    background: var(--bg-glass); /* Efeito glass para ver o fundo do layout com blur */
-    backdrop-filter: blur(12px);
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border-radius: var(--radius);
     border: 1px solid var(--panel-border);
     overflow-y: auto;
@@ -60,6 +71,7 @@
     animation: fadeIn 0.3s ease-out; 
     min-height: 100%;
     padding: 2rem;
+    color: var(--txt);
 }
 
 .m-tab-content.active { 
