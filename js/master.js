@@ -6,24 +6,27 @@ function renderMasterPanel() {
 
     const grid = document.getElementById('master-grid');
     if (!grid) return;
-    const ids = Object.keys(connectedPlayers).filter(id => !connectedPlayers[id].isDeleted);
-    if (ids.length === 0) {
+    const playersToShow = allCharacters;
+    if (playersToShow.length === 0) {
         grid.classList.add('m-empty-state');
         grid.innerHTML = '';
     } else {
         grid.classList.remove('m-empty-state');
-        grid.innerHTML = ids.map(id => {
-            const p = connectedPlayers[id];
+        grid.innerHTML = playersToShow.map(p => {
+            const id = p.socketId || p.syncId;
             const hpPercent = Math.max(0, Math.min(100, (p.hp.current / p.hp.max) * 100));
             const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
+            const statusColor = p.isOnline ? 'var(--green)' : 'var(--txt-muted)';
             return `
-                <div class="player-card" onclick="openPlayerSheet('${id}')">
+                <div class="player-card ${p.isOnline ? '' : 'is-offline'}" onclick="openPlayerSheet('${id}')" style="position:relative; opacity: ${p.isOnline ? '1' : '0.7'};">
+                    <div class="online-indicator" style="position:absolute; top:12px; left:12px; width:10px; height:10px; border-radius:50%; background:${statusColor}; box-shadow: 0 0 5px ${statusColor};"></div>
                     <button class="btn-delete-card" onclick="event.stopPropagation(); masterSoftDeletePlayer('${id}')" title="Excluir Jogador">×</button>
-                    <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                    <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem; border-color: ${p.isOnline ? 'var(--gold)' : 'var(--panel-border)'};">
                         ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
                     </div>
                     <strong>${p.name || 'Sem Nome'}</strong>
                     <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[p.race]?.name || '---'} • ${CLASSES[p.cls]?.name || '---'} • Nv.${p.level}</div>
+                    <div class="label-tiny" style="font-size: 0.5rem; opacity: 0.5;">${p.isOnline ? 'Online' : 'Offline'}</div>
                     
                     <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
                     <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
@@ -266,7 +269,14 @@ window.broadcastMasterAlert = function() {
 };
 
 window.openPlayerSheet = function(id) {
-    masterEditingId = id; masterEditingType = 'player'; state = connectedPlayers[id];
+    // Procura primeiro no array allCharacters que já está consolidado
+    const p = allCharacters.find(char => (char.socketId === id || char.syncId === id));
+    if (!p) return;
+
+    masterEditingId = p.socketId || p.syncId; 
+    masterEditingType = 'player'; 
+    state = { ...p };
+    
     currentView = 'sheet-view';
     const container = document.getElementById('sheet-container');
     if (container) container.classList.remove('read-only');
