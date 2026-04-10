@@ -259,14 +259,7 @@ async function openUserSelectionModal(charData) {
     }
 }
 
-window.startNPCCreation = function() {
-    isCreatingNPC = true;
-    isPreCreatingPlayer = false;
-    wizardData = {
-        active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
-        personality: { traits: '', ideals: '', bonds: '', flaws: '' },
-        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
-    };
+function resetWizardUI() {
     const nameInput = document.getElementById('create-name');
     if (nameInput) {
         nameInput.value = '';
@@ -275,7 +268,21 @@ window.startNPCCreation = function() {
         nameInput.style.pointerEvents = 'auto';
         nameInput.style.userSelect = 'text';
     }
-    buildGrids(); switchView('creation-screen'); goToStep(1);
+    const photoInput = document.getElementById('create-photo');
+    if (photoInput) photoInput.value = '';
+    goToStep(1);
+}
+
+window.startNPCCreation = function() {
+    isCreatingNPC = true;
+    isPreCreatingPlayer = false;
+    wizardData = {
+        active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
+        personality: { traits: '', ideals: '', bonds: '', flaws: '' },
+        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
+    };
+    resetWizardUI();
+    buildGrids(); switchView('creation-screen');
 };
 
 window.startPlayerCreationByMaster = function() {
@@ -286,5 +293,6 @@ window.startPlayerCreationByMaster = function() {
         personality: { traits: '', ideals: '', bonds: '', flaws: '' },
         attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
     };
-    buildGrids(); switchView('creation-screen'); goToStep(1);
+    resetWizardUI();
+    buildGrids(); switchView('creation-screen');
 };

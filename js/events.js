@@ -76,6 +76,7 @@ function setupEvents() {
             wizardData.active = true;
             wizardData.step = 1;
             document.getElementById('character-selection')?.classList.remove('active');
+            if (typeof resetWizardUI === 'function') resetWizardUI();
             render();
             return;
         }

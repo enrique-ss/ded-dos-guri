@@ -582,7 +582,16 @@
     background-repeat: no-repeat;
     z-index: -1;
     pointer-events: none;
-    filter: brightness(0.8); /* Escurece as imagens de fundo específicas */
+    filter: brightness(0.4); /* Escurece as imagens diretamente pelas origens */
+}
+
+/* Modo Claro: Imagens originais ficam mais vivas */
+[data-theme="light"] #auth-screen::before, [data-theme="light"] #role-selection::before, 
+[data-theme="light"] #creation-screen::before, [data-theme="light"] #character-selection::before, 
+[data-theme="light"] #master-panel::before, [data-theme="light"] #sheet-view::before, 
+[data-theme="light"] #items-view::before, [data-theme="light"] #habilidades-view::before, 
+[data-theme="light"] #history-view::before {
+    filter: brightness(0.85);
 }
 
 #master-panel {
