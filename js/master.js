@@ -1,145 +1,307 @@
 // ==================== MASTER HUB LOGIC ====================
 
-function renderMasterPanel() {
+/**
+ * Função central para gerar o HTML de qualquer card de entidade (Player, NPC, DB Character)
+ * Garante padronização visual em todo o painel do mestre.
+ */
+function createEntityCardHtml(entity, type, options = {}) {
+    if (!entity) return '';
+    
+    const { isOnline = false, dbId = null, extraClasses = '' } = options;
+    const p = entity;
+    
+    const hpPercent = Math.max(0, Math.min(100, (p.hp.current / p.hp.max) * 100));
+    const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
+    
+    const dexMod = Math.floor(((p.attr?.des || 10) - 10) / 2);
+    const initDisplay = (p.initiativeRoll ? p.initiativeRoll : (dexMod >= 0 ? '+' : '') + dexMod);
+
+    // Define o ID de clique e o tipo para abertura de ficha
+    let clickArgs;
+    if (type === 'npc') {
+        clickArgs = `'npc', '${p.id}'`;
+    } else if (type === 'player') {
+        clickArgs = `'player', '${options.socketId}'`;
+    } else {
+        clickArgs = `'db_character', '${dbId}'`;
+    }
+
+    return `
+        <div class="player-card ${isOnline ? 'is-online' : 'is-offline'} ${extraClasses}" onclick="openEntitySheet(${clickArgs})">
+            ${isOnline ? '<div class="online-indicator" title="Online"></div>' : ''}
+            
+            <button class="btn-delete-card" onclick="event.stopPropagation(); deleteEntityMaster('${dbId || p.id}', '${type}')" title="Excluir Permanentemente">×</button>
+            
+            <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : '👤')}
+            </div>
+            
+            <strong>${p.name || 'Sem Nome'}</strong>
+            <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">
+                ${RACES[p.race]?.name || p.race || ''} • ${CLASSES[p.cls]?.name || ''} • Nv.${p.level || 1}
+            </div>
+            
+            <div class="hp-bar-container" style="margin-top: 0.6rem;">
+                <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
+            </div>
+            <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
+
+            <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.ac || 10}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${initDisplay}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.speed || 9}m</span>
+                </div>
+            </div>
+
+            ${type === 'db_character' && p.userEmail ? `<div class="label-tiny" style="opacity: 0.5; font-size: 0.5rem; margin-top: 8px;">Dono: ${p.userEmail}</div>` : ''}
+        </div>
+    `;
+}
+
+/** 
+ * Garante que a cache de personagens do banco esteja preenchida. 
+ * Resolvido problema onde Mesa só funcionava após entrar na aba Personagens.
+ */
+async function ensureDbCharsCache(force = false) {
+    if (!window._dbCharsCache || force) {
+        try {
+            const res = await fetch('/api/admin/characters');
+            if (!res.ok) throw new Error("Erro ao buscar personagens");
+            window._dbCharsCache = await res.json();
+        } catch (err) {
+            console.error("Erro ao preencher cache:", err);
+            window._dbCharsCache = [];
+        }
+    }
+    return window._dbCharsCache;
+}
+
+async function renderMasterPanel() {
+    // Garante dados básicos antes de renderizar qualquer aba que dependa de IDs
+    await ensureDbCharsCache();
+
+    // Forçar 'mesa' como aba inicial se nenhuma estiver definida ou para garantir padrão
+    if (!masterState.activeTab) masterState.activeTab = 'mesa';
+    
     const panel = document.getElementById('master-panel');
     if (panel) panel.setAttribute('data-active-tab', masterState.activeTab);
 
-    const grid = document.getElementById('master-grid');
-    if (!grid) return;
-    const ids = Object.keys(connectedPlayers).filter(id => !connectedPlayers[id].isDeleted);
-    if (ids.length === 0) {
-        grid.classList.add('m-empty-state');
-        grid.innerHTML = '';
-    } else {
-        grid.classList.remove('m-empty-state');
-        grid.innerHTML = ids.map(id => {
-            const p = connectedPlayers[id];
-            const hpPercent = Math.max(0, Math.min(100, (p.hp.current / p.hp.max) * 100));
-            const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
-            return `
-                <div class="player-card" onclick="openPlayerSheet('${id}')">
-                    <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
-                        ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : '👤'}
-                    </div>
-                    <strong>${p.name || 'Sem Nome'}</strong>
-                    <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[p.race]?.name || ''} • ${CLASSES[p.cls]?.name || ''} • Nv.${p.level}</div>
-                    
-                    <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
-                    <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
+    // Atualiza Sidebar
+    document.querySelectorAll('.m-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === masterState.activeTab);
+    });
 
-                    <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
-                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.ac || 10}</span>
-                        </div>
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${(typeof npc !== 'undefined' ? npc : p).initiativeRoll || Math.floor(((typeof npc !== 'undefined' ? npc : p).attr.des - 10) / 2)}</span>
-                        </div>
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
-                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.speed}m</span>
-                        </div>
-                    </div>
-
-                    <div class="conditions-hub-display" style="margin-top: 0.6rem; min-height: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;">
-                        ${(p.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-    document.querySelectorAll('.m-nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === masterState.activeTab));
-    document.querySelectorAll('.m-tab-content').forEach(tab => tab.classList.toggle('active', tab.id === `m-tab-${masterState.activeTab}`));
-    if (masterState.activeTab === 'initiative') renderInitiative();
-    if (masterState.activeTab === 'bestiary') renderBestiary();
-    if (masterState.activeTab === 'log') renderLogHistory();
-    if (masterState.activeTab === 'notes') {
-        const area = document.getElementById('master-private-notes');
-        if (area) area.value = masterState.notes;
+    // Atualiza Conteúdo
+    document.querySelectorAll('.m-tab-content').forEach(tab => {
+        tab.classList.toggle('active', tab.id === `m-tab-${masterState.activeTab}`);
+    });
+    
+    // Renderiza o conteúdo específico da aba ativa
+    switch(masterState.activeTab) {
+        case 'mesa': await renderMesa(); break;
+        case 'initiative': renderInitiative(); break;
+        case 'bestiary': renderBestiary(); break; 
+        case 'monsters': renderMonsters(); break; // Nova aba de Monstros
+        case 'characters': await renderAllCharacters(); break;
+        case 'log': renderLogHistory(); break;
+        case 'notes': 
+            const area = document.getElementById('master-private-notes');
+            if (area) area.value = masterState.notes;
+            break;
     }
 }
 
-window.switchMasterTab = function(tabId) {
-    masterState.activeTab = tabId; saveMasterState(); renderMasterPanel();
-};
+async function renderMesa() {
+    const grid = document.getElementById('mesa-grid');
+    if (!grid) return;
 
-function renderInitiative() {
-    const list = document.getElementById('initiative-list');
-    if (!list) return;
-
-    const hasBattle = masterState.battleOrder && masterState.battleOrder.length > 0;
-    const btnEnd = document.getElementById('btn-end-battle');
-    if (btnEnd) btnEnd.style.display = hasBattle ? 'block' : 'none';
-
-    if (!hasBattle) {
-        list.classList.add('m-empty-state');
-        list.innerHTML = '';
+    if (!masterState.tableCharacters || masterState.tableCharacters.length === 0) {
+        grid.innerHTML = `
+            <div class="m-empty-state">
+                <span>Nenhum personagem na mesa ainda.</span>
+                <button class="btn-ghost" onclick="window.openMesaSetup()" style="margin-top: 1rem; pointer-events: auto;">Gerenciar Mesa</button>
+            </div>
+        `;
         return;
     }
 
-    list.classList.remove('m-empty-state');
-    list.innerHTML = masterState.battleOrder.map(item => {
-        // Fallback: Tenta achar por ID, se não conseguir (ex: reconexão), tenta pelo nome
-        let entity = item.isPlayer 
-            ? (connectedPlayers[item.id] || Object.values(connectedPlayers).find(p => p.name === item.name))
-            : masterState.npcs.find(n => n.id == item.id);
-            
-        const hpStr = entity ? `<span style="font-size:0.85rem; opacity:0.8; font-weight: 500; margin-left: 12px; color: var(--gold);">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
-        const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through; opacity: 0.6;' : 'color: var(--txt);';
-        
-        let icon = '👾'; 
-        if (item.isPlayer && entity) {
-            icon = CLASSES[entity.cls]?.icon || '🛡️';
-        }
+    const onlineMap = {};
+    grid.classList.remove('m-empty-state');
+    Object.values(connectedPlayers).forEach(p => { if (p.id) onlineMap[p.id] = p; });
 
-        const liveInit = (entity && entity.initiativeRoll !== undefined && entity.initiativeRoll !== '') ? entity.initiativeRoll : item.val;
-
-        return `
-        <div class="initiative-row ${item.isPlayer ? 'player' : 'npc'}" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};">
-            <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${liveInit}</div>
-            <div class="init-name" style="flex: 1; ${dangerStr}">${icon} <strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
-        </div>
-        `;
+    grid.innerHTML = masterState.tableCharacters.map(dbId => {
+        const dbChar = (window._dbCharsCache || []).find(c => c.id === dbId);
+        const onlineSocketId = Object.keys(connectedPlayers).find(k => connectedPlayers[k].id === dbId);
+        const onlineChar = onlineSocketId ? connectedPlayers[onlineSocketId] : null;
+        const entity = onlineChar || (dbChar ? dbChar.data : null);
+        if (!entity) return '';
+        return createEntityCardHtml(entity, onlineChar ? 'player' : 'db_character', { isOnline: !!onlineChar, dbId: dbId, socketId: onlineSocketId });
     }).join('');
-
 }
 
+function renderBestiary() {
+    const grid = document.getElementById('npcs-grid');
+    if (!grid) return;
+    if (!masterState.npcs || masterState.npcs.length === 0) { 
+        grid.innerHTML = '<div class="m-empty-state"><span>Nenhum NPC de história criado ainda.</span></div>'; 
+        return; 
+    }
+    grid.classList.remove('m-empty-state');
+    grid.innerHTML = masterState.npcs.filter(n => !n.isDeleted).map(npc => createEntityCardHtml(npc, 'npc')).join('');
+}
+
+function renderMonsters() {
+    const grid = document.getElementById('monsters-grid');
+    if (!grid) return;
+    if (!masterState.monsters || masterState.monsters.length === 0) { 
+        grid.innerHTML = '<div class="m-empty-state"><span>Seu bestiário está vazio.</span></div>'; 
+        return; 
+    }
+    grid.classList.remove('m-empty-state');
+    grid.innerHTML = masterState.monsters.filter(n => !n.isDeleted).map(monster => createEntityCardHtml(monster, 'monster')).join('');
+}
+
+async function renderAllCharacters() {
+    const grid = document.getElementById('all-characters-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '<div class="m-empty-state"><div class="loader-spinner"></div>Buscando no banco...</div>';
+    
+    // Usa o helper compartilhado para buscar dados
+    const chars = await ensureDbCharsCache(true); // 'true' para forçar refresh manual se solicitado pelo botão
+    
+    if (!chars || chars.length === 0) {
+        grid.innerHTML = '<div class="m-empty-state"><span>Nenhum personagem encontrado no banco.</span></div>';
+        return;
+    }
+
+    grid.classList.remove('m-empty-state');
+    grid.innerHTML = chars.map(c => createEntityCardHtml(c.data, 'db_character', { dbId: c.id })).join('');
+}
+
+window.openMesaSetup = async function() {
+    // Busca personagens do banco se não tiver cache
+    if (!window._dbCharsCache) {
+        const res = await fetch('/api/admin/characters');
+        window._dbCharsCache = await res.json();
+    }
+    
+    const chars = window._dbCharsCache || [];
+    
+    const html = `
+        <div id="mesa-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
+            <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Gerenciar Mesa</h2>
+                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;" id="mesa-selection-list">
+                    ${chars.map(c => `
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
+                            <span style="font-weight:700;">
+                                <input type="checkbox" class="mesa-check" value="${c.id}" ${masterState.tableCharacters.includes(c.id) ? 'checked' : ''} style="margin-right: 10px;"> 
+                                ${c.data.name}
+                            </span>
+                            <span class="label-tiny">${c.owner_email || 'Herói'}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div style="display:flex; gap: 1rem;">
+                    <button class="btn-ghost" onclick="document.getElementById('mesa-setup-modal').remove()" style="flex:1;">Cancelar</button>
+                    <button class="btn-primary" onclick="window.confirmMesaSetup()" style="flex:1;">Salvar Mesa</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.confirmMesaSetup = function() {
+    const checks = document.querySelectorAll('.mesa-check:checked');
+    masterState.tableCharacters = Array.from(checks).map(c => c.value);
+    saveMasterState();
+    document.getElementById('mesa-setup-modal').remove();
+    renderMesa();
+};
+
+window.deleteEntityMaster = async function(id, type) {
+    const msg = type === 'monster' ? "Deseja excluir este Monstro permanentemente?" : (type === 'npc' ? "Deseja excluir este NPC permanentemente?" : "Deseja excluir este personagem PERMANENTEMENTE do banco de dados?");
+    if (!confirm(msg)) return;
+
+    if (type === 'npc') {
+        masterState.npcs = masterState.npcs.filter(n => n.id != id);
+        saveMasterState(); renderBestiary();
+    } else if (type === 'monster') {
+        masterState.monsters = (masterState.monsters || []).filter(n => n.id != id);
+        saveMasterState(); renderMonsters();
+    } else {
+        try {
+            const res = await fetch(`/api/admin/characters/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("Erro ao excluir no servidor");
+            
+            masterState.tableCharacters = masterState.tableCharacters.filter(tid => tid != id);
+            if (window._dbCharsCache) window._dbCharsCache = window._dbCharsCache.filter(c => c.id != id);
+            
+            saveMasterState(); renderMesa(); renderAllCharacters();
+            
+        } catch (err) {
+            alert("Erro ao excluir: " + err.message);
+        }
+    }
+};
+
 window.startBattleSetup = function() {
-    const players = Object.values(connectedPlayers).filter(p => !p.isDeleted).map(p => ({id: p.id, name: p.name, init: p.initiativeRoll||0, type: 'player'}));
-    const npcs = (masterState.npcs||[]).filter(n => !n.isDeleted).map(n => ({id: n.id, name: n.name, init: n.initiativeRoll||0, type: 'npc'}));
+    // Puxa apenas quem está na Mesa
+    const mesaPlayers = (masterState.tableCharacters || []).map(dbId => {
+        const dbChar = (window._dbCharsCache || []).find(c => c.id === dbId);
+        const onlineSocketId = Object.keys(connectedPlayers).find(k => connectedPlayers[k].id === dbId);
+        const p = onlineSocketId ? connectedPlayers[onlineSocketId] : (dbChar ? dbChar.data : null);
+        if (!p) return null;
+        const dexMod = Math.floor(((p.attr?.des || 10) - 10) / 2);
+        const init = p.initiativeRoll || dexMod;
+        return { id: dbId, name: p.name, init: init, isPlayer: true, socketId: onlineSocketId };
+    }).filter(p => p !== null);
+
+    const getInic = (n) => n.initiativeRoll || Math.floor(((n.attr?.des || 10) - 10) / 2);
+
+    const npcs = (masterState.npcs || []).filter(n => !n.isDeleted).map(n => ({ id: n.id, name: n.name, init: getInic(n), isPlayer: false }));
+    const monsters = (masterState.monsters || []).filter(n => !n.isDeleted).map(n => ({ id: n.id, name: n.name, init: getInic(n), isPlayer: false }));
     
     const html = `
         <div id="battle-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
             <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Setup de Batalha</h2>
-                <p style="text-align:center; font-size:0.8rem; margin-bottom: 1.5rem;" class="muted-text">Selecione quem irá participar do combate.\nA ordem será gerada com base na rolagem de Iniciativa atual de cada um.</p>
-                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 0.5rem;" id="battle-selection-list">
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">Jogadores</h3>
-                    ${players.length === 0 ? '<div class="muted-text" style="margin-bottom:1rem; font-size:0.8rem;">Nenhum jogador online.</div>' : ''}
-                    ${players.map(p => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
-                            <span style="font-weight:700;">
-                                <input type="checkbox" class="battle-check player-check" value="${p.id}" data-name="${p.name}" data-init="${p.init}" checked style="margin-right: 10px;"> 
-                                ${p.name}
-                            </span>
-                            <span class="label-tiny">Init: ${p.init}</span>
+                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border);">Mesa</h3>
+                    ${mesaPlayers.map(p => `
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                            <span><input type="checkbox" class="battle-check player-check" value="${p.id}" data-name="${p.name}" data-init="${p.init}" checked data-socket="${p.socketId || ''}"> ${p.name}</span>
+                            <span class="label-tiny">Ini: ${p.init}</span>
                         </label>
                     `).join('')}
                     
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.3rem;">NPCs</h3>
-                    ${npcs.length === 0 ? '<div class="muted-text" style="font-size:0.8rem;">Nenhum NPC disponível.</div>' : ''}
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top:1rem; border-bottom: 1px solid var(--panel-border);">NPCs & Aliados</h3>
                     ${npcs.map(n => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
-                            <span style="font-weight:700;">
-                                <input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> 
-                                ${n.name}
-                            </span>
-                            <span class="label-tiny">Init: ${n.init}</span>
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
+                            <span class="label-tiny">Ini: ${n.init}</span>
+                        </label>
+                    `).join('')}
+
+                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top:1rem; border-bottom: 1px solid var(--panel-border);">Bestiário</h3>
+                    ${monsters.map(n => `
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
+                            <span class="label-tiny">Ini: ${n.init}</span>
                         </label>
                     `).join('')}
                 </div>
-                <div style="display:flex; gap: 1rem; margin-top: 1rem;">
+                <div style="display:flex; gap: 1rem;">
                     <button class="btn-ghost" onclick="document.getElementById('battle-setup-modal').remove()" style="flex:1;">Cancelar</button>
                     <button class="btn-primary" onclick="window.confirmBattleSetup()" style="flex:1;">Gerar Ordem</button>
                 </div>
@@ -151,107 +313,66 @@ window.startBattleSetup = function() {
 
 window.confirmBattleSetup = function() {
     const checks = document.querySelectorAll('.battle-check:checked');
-    const combatants = [];
-    checks.forEach(c => {
-        combatants.push({
-            id: c.value,
-            name: c.dataset.name,
-            val: parseInt(c.dataset.init) || 0,
-            isPlayer: c.classList.contains('player-check')
-        });
-    });
-    
-    // Filtra e organiza quem tem maior iniciativa primeiro
-    combatants.sort((a,b) => b.val - a.val);
+    const combatants = Array.from(checks).map(c => ({
+        id: c.value,
+        name: c.dataset.name,
+        val: parseInt(c.dataset.init) || 0,
+        isPlayer: c.classList.contains('player-check'),
+        socketId: c.dataset.socket
+    })).sort((a,b) => b.val - a.val);
     
     masterState.battleOrder = combatants;
     saveMasterState();
     
-    // Atualiza o estado individual dos participantes
     combatants.forEach(c => {
-        if (c.isPlayer) {
-            const pData = connectedPlayers[c.id];
-            if (pData) socket.emit('masterUpdatePlayer', { targetId: c.id, data: { inBattle: true } });
-        } else {
-            const npc = masterState.npcs.find(n => n.id == c.id);
-            if (npc) npc.inBattle = true;
-        }
+        if (c.isPlayer && c.socketId) socket.emit('masterUpdatePlayer', { targetId: c.socketId, data: { ...connectedPlayers[c.socketId], inBattle: true } });
+        else if (!c.isPlayer) { const npc = masterState.npcs.find(n => n.id == c.id); if (npc) npc.inBattle = true; }
     });
 
     sendSystemLog(`⚔️ <strong>Início de Combate!</strong>`);
-    
-    const m = document.getElementById('battle-setup-modal');
-    if(m) m.remove();
-    
+    document.getElementById('battle-setup-modal').remove();
     renderInitiative();
 };
 
+window.switchMasterTab = function(tabId) {
+    masterState.activeTab = tabId; saveMasterState(); renderMasterPanel();
+};
+
+function renderInitiative() {
+    const list = document.getElementById('initiative-list');
+    if (!list) return;
+    const hasBattle = masterState.battleOrder && masterState.battleOrder.length > 0;
+    const btnEnd = document.getElementById('btn-end-battle');
+    if (btnEnd) btnEnd.style.display = hasBattle ? 'block' : 'none';
+    if (!hasBattle) { 
+        list.innerHTML = '<div class="m-empty-state">Nenhum combate ativo.</div>'; 
+        return; 
+    }
+    list.classList.remove('m-empty-state');
+    list.innerHTML = masterState.battleOrder.map(item => {
+        let entity = item.isPlayer ? connectedPlayers[item.socketId] : masterState.npcs.find(n => n.id == item.id);
+        const hpStr = entity ? `<span style="font-size:0.85rem; opacity:0.8; font-weight: 500; margin-left: 12px; color: var(--gold);">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
+        const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through; opacity: 0.6;' : 'color: var(--txt);';
+        return `
+            <div class="initiative-row" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};">
+                <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${item.val}</div>
+                <div class="init-name" style="flex: 1; ${dangerStr}"><strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
+            </div>
+        `;
+    }).join('');
+}
+
 window.endBattle = function() {
     if(!confirm("Encerrar a batalha atual?")) return;
-    
-    // Limpa estado de batalha de todos
     masterState.battleOrder.forEach(c => {
-        if (c.isPlayer) {
-            socket.emit('masterUpdatePlayer', { targetId: c.id, data: { inBattle: false } });
-        } else {
-            const npc = masterState.npcs.find(n => n.id == c.id);
-            if (npc) npc.inBattle = false;
-        }
+        if (c.isPlayer && c.socketId) socket.emit('masterUpdatePlayer', { targetId: c.socketId, data: { ...connectedPlayers[c.socketId], inBattle: false } });
+        else if (!c.isPlayer) { const npc = masterState.npcs.find(n => n.id == c.id); if (npc) npc.inBattle = false; }
     });
-
     masterState.battleOrder = [];
     saveMasterState();
     sendSystemLog(`🏁 <strong>Batalha encerrada!</strong>`);
     renderInitiative();
 };
-
-
-function renderBestiary() {
-    const grid = document.getElementById('npcs-grid');
-    if (!grid) return;
-    if (masterState.npcs.length === 0) { 
-        grid.classList.add('m-empty-state');
-        grid.innerHTML = ''; 
-        return; 
-    }
-    grid.classList.remove('m-empty-state');
-    grid.innerHTML = (masterState.npcs || []).filter(n => !n.isDeleted).map(npc => {
-        const hpPercent = Math.max(0, Math.min(100, (npc.hp.current / npc.hp.max) * 100));
-        const hpClass = hpPercent < 25 ? 'danger' : (hpPercent < 50 ? 'warning' : '');
-        return `
-            <div class="player-card" onclick="openNPCSheet('${npc.id}')">
-                <button class="btn-delete-card" onclick="event.stopPropagation(); softDeleteNPC(${npc.id})" title="Excluir NPC">×</button>
-                <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
-                    ${npc.photo ? `<img src="${npc.photo}" class="char-portrait" style="display:block">` : '👾'}
-                </div>
-                <strong>${npc.name || 'Sem Nome'}</strong>
-                <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">${RACES[npc.race]?.name || npc.race || ''} • ${CLASSES[npc.cls]?.name || ''} • Nv.${npc.level || 1}</div>
-                
-                <div class="hp-bar-container" style="margin-top: 0.6rem;"><div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div></div>
-                <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${npc.hp.current} / ${npc.hp.max} HP</div>
-
-                <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
-                    <div style="display:flex; flex-direction:column; align-items:center;">
-                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
-                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.ac || 10}</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; align-items:center;">
-                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.initiativeRoll || Math.floor((npc.attr.des - 10) / 2)}</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; align-items:center;">
-                        <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
-                        <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${npc.speed}m</span>
-                    </div>
-                </div>
-
-                <div class="conditions-hub-display" style="margin-top: 0.6rem; min-height: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem;">
-                    ${(npc.conditions || []).map(id => `<span>${CONDITIONS[id]?.icon}</span>`).join('')}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
 
 function renderLogHistory() {
     const list = document.getElementById('master-log-history');
@@ -263,110 +384,48 @@ function renderLogHistory() {
     `).join('');
 }
 
-window.broadcastMasterAlert = function() {
-    const input = document.getElementById('master-alert-input');
-    const msg = input.value.trim();
-    if (msg && socket) { socket.emit('sendAlert', msg); input.value = ''; }
-};
-
-window.openPlayerSheet = function(id) {
-    masterEditingId = id; masterEditingType = 'player'; state = connectedPlayers[id];
+window.openEntitySheet = function(type, id) {
+    let entity;
+    if (type === 'player') entity = connectedPlayers[id];
+    else if (type === 'npc') entity = masterState.npcs.find(n => n.id == id);
+    else if (type === 'db_character') {
+        const charEntry = (window._dbCharsCache || []).find(c => c.id === id);
+        if (charEntry) entity = charEntry.data;
+    }
+    
+    if (!entity) return;
+    masterEditingId = id;
+    masterEditingType = type === 'db_character' ? 'player' : type; 
+    state = entity;
     currentView = 'sheet-view';
     const container = document.getElementById('sheet-container');
     if (container) container.classList.remove('read-only');
     render();
 };
 
-window.openNPCSheet = function(id) {
-    const npc = masterState.npcs.find(n => n.id == id);
-    if (!npc) return;
-    masterEditingId = id; masterEditingType = 'npc'; state = npc;
-    currentView = 'sheet-view';
-    const container = document.getElementById('sheet-container');
-    if (container) container.classList.remove('read-only');
-    render();
-};
-
-window.softDeleteNPC = function(id) {
-    if (!confirm("Arquivar este NPC?")) return;
-    const npc = masterState.npcs.find(n => n.id == id);
-    if (npc) { npc.isDeleted = true; saveMasterState(); render(); }
-};
-
-
-window.handleAdminCredentials = function(e) {
-    e.preventDefault();
-    const email = document.getElementById('admin-email').value;
-    const pass = document.getElementById('admin-password').value;
-    if (email === 'admin@rpg.com' && pass === 'admin123') {
-        const modal = document.getElementById('admin-credentials-modal');
-        if (modal) modal.remove();
-        roleSelected = true; isMaster = true; isAdmin = true;
-        masterState.activeTab = 'users'; saveMasterState(); render();
-    } else alert("Inválido!");
-};
-
-window.closeAdminCredentials = () => { const m = document.getElementById('admin-credentials-modal'); if(m) m.remove(); };
-
-window.showAdminCredentials = function() {
-    const html = `
-        <div id="admin-credentials-modal" class="full-screen-modal active" style="background: rgba(0,0,0,0.9);">
-            <div class="creation-wizard fade-in" style="max-width: 400px;">
-                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">Admin Mode</h2>
-                <form id="admin-credentials-form" style="display: flex; flex-direction: column; gap: 1rem;" onsubmit="handleAdminCredentials(event)">
-                    <input type="email" id="admin-email" placeholder="Email" required>
-                    <input type="password" id="admin-password" placeholder="Senha" required>
-                    <button type="submit" class="btn-primary">Entrar</button>
-                    <button type="button" onclick="closeAdminCredentials()">Cancelar</button>
-                </form>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', html);
-};
+window.openPlayerSheet = id => openEntitySheet('player', id);
+window.openNPCSheet = id => openEntitySheet('npc', id);
+window.openDatabaseCharacter = id => openEntitySheet('db_character', id);
 
 window.clearMasterLog = function() {
-    if (confirm('Tem certeza que deseja apagar todo o histórico desta aventura?')) {
-        masterState.logHistory = [];
-        saveMasterState();
-        renderLogHistory();
+    if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
+        masterState.logHistory = []; saveMasterState(); renderLogHistory();
     }
 };
 
 window.openNPCGeneratorSetup = function() {
     const raceOps = Object.keys(RACES).map(k => `<option value="${k}">${RACES[k].name}</option>`).join('');
     const classOps = Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k].name}</option>`).join('');
-    
     const html = `
         <div id="npc-gen-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
             <div class="premium-card" style="width: 100%; max-width: 450px; padding: 2.5rem;">
                 <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">Gerador de NPC</h2>
-                
                 <div class="form-group" style="margin-bottom: 2rem;">
-                    <div>
-                        <label class="label-tiny">Raça</label>
-                        <select id="gen-npc-race" class="premium-input full-width" style="background: var(--bg-overlay) !important;">
-                            <option value="random">🎲 Aleatória</option>
-                            ${raceOps}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="label-tiny">Classe</label>
-                        <select id="gen-npc-class" class="premium-input full-width" style="background: var(--bg-overlay) !important;">
-                            <option value="random">🎲 Aleatória</option>
-                            ${classOps}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="label-tiny">Nível</label>
-                        <input type="number" id="gen-npc-level" class="premium-input full-width" value="1" min="1" max="20" style="background: var(--bg-overlay) !important;">
-                    </div>
+                    <label class="label-tiny">Raça</label><select id="gen-npc-race" class="premium-input full-width">${raceOps}</select>
+                    <label class="label-tiny">Classe</label><select id="gen-npc-class" class="premium-input full-width">${classOps}</select>
+                    <label class="label-tiny">Nível</label><input type="number" id="gen-npc-level" class="premium-input full-width" value="1">
                 </div>
-
-                <div style="display:flex; gap: 1rem;">
-                    <button class="btn-ghost" onclick="document.getElementById('npc-gen-modal').remove()" style="flex:1;">Cancelar</button>
-                    <button class="btn-primary" onclick="window.confirmNPCGeneration()" style="flex:1;">Gerar NPC</button>
-                </div>
+                <div style="display:flex; gap: 1rem;"><button class="btn-ghost" onclick="document.getElementById('npc-gen-modal').remove()">Cancelar</button><button class="btn-primary" onclick="window.confirmNPCGeneration()">Gerar</button></div>
             </div>
         </div>
     `;
@@ -377,67 +436,16 @@ window.confirmNPCGeneration = function() {
     const race = document.getElementById('gen-npc-race').value;
     const cls = document.getElementById('gen-npc-class').value;
     const level = parseInt(document.getElementById('gen-npc-level').value) || 1;
-    
     window.generateRandomNPC(race, cls, level);
-    
-    const m = document.getElementById('npc-gen-modal');
-    if(m) m.remove();
+    document.getElementById('npc-gen-modal').remove();
 };
 
-window.generateRandomNPC = function(targetRace = 'random', targetCls = 'random', targetLevel = 1) {
-    const NAMES = [
-        "Tharivol", "Eberk", "Gimble", "Adrik", "Brodert", "Kildrak", "Vondal", "Zook", "Frug", "Milo",
-        "Lia", "Sarya", "Mialee", "Keyleth", "Valerius", "Kaelen", "Kethra", "Dorn", "Oakhart", "Ravana",
-        "Gromm", "Ursh", "Korg", "Brak", "Thokk", "Malakor", "Xanos", "Silas", "Elora", "Myrtle"
-    ];
-    
-    const raceKeys = Object.keys(RACES);
-    const classKeys = Object.keys(CLASSES);
-    const bgKeys = Object.keys(BACKGROUNDS);
-    const alignKeys = Object.keys(ALIGNMENTS);
-
-    // Pick randoms or use targets
-    const name = NAMES[Math.floor(Math.random() * NAMES.length)];
-    const race = targetRace === 'random' ? raceKeys[Math.floor(Math.random() * raceKeys.length)] : targetRace;
-    const cls = targetCls === 'random' ? classKeys[Math.floor(Math.random() * classKeys.length)] : targetCls;
-    const level = targetLevel;
-    
-    const bg = "";
-    const align = "";
-    
-    // Attributes (Standard Array shuffled)
-    const array = [...STANDARD_ARRAY];
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    
-    const attrNames = ['for', 'des', 'con', 'int', 'sab', 'car'];
-    const attr = {};
-    attrNames.forEach((n, i) => attr[n] = array[i]);
-    
-    // Calculate HP
-    const hpMax = (CLASSES[cls].hp + Math.floor((attr.con - 10) / 2)) * level;
-    
+window.generateRandomNPC = function(targetRace, targetCls, targetLevel) {
+    const name = "NPC_" + Math.floor(Math.random()*1000);
+    const hpMax = (CLASSES[targetCls].hp + 2) * targetLevel;
     const npc = {
-        ...getDefaultState(),
-        id: Date.now(),
-        isCreated: true,
-        name: name,
-        race: race,
-        cls: cls,
-        bg: bg,
-        align: align,
-        level: level,
-        hp: { current: hpMax, max: hpMax },
-        attr: attr,
-        speed: RACES[race].speed || 9,
-        hd: `${level}${CLASSES[cls].hd}`,
-        ac: 10 + Math.floor((attr.des - 10) / 2)
+        ...getDefaultState(), id: Date.now(), isCreated: true, name, race: targetRace, cls: targetCls, level: targetLevel,
+        hp: { current: hpMax, max: hpMax }, speed: RACES[targetRace].speed || 9, ac: 10
     };
-    
-    masterState.npcs.push(npc);
-    saveMasterState();
-    renderBestiary();
-    sendSystemLog(`🎭 Novo NPC Gerado: <strong>${npc.name}</strong> | ${RACES[npc.race].name} • ${CLASSES[npc.cls].name} • Nível ${level}`);
+    masterState.npcs.push(npc); saveMasterState(); renderBestiary();
 };

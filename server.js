@@ -55,6 +55,48 @@ app.post('/api/admin/characters/precreate', async (req, res) => {
     }
 });
 
+// Endpoint para listar todos os personagens (Apenas para Mestre)
+app.get('/api/admin/characters', async (req, res) => {
+    try {
+        // Busca todos os personagens
+        const { data: chars, error: charError } = await supabaseAdmin
+            .from('characters')
+            .select('*')
+            .order('updated_at', { ascending: false });
+        if (charError) throw charError;
+
+        // Busca todos os usuários para mapear o e-mail
+        const { data: { users }, error: userError } = await supabaseAdmin.auth.admin.listUsers();
+        if (userError) throw userError;
+
+        // Mapeia o e-mail do dono para cada personagem
+        const mappedChars = chars.map(c => ({
+            ...c,
+            owner_email: users.find(u => u.id === c.user_id)?.email || 'Desconhecido'
+        }));
+
+        res.json(mappedChars);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Endpoint para excluir personagem (Apenas para Mestre)
+app.delete('/api/admin/characters/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { error } = await supabaseAdmin
+            .from('characters')
+            .delete()
+            .eq('id', id);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 io.on('connection', (socket) => {
     // Envia a lista atual de jogadores para quem acabou de conectar (útil para o Mestre)
     socket.emit('updatePlayersList', gamePlayers);

@@ -1,6 +1,5 @@
 /* ===== Master Hub Module ===== */
 
-
 .master-hub-layout {
     display: flex; flex-direction: row; gap: 1.5rem;
     height: calc(100vh - 2rem); max-width: 1800px;
@@ -41,7 +40,6 @@
 .m-nav-btn:hover { background: var(--bg-overlay); color: var(--gold); }
 .m-nav-btn.active { background: var(--gold) !important; color: #000 !important; box-shadow: 0 4px 15px var(--gold-glow); }
 
-
 .master-content { 
     flex: 1; 
     height: 100%; 
@@ -66,26 +64,48 @@
     display: block; 
 }
 
-/* MASTER HEADERS & EMPTY STATES */
-.m-tab-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 2rem; padding-bottom: 1rem;
+/* MASTER HEADERS */
+.m-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
     border-bottom: 1px solid var(--panel-border);
 }
 
-.m-tab-header h2 {
-    font-size: 2.2rem; margin: 0; color: var(--gold);
-    text-transform: uppercase; letter-spacing: 2px;
+.m-header-info h1, .m-header-info h2 {
+    font-size: 2.2rem; 
+    margin: 0; 
+    color: var(--gold);
+    text-transform: uppercase; 
+    letter-spacing: 2px;
+}
+
+.m-header-info p {
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.m-header-actions {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
 }
 
 .m-empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 5rem 2rem; text-align: center; gap: 1rem;
-    color: var(--txt); opacity: 0.6; /* Uso opacidade para 'muted' sem sair das 5 cores */
+    padding: 6rem 2rem; text-align: center; gap: 1rem;
+    color: var(--txt); opacity: 0.45; 
+    grid-column: 1 / -1; width: 100%;
+    font-style: italic; font-size: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
-.m-empty-state p {
-    font-size: 1.1rem; margin: 0; font-weight: 500;
+.m-empty-state span {
+    font-weight: 500;
 }
 
 .m-empty-state i {
@@ -93,14 +113,6 @@
 }
 
 /* MASTER PLAYER CARDS */
-.player-grid, #master-grid, #npcs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 220px);
-    gap: 2.5rem;
-    justify-content: start;
-    padding: 1rem 0;
-}
-
 .player-card {
     background: var(--panel); border: 2px solid var(--panel-border);
     border-radius: 20px; padding: 1.5rem; text-align: center;
@@ -109,7 +121,8 @@
     display: flex; flex-direction: column; align-items: center;
     justify-content: space-between;
     width: 220px;
-    height: 220px;
+    min-height: 240px;
+    height: auto;
     color: var(--txt);
     flex-shrink: 0;
     box-shadow: 0 8px 25px rgba(0,0,0,0.25);
@@ -132,14 +145,29 @@
 .init-score { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
 
 /* LOGS */
-#master-log-wrapper {
-    position: fixed; bottom: 80px; right: 20px; width: 320px; max-height: 400px;
-    background: var(--panel); border: 1px solid var(--gold); border-radius: 15px;
-    display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    backdrop-filter: blur(20px); z-index: 9000; overflow: hidden;
+.log-history {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1rem 0;
+    background: transparent;
+    border-radius: 12px;
 }
-.log-header { background: var(--gold-glow); padding: 0.8rem; font-size: 0.8rem; color: var(--gold); border-bottom: 1px solid var(--panel-border); }
-#master-log-content { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.85rem; }
+
+.log-entry {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--gold);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.log-time {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+}
 
 /* MASTER TOOLS */
 .master-sidebar-toggle {
@@ -148,4 +176,65 @@
     border-radius: 50%; color: var(--txt); display: flex; align-items: center;
     justify-content: center; cursor: pointer; box-shadow: 0 4px 15px var(--bg-overlay);
     backdrop-filter: blur(10px); z-index: 1001;
+}
+
+/* Status Indicators */
+.online-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    background: #555; /* Offline por padrão */
+    border: 2px solid var(--panel);
+}
+
+.is-online .online-indicator {
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+}
+
+.is-offline {
+    opacity: 0.8;
+    filter: grayscale(0.3);
+}
+
+.mt-1 { margin-top: 0.5rem; }
+
+/* Botão de Excluir nos cards */
+.btn-delete-card {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    color: var(--red);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
+}
+.player-card:hover .btn-delete-card {
+    opacity: 1;
+}
+.btn-delete-card:hover {
+    background: var(--red);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.m-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+    width: 100%;
 }

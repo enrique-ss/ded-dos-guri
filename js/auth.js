@@ -57,43 +57,29 @@ async function clearSession() {
     user = null;
     roleSelected = false;
     isMaster = false;
-    isAdmin = false;
     sessionStorage.removeItem('adminAuth');
     window.location.href = window.location.origin + window.location.pathname;
 }
 
 async function loadUsers() {
-    if (!supabaseClient) {
-        document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Supabase não disponível</div>';
-        return;
-    }
+    const listEl = document.getElementById('users-list');
+    if (!listEl) return;
+    
+    listEl.innerHTML = '<div class="loader-spinner"></div><p>Buscando usuários...</p>';
+    
     try {
-        const { data, error } = await supabaseClient.auth.admin.listUsers();
-        if (error) {
-            const { data: characters, error: charError } = await supabaseClient
-                .from('characters').select('data, updated_at');
-            if (charError) {
-                document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Erro ao carregar usuários</div>';
-                return;
-            }
-            const users = [...new Set(characters.map(c => c.data?.userEmail).filter(Boolean))];
-            document.getElementById('users-list').innerHTML = `
-                <div style="background: var(--bg-overlay); border-radius: 12px; padding: 1.5rem;">
-                    <h3 style="color: var(--gold); margin-bottom: 1rem;">Usuários Detectados (${users.length})</h3>
-                    ${users.length > 0 ? users.map(email => `
-                        <div style="padding: 0.75rem; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
-                            <span>${email}</span>
-                            <small style="color: var(--txt-muted);">Detectado via personagem</small>
-                        </div>
-                    `).join('') : '<div class="muted-text txt-center" style="padding: 2rem;">Nenhum usuário encontrado</div>'}
-                </div>
-            `;
+        const response = await fetch('/api/admin/users');
+        const users = await response.json();
+        
+        if (!users || users.length === 0) {
+            listEl.innerHTML = '<div class="muted-text txt-center">Nenhum usuário no sistema.</div>';
             return;
         }
-        document.getElementById('users-list').innerHTML = `
+
+        listEl.innerHTML = `
             <div style="background: var(--bg-overlay); border-radius: 12px; padding: 1.5rem;">
-                <h3 style="color: var(--gold); margin-bottom: 1rem;">Todos os Usuários (${data.users.length})</h3>
-                ${data.users.map(u => `
+                <h3 style="color: var(--gold); margin-bottom: 1rem;">Todos os Usuários (${users.length})</h3>
+                ${users.map(u => `
                     <div style="padding: 0.75rem; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
                         <span>${u.email}</span>
                         <small style="color: var(--txt-muted);">Criado: ${new Date(u.created_at).toLocaleDateString('pt-BR')}</small>
@@ -103,7 +89,7 @@ async function loadUsers() {
         `;
     } catch (error) {
         console.error('Erro ao carregar usuários:', error);
-        document.getElementById('users-list').innerHTML = '<div class="muted-text txt-center" style="padding: 3rem;">Erro ao carregar usuários</div>';
+        listEl.innerHTML = '<div class="muted-text txt-center">Erro ao carregar dados do servidor.</div>';
     }
 }
 

@@ -599,12 +599,12 @@
 }
 
 #master-panel::before {
-    background-image: url('../resources/mestre_dark.webp');
+    background-image: url('../resources/mestre_dark.jpg');
     background-size: cover; /* Garantia de preenchimento total e proporcional */
 }
 
 [data-theme="light"] #master-panel::before {
-    background-image: url('../resources/mestre_light.webp');
+    background-image: url('../resources/mestre_light.jpg');
 }
 
 #sheet-view, #items-view, #habilidades-view, #history-view {
@@ -612,35 +612,35 @@
 }
 
 #sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before {
-    background-image: url('../resources/jogador_dark.webp');
+    background-image: url('../resources/jogador_dark.jpg');
 }
 
 [data-theme="light"] #sheet-view::before, 
 [data-theme="light"] #items-view::before, 
 [data-theme="light"] #habilidades-view::before, 
 [data-theme="light"] #history-view::before {
-    background-image: url('../resources/jogador_light.webp');
+    background-image: url('../resources/jogador_light.jpg');
 }
 
 #auth-screen::before { 
-    background-image: url('../resources/login_dark.webp'); 
+    background-image: url('../resources/login_dark.jpg'); 
 }
 [data-theme="light"] #auth-screen::before { 
-    background-image: url('../resources/login_light.webp'); 
+    background-image: url('../resources/login_light.jpg'); 
 }
 
 #role-selection::before { 
-    background-image: url('../resources/role_dark.webp'); 
+    background-image: url('../resources/role_dark.jpg'); 
 }
 [data-theme="light"] #role-selection::before { 
-    background-image: url('../resources/role_light.webp'); 
+    background-image: url('../resources/role_light.jpg'); 
 }
 
 #creation-screen::before, #character-selection::before { 
-    background-image: url('../resources/heroi_dark.webp'); 
+    background-image: url('../resources/heroi_dark.jpg'); 
 }
 [data-theme="light"] #creation-screen::before, [data-theme="light"] #character-selection::before { 
-    background-image: url('../resources/heroi_light.webp'); 
+    background-image: url('../resources/heroi_light.jpg'); 
 }
 
 @media (max-width: 600px) {

@@ -53,8 +53,7 @@ function goToStep(n) {
         }
         if (wizardData.step === 4 && Object.values(wizardData.attr).some(v => v === 0)) { alert("Distribua todos os valores!"); return; }
     }
-    const titleSpan = document.querySelector('#creation-screen h1 span');
-    if (titleSpan) titleSpan.textContent = isCreatingNPC ? 'NPC' : 'Herói';
+    // Removido: O logo deve ser sempre 'D&D dosGuri'
     
     wizardData.step = n;
     if (n === 3) loadSkillChoices();
@@ -135,10 +134,17 @@ function finalizeWizard(name, bg, align, photo) {
 
     if (isCreatingNPC) {
         char.id = Date.now();
-        masterState.npcs.push(char);
+        // Salva na lista correta baseada no tipo que disparou a criação
+        if (isCreatingNPC === 'monster') {
+            masterState.monsters.push(char);
+            masterState.activeTab = 'monsters';
+        } else {
+            masterState.npcs.push(char);
+            masterState.activeTab = 'bestiary';
+        }
+        
         saveMasterState();
         isCreatingNPC = false;
-        masterState.activeTab = 'bestiary';
         switchView('master-panel');
     } else if (isPreCreatingPlayer) {
         // Fluxo de Pré-criação pelo Mestre
@@ -273,8 +279,8 @@ function resetWizardUI() {
     goToStep(1);
 }
 
-window.startNPCCreation = function() {
-    isCreatingNPC = true;
+window.startNPCCreation = function(type = 'npc') {
+    isCreatingNPC = type; // Agora armazena o tipo ('npc' ou 'monster')
     isPreCreatingPlayer = false;
     wizardData = {
         active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
@@ -282,6 +288,10 @@ window.startNPCCreation = function() {
         attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
     };
     resetWizardUI();
+    
+    // Atualiza subtítulo do Wizard
+    // Removido: O logo deve ser sempre 'D&D dosGuri'
+
     buildGrids(); switchView('creation-screen');
 };
 

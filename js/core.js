@@ -7,7 +7,6 @@ let socket;
 try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
 
 let isMaster = false;
-let isAdmin = false; 
 let connectedPlayers = {}; // { socketId: state }
 let masterEditingId = null; 
 let masterEditingType = 'player'; 
@@ -16,6 +15,7 @@ let roleSelected = false;
 let user = null;
 let currentView = 'sheet-view';
 let userCharacters = [];
+let sessionLog = []; // Histórico da sessão atual para todos os usuários
 let isPreCreatingPlayer = false;
 let targetUserIdByMaster = null;
 
@@ -67,12 +67,16 @@ function getDefaultState() {
     };
 }
 
+
 function loadMasterState() {
     return {
-        activeTab: 'players',
+        activeTab: 'mesa', 
         initiative: [], 
         notes: '',
         npcs: [],
+        monsters: [], // Nova lista separada para o Bestiário
+        tableCharacters: [], // Lista de IDs de personagens do banco que estão na mesa atual
+        logHistory: [], // Histórico persistente do mestre
         worldLore: { group: '', world: '', npcs: '' }
     };
 }
@@ -175,11 +179,18 @@ if (socket) {
     });
 
     socket.on('newLogEntry', ({ timestamp, text }) => {
-        if (!isMaster) return;
-        if (!masterState.logHistory) masterState.logHistory = [];
-        masterState.logHistory.push({ timestamp, text });
-        saveMasterState();
-        if (masterState.activeTab === 'log') renderLogHistory();
+        const logObj = { timestamp, text };
+        sessionLog.push(logObj); // Salva no histórico global do cliente
+        
+        if (isMaster) {
+            if (!masterState.logHistory) masterState.logHistory = [];
+            masterState.logHistory.push(logObj);
+            saveMasterState();
+            if (masterState.activeTab === 'log') renderLogHistory();
+        } else {
+            // Se for jogador e estiver na visualização de histórico, renderiza
+            if (currentView === 'history-view') renderHistoryView();
+        }
     });
 
     socket.on('incomingAlert', (text) => {
@@ -195,28 +206,16 @@ if (socket) {
 async function init() {
     if (supabaseClient) {
         try {
-            const adminEmail = 'admin@rpg.com';
-            const adminPass = 'admin123';
             const { data: { user: existingUser } } = await supabaseClient.auth.getUser();
-            if (!existingUser) {
-                const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
-                    email: adminEmail, password: adminPass
-                });
-                if (!loginError) { 
-                    user = loginData.user; 
-                    await loadStateFromSupabase(); 
-                    await loadMasterStateFromSupabase();
-                }
-            } else {
+            if (existingUser) {
                 user = existingUser;
                 await loadStateFromSupabase();
                 await loadMasterStateFromSupabase();
             }
         } catch (e) {
-            console.log('Setup de Admin Automático ignorado ou falhou:', e.message);
+            console.log('Erro ao recuperar usuário:', e.message);
         }
     }
-    // Removido loadState() vazio aqui para nao deletar a ficha que acabou de baixar da nuvem
     buildGrids();
     setupEvents();
     render();
@@ -295,7 +294,7 @@ async function loadStateFromSupabase() {
 function render() {
     const $ = id => document.getElementById(id);
     document.body.classList.toggle('is-master', isMaster);
-    const views = ['auth-screen', 'role-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'habilidades-view', 'history-view'];
+    const views = ['auth-screen', 'role-selection', 'character-selection', 'creation-screen', 'master-panel', 'sheet-view', 'items-view', 'habilidades-view', 'history-view', 'game-log-view'];
     views.forEach(v => { const el = $(v); if (el) el.classList.remove('active'); });
 
     if (!user) {
@@ -308,26 +307,12 @@ function render() {
         const roleSel = $('role-selection');
         const charSel = $('character-selection');
         
-        // Se estamos autenticados mas não selecionamos a função nem o personagem ainda
-        if (charSel.classList.contains('active')) {
-            // Se o char-selection estiver ativo, não mostramos o role-selection
-            return;
-        }
+        if (charSel && charSel.classList.contains('active')) return;
 
         if (roleSel) {
             roleSel.classList.add('active');
-            const isAdminUser = user && user.email === 'admin@rpg.com';
-            const adminCard = roleSel.querySelector('.admin-only');
             const selectionGrid = roleSel.querySelector('.selection-grid');
             const logoutSection = roleSel.querySelector('#logout-section');
-            
-            if (isAdminUser) {
-                if (adminCard) adminCard.style.display = 'flex';
-                if (selectionGrid) selectionGrid.classList.remove('two-options');
-            } else {
-                if (adminCard) adminCard.style.display = 'none';
-                if (selectionGrid) selectionGrid.classList.add('two-options');
-            }
             if (logoutSection) logoutSection.style.display = 'block';
         }
         return;
@@ -340,18 +325,17 @@ function render() {
         } else if (masterEditingId) {
             const targetView = $(currentView) || $('sheet-view');
             if (targetView) targetView.classList.add('active');
-            renderSheet();
-            if (currentView === 'items-view') renderItems();
-            if (currentView === 'habilidades-view') renderHabilidades();
+            if (currentView === 'game-log-view') renderHistoryView();
+            else {
+                renderSheet();
+                if (currentView === 'items-view') renderItems();
+                if (currentView === 'habilidades-view') renderHabilidades();
+            }
         } else {
             const masterPanel = $('master-panel');
             if (masterPanel) {
                 masterPanel.classList.add('active');
                 renderMasterPanel();
-                if (isAdmin) {
-                    document.querySelectorAll('.admin-only').forEach(tab => tab.style.display = 'block');
-                    if (masterState.activeTab === 'users') loadUsers();
-                }
             }
         }
     } else if (!state.isCreated || state.isDeleted) {
@@ -359,19 +343,20 @@ function render() {
             const creation = $('creation-screen');
             if(creation) creation.classList.add('active');
         } else {
-            const roleSel = $('role-selection');
-            if(roleSel) roleSel.classList.add('active');
+            const charSel = $('character-selection');
+            if(charSel) charSel.classList.add('active');
         }
     } else {
         const targetView = $(currentView) || $('sheet-view');
         if (targetView) {
-            targetView.classList.remove('fade-in');
-            void targetView.offsetWidth; // Trigger reflow
-            targetView.classList.add('active', 'fade-in');
+            targetView.classList.add('active');
         }
-        renderSheet();
-        if (currentView === 'items-view') renderItems();
-        if (currentView === 'habilidades-view') renderHabilidades();
+        if (currentView === 'game-log-view') renderHistoryView();
+        else {
+            renderSheet();
+            if (currentView === 'items-view') renderItems();
+            if (currentView === 'habilidades-view') renderHabilidades();
+        }
     }
 
     document.querySelectorAll('.nav-btn').forEach(btn => {

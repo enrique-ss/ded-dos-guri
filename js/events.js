@@ -28,14 +28,15 @@ function setupEvents() {
         if (rCard) {
             const role = rCard.dataset.role;
             if (role === 'admin') { 
-                sessionStorage.setItem('adminAuth', 'true'); 
-                window.location.href = '/admin'; 
+                // Redireciona para o fluxo de mestre se tentar admin
+                const mestreBtn = document.querySelector('.choice-card[data-role="mestre"]');
+                if (mestreBtn) mestreBtn.click();
                 return; 
             }
             if (role === 'mestre') {
                 if (prompt("Código do Mestre:") === "4444") {
                     if (user) await loadMasterStateFromSupabase(); // Força update do state do mestre
-                    roleSelected = true; isMaster = true; masterState.activeTab = 'players'; 
+                    roleSelected = true; isMaster = true; masterState.activeTab = 'mesa'; 
                     wipeActiveState(); // Garante que começa com o estado limpo sem ficha de player
                     render();
                 } else alert("Código incorreto!");
@@ -89,22 +90,28 @@ function setupEvents() {
 
         // Common Nav
         if (t.closest('#btn-master-exit') || t.closest('#btn-back-to-role')) {
-            if (isMaster && masterEditingId) {
-                // Sair da ficha do jogador ou NPC
-                const prev = masterEditingType === 'npc' ? 'bestiary' : 'players';
-                masterEditingId = null; masterEditingType = 'player'; masterState.activeTab = prev;
-                wipeActiveState(); // Limpa a ficha que estava sendo editada
-            } else if (isMaster && isCreatingNPC) {
-                // Sair da criação do NPC e voltar pro bestiário
-                isCreatingNPC = false;
-                masterState.activeTab = 'bestiary';
-                wipeActiveState();
+            if (isMaster) {
+                if (masterEditingId) {
+                    const prev = masterEditingType === 'npc' ? 'bestiary' : 'mesa';
+                    masterEditingId = null; masterEditingType = 'player'; masterState.activeTab = prev;
+                    wipeActiveState(); render();
+                } else {
+                    // Sair do painel do mestre para a seleção de papel
+                    roleSelected = false; isMaster = false; render();
+                }
             } else {
-                // Sair do app (jogador ou deslogar master default)
-                roleSelected = false; isMaster = false; isAdmin = false; wizardData.active = false;
-                masterEditingId = null; masterEditingType = 'player'; 
-                if (socket) socket.emit('playerLeave');
-                render();
+                // Fluxo Jogador Sair da Criação ou Ficha
+                if (wizardData.active) {
+                    wizardData.active = false;
+                    renderCharacterSelection();
+                    render();
+                } else {
+                    // Sair da ficha para a lista de personagens
+                    if (socket) socket.emit('playerLeave');
+                    state = getDefaultState();
+                    renderCharacterSelection();
+                    render();
+                }
             }
             return;
         }
@@ -223,7 +230,7 @@ function setupEvents() {
         const mNav = t.closest('.m-nav-btn');
         if (mNav && mNav.dataset.tab) {
             switchMasterTab(mNav.dataset.tab);
-            if (mNav.dataset.tab === 'users' && isAdmin) loadUsers();
+            if (mNav.dataset.tab === 'users') loadUsers();
             if (window.innerWidth <= 900 && mNav.id !== 'btn-master-exit') {
                 const sb = document.getElementById('master-sidebar');
                 if (sb) sb.classList.add('sidebar-hidden');
@@ -422,37 +429,45 @@ function setupEvents() {
     });
 }
 
+let isRenderingSelection = false;
 async function renderCharacterSelection() {
-    const list = await loadAllCharactersFromSupabase();
-    const container = document.getElementById('characters-list-grid');
-    if (!container) return;
+    if (isRenderingSelection) return;
+    isRenderingSelection = true;
 
-    container.innerHTML = '';
-    
-    // Lista de personagens existentes
-    list.forEach(char => {
-        const data = char.data;
-        const card = document.createElement('div');
-        card.className = 'choice-card char-card';
-        card.dataset.id = char.id;
-        card.innerHTML = `
-            <div class="char-name">${data.name || 'Herói Sem Nome'}</div>
-            <div class="char-meta">${data.race} ${data.cls} - Nível ${data.level}</div>
+    try {
+        const list = await loadAllCharactersFromSupabase();
+        const container = document.getElementById('characters-list-grid');
+        if (!container) return;
+
+        container.innerHTML = '';
+        
+        // Lista de personagens existentes
+        list.forEach(char => {
+            const data = char.data;
+            const card = document.createElement('div');
+            card.className = 'choice-card char-card';
+            card.dataset.id = char.id;
+            card.innerHTML = `
+                <div class="char-name">${data.name || 'Herói Sem Nome'}</div>
+                <div class="char-meta">${data.race} ${data.cls} - Nível ${data.level}</div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Botão de Novo Personagem
+        const newCard = document.createElement('div');
+        newCard.className = 'choice-card char-card char-card-new';
+        newCard.id = 'btn-new-character';
+        newCard.innerHTML = `
+            <div class="char-name" style="color: var(--gold);">+ Novo Personagem</div>
+            <div class="char-meta">Comece uma nova lenda</div>
         `;
-        container.appendChild(card);
-    });
+        container.appendChild(newCard);
 
-    // Botão de Novo Personagem
-    const newCard = document.createElement('div');
-    newCard.className = 'choice-card char-card char-card-new';
-    newCard.id = 'btn-new-character';
-    newCard.innerHTML = `
-        <div class="char-name" style="color: var(--gold);">+ Novo Personagem</div>
-        <div class="char-meta">Comece uma nova lenda</div>
-    `;
-    container.appendChild(newCard);
-
-    // Trocar telas
-    document.getElementById('role-selection')?.classList.remove('active');
-    document.getElementById('character-selection')?.classList.add('active');
+        // Trocar telas
+        document.getElementById('role-selection')?.classList.remove('active');
+        document.getElementById('character-selection')?.classList.add('active');
+    } finally {
+        isRenderingSelection = false;
+    }
 }

@@ -38,6 +38,10 @@ function renderHeader() {
                 <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
                     <span>Notas</span>
                 </button>
+                ${!isMaster ? `
+                <button class="nav-btn ${currentView === 'game-log-view' ? 'active' : ''}" data-view="game-log-view" onclick="switchView('game-log-view')">
+                    <span>Histórico</span>
+                </button>` : ''}
                 
                 <button class="nav-btn" id="btn-back-to-role" style="color: var(--txt-muted);">
                     <span>Voltar</span>
@@ -50,21 +54,7 @@ function renderHeader() {
         </header>
     `;
 
-    // Rebind do botão voltar (Mestre e Jogador)
-    const btnBack = document.getElementById('btn-back-to-role');
-    if (btnBack) {
-        btnBack.onclick = () => {
-            if (isMaster) {
-                if (masterEditingType === 'npc') {
-                    masterEditingId = null; masterState.activeTab = 'bestiary'; render();
-                } else {
-                    masterEditingId = null; masterState.activeTab = 'players'; render();
-                }
-            } else {
-                roleSelected = false; render();
-            }
-        };
-    }
+    // A navegação de 'Voltar' agora é gerenciada centralmente pelo events.js via delegação de cliques.
     
     // A exclusão agora é gerenciada exclusivamente pelo events.js
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -281,6 +271,42 @@ window.removeGenericItem = (type, i, containerId) => {
         removeAbility(type, i);
     }
 };
+
+function renderHistoryView() {
+    renderHeader();
+    const $ = id => document.getElementById(id);
+    const container = $('sheet-container');
+    if (!container) return;
+
+    // Preservamos o layout padrão da ficha: Header + Body
+    container.innerHTML = `
+        <div class="character-header-placeholder"></div>
+        <div class="sheet-body" style="display: block; padding-top: 0;">
+            <div class="premium-card" style="min-height: 60vh; display: flex; flex-direction: column;">
+                <div class="m-header" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
+                    <div class="m-header-info">
+                        <h2 class="cinzel" style="font-size: 1.2rem;">Crônicas da Sessão</h2>
+                        <p class="muted-text" style="font-size: 0.8rem;">Registro compartilhado de todas as ações importantes da mesa</p>
+                    </div>
+                </div>
+                <div id="player-history-list" class="log-history" style="flex: 1; overflow-y: auto;">
+                    ${sessionLog.length === 0 ? '<p class="muted-text txt-center" style="padding: 3rem; opacity: 0.5;">As crônicas ainda estão em branco...</p>' : sessionLog.map(log => `
+                        <div class="log-entry" style="margin-bottom: 0.8rem;">
+                            <div class="log-time">${log.timestamp}</div>
+                            <div style="font-size: 0.9rem; line-height: 1.4;">${log.text}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    renderHeader(); // Re-popula o cabeçalho no novo placeholder
+
+    // Auto-scroll para o final
+    const list = $('player-history-list');
+    if (list) list.scrollTop = list.scrollHeight;
+}
 
 window.removeAbility = (type, i) => { 
     const keyMap = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };

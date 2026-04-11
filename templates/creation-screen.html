@@ -1,151 +1,153 @@
 <main id="creation-screen" class="full-screen-modal">
     <div class="creation-wizard fade-in">
-        <h1 class="pocket-logo cinzel" style="margin-top: 1rem;">D&D<span>dosGuri</span></h1>
-
-        <!-- Step 1: Identidade -->
-        <div id="step-1" class="wizard-step active">
-            <h2 class="cinzel">O Registro</h2>
-            <div class="detail-item">
-                <label class="label-tiny">Nome do Personagem</label>
-                <input type="text" id="create-name" placeholder="Ex: Galadrius" class="char-name-input"
-                    maxlength="15">
-            </div>
-
-            <label class="label-tiny" style="margin-top: 1.5rem;">Raça:</label>
-            <div id="race-grid" class="selection-grid"></div>
-            <div id="race-desc-box" class="desc-box"></div>
-
-            <div class="wizard-nav">
-                <button class="btn-ghost" id="btn-back-to-role">Voltar ao Início</button>
-                <button class="btn-primary" id="btn-step-2">Escolher Classe</button>
-            </div>
-        </div>
-
-        <!-- Step 2: Classe -->
-        <div id="step-2" class="wizard-step">
-            <h2 class="cinzel" id="class-title-step">Classe:</h2>
-            <div id="class-grid" class="selection-grid"></div>
-            <div id="class-desc-box" class="desc-box"></div>
-            <div class="wizard-nav">
-                <button class="btn-ghost" id="btn-back-1">Voltar</button>
-                <button class="btn-primary" id="btn-step-3">Escolher Perícias</button>
-            </div>
-        </div>
-
-        <!-- Step 3: Perícias -->
-        <div id="step-3" class="wizard-step">
-            <h2 class="cinzel">Perícias</h2>
-            <p class="subtitle" id="skills-limit-text"
-                style="color: var(--gold); font-weight: 700; margin-bottom: 2rem;">...</p>
-
-            <div id="skills-selection-grid" class="selection-grid">
-            </div>
-
-            <div class="wizard-nav">
-                <button class="btn-ghost" id="btn-back-2">Voltar</button>
-                <button class="btn-primary" id="btn-step-4">Distribuir Atributos</button>
-            </div>
-        </div>
-
-        <div id="step-4" class="wizard-step">
-            <h2 class="cinzel">Atributos:</h2>
-
-            <!-- Pool de Valores Disponíveis -->
-            <div id="available-values-pool"
-                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2.5rem;">
-                <!-- Chips gerados via JS -->
-            </div>
-
-            <!-- Slots de Atributo -->
-            <div class="selection-grid" style="gap: 1.5rem; background: none; border: none; box-shadow: none;">
-                <div class="attr-slot" data-attr="for">
-                    <label class="label-tiny">FOR</label>
-                    <div class="slot-display">---</div>
-                </div>
-                <div class="attr-slot" data-attr="des">
-                    <label class="label-tiny">DES</label>
-                    <div class="slot-display">---</div>
-                </div>
-                <div class="attr-slot" data-attr="con">
-                    <label class="label-tiny">CON</label>
-                    <div class="slot-display">---</div>
-                </div>
-                <div class="attr-slot" data-attr="int">
-                    <label class="label-tiny">INT</label>
-                    <div class="slot-display">---</div>
-                </div>
-                <div class="attr-slot" data-attr="sab">
-                    <label class="label-tiny">SAB</label>
-                    <div class="slot-display">---</div>
-                </div>
-                <div class="attr-slot" data-attr="car">
-                    <label class="label-tiny">CAR</label>
-                    <div class="slot-display">---</div>
-                </div>
-            </div>
-
-            <div class="wizard-nav">
-                <button class="btn-ghost" id="btn-back-3">Voltar</button>
-                <button class="btn-primary" id="btn-step-5">Aparência e Alma</button>
-            </div>
-        </div>
-
-        <!-- Step 5: Alma e Aparência -->
-        <div id="step-5" class="wizard-step">
-            <h2 class="cinzel">Aparência e Alma</h2>
-            <div class="premium-card form-group">
+        <h1 class="pocket-logo cinzel" style="margin-top: 2rem; margin-bottom: 0;">D&D<span>dosGuri</span></h1>
+        <div class="premium-card auth-card" style="width: 100%; max-width: 600px; margin: 1rem auto; padding: 2.5rem;">
+            
+            <!-- Step 1: Identidade -->
+            <div id="step-1" class="wizard-step active">
+                <h2 class="cinzel">O Registro</h2>
                 <div class="detail-item">
-                    <label class="label-tiny">Retrato (Foto da Galeria)</label>
-                    <input type="file" id="create-photo" accept="image/*" class="premium-input">
-                    <small class="muted-text"
-                        style="font-size: 0.75rem; margin-top: 0.5rem; display: block; line-height: 1.3;">Selecione
-                        uma imagem direto do seu celular para incorporar o personagem.</small>
+                    <label class="label-tiny">Nome do Personagem</label>
+                    <input type="text" id="create-name" placeholder="Ex: Galadrius" class="char-name-input"
+                        maxlength="15">
                 </div>
 
-                <label class="label-tiny"
-                    style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;"></label>
+                <label class="label-tiny" style="margin-top: 1.5rem;">Raça:</label>
+                <div id="race-grid" class="selection-grid"></div>
+                <div id="race-desc-box" class="desc-box"></div>
 
-                <div class="detail-item">
-                    <label class="label-tiny">Antecedente</label>
-                    <input type="text" id="create-bg" placeholder="Ex: Criminoso, Nobre..." maxlength="500" class="premium-input">
-                </div>
-                <div class="detail-item">
-                    <label class="label-tiny">Alinhamento</label>
-                    <input type="text" id="create-align" placeholder="Ex: Leal/Bom..." maxlength="500" class="premium-input">
-                </div>
-
-                <label class="label-tiny"
-                    style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;"></label>
-
-                <div class="detail-item">
-                    <label class="label-tiny">Traços de Personalidade</label>
-                    <textarea id="create-traits"
-                        placeholder="Ex: Sou metódico, calmo e sempre ouço atenciosamente antes de agir."
-                        class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
-                </div>
-                <div class="detail-item">
-                    <label class="label-tiny">Ideais</label>
-                    <textarea id="create-ideals"
-                        placeholder="Ex: O conhecimento ancestral é a maior riqueza do mundo."
-                        class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
-                </div>
-                <div class="detail-item">
-                    <label class="label-tiny">Vínculos</label>
-                    <textarea id="create-bonds"
-                        placeholder="Ex: Jurei lealdade ao Rei dos ladrões que me adotou." class="rp-textarea premium-input"
-                        style="min-height: 80px;" maxlength="500"></textarea>
-                </div>
-                <div class="detail-item">
-                    <label class="label-tiny">Fraquezas</label>
-                    <textarea id="create-flaws"
-                        placeholder="Ex: Sou corrompido facilmente pela visão de gemas mágicas."
-                        class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-to-role">Voltar</button>
+                    <button class="btn-primary" id="btn-step-2">Escolher Classe</button>
                 </div>
             </div>
 
-            <div class="wizard-nav">
-                <button class="btn-ghost" id="btn-back-4">Voltar</button>
-                <button class="btn-primary" id="btn-finish">DESPERTAR HERÓI</button>
+            <!-- Step 2: Classe -->
+            <div id="step-2" class="wizard-step">
+                <h2 class="cinzel" id="class-title-step">Classe:</h2>
+                <div id="class-grid" class="selection-grid"></div>
+                <div id="class-desc-box" class="desc-box"></div>
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-1">Voltar</button>
+                    <button class="btn-primary" id="btn-step-3">Escolher Perícias</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Perícias -->
+            <div id="step-3" class="wizard-step">
+                <h2 class="cinzel">Perícias</h2>
+                <p class="subtitle" id="skills-limit-text"
+                    style="color: var(--gold); font-weight: 700; margin-bottom: 2rem;">...</p>
+
+                <div id="skills-selection-grid" class="selection-grid">
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-2">Voltar</button>
+                    <button class="btn-primary" id="btn-step-4">Distribuir Atributos</button>
+                </div>
+            </div>
+
+            <div id="step-4" class="wizard-step">
+                <h2 class="cinzel">Atributos:</h2>
+
+                <!-- Pool de Valores Disponíveis -->
+                <div id="available-values-pool"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2.5rem;">
+                    <!-- Chips gerados via JS -->
+                </div>
+
+                <!-- Slots de Atributo -->
+                <div class="selection-grid" style="gap: 1.5rem; background: none; border: none; box-shadow: none;">
+                    <div class="attr-slot" data-attr="for">
+                        <label class="label-tiny">FOR</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="des">
+                        <label class="label-tiny">DES</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="con">
+                        <label class="label-tiny">CON</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="int">
+                        <label class="label-tiny">INT</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="sab">
+                        <label class="label-tiny">SAB</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="car">
+                        <label class="label-tiny">CAR</label>
+                        <div class="slot-display">---</div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-3">Voltar</button>
+                    <button class="btn-primary" id="btn-step-5">Aparência e Alma</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Alma e Aparência -->
+            <div id="step-5" class="wizard-step">
+                <h2 class="cinzel">Aparência e Alma</h2>
+                <div class="premium-card form-group" style="background: rgba(0,0,0,0.1); border: 1px solid var(--panel-border);">
+                    <div class="detail-item">
+                        <label class="label-tiny">Retrato (Foto da Galeria)</label>
+                        <input type="file" id="create-photo" accept="image/*" class="premium-input">
+                        <small class="muted-text"
+                            style="font-size: 0.75rem; margin-top: 0.5rem; display: block; line-height: 1.3;">Selecione
+                            uma imagem direto do seu celular para incorporar o personagem.</small>
+                    </div>
+
+                    <label class="label-tiny"
+                        style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;"></label>
+
+                    <div class="detail-item">
+                        <label class="label-tiny">Antecedente</label>
+                        <input type="text" id="create-bg" placeholder="Ex: Criminoso, Nobre..." maxlength="500" class="premium-input">
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Alinhamento</label>
+                        <input type="text" id="create-align" placeholder="Ex: Leal/Bom..." maxlength="500" class="premium-input">
+                    </div>
+
+                    <label class="label-tiny"
+                        style="margin-top: 1rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.5rem;"></label>
+
+                    <div class="detail-item">
+                        <label class="label-tiny">Traços de Personalidade</label>
+                        <textarea id="create-traits"
+                            placeholder="Ex: Sou metódico, calmo e sempre ouço atenciosamente antes de agir."
+                            class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Ideais</label>
+                        <textarea id="create-ideals"
+                            placeholder="Ex: O conhecimento ancestral é a maior riqueza do mundo."
+                            class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Vínculos</label>
+                        <textarea id="create-bonds"
+                            placeholder="Ex: Jurei lealdade ao Rei dos ladrões que me adotou." class="rp-textarea premium-input"
+                            style="min-height: 80px;" maxlength="500"></textarea>
+                    </div>
+                    <div class="detail-item">
+                        <label class="label-tiny">Fraquezas</label>
+                        <textarea id="create-flaws"
+                            placeholder="Ex: Sou corrompido facilmente pela visão de gemas mágicas."
+                            class="rp-textarea premium-input" style="min-height: 80px;" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-4">Voltar</button>
+                    <button class="btn-primary" id="btn-finish">DESPERTAR HERÓI</button>
+                </div>
             </div>
         </div>
     </div>

@@ -86,6 +86,7 @@ body::before {
     background-attachment: fixed;
     z-index: -2;
 }
+.app-container {
     max-width: 1300px;
     margin: 0 auto;
     width: 100%;
@@ -111,7 +112,8 @@ h3,
 /* Exceção: D&D dos guris segue o tema - dourado no dark, verde no light */
 .pocket-logo, .pocket-logo span, .main-title {
     color: var(--gold) !important;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3) !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6) !important;
+    letter-spacing: 1.5px;
 }
 
 label {
@@ -141,18 +143,12 @@ select {
 
 /* For the sheet, we want block for full width scrolling */
 
-.fade-in {
-    animation: fadeInSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+img {
+    filter: brightness(0.6);
+    transition: filter 0.4s ease;
 }
 
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+img:hover {
+    filter: brightness(0.85); /* Efeito suave de hover */
 }
 

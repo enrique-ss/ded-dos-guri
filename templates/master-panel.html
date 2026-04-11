@@ -8,23 +8,26 @@
         </svg>
     </button>
 
-    <div class="master-hub-layout fade-in">
+    <div class="master-hub-layout">
         
         <!-- Sidebar do Mestre -->
         <aside id="master-sidebar" class="master-sidebar premium-card sidebar-hidden">
             
             <nav class="sidebar-nav">
-                <button class="m-nav-btn admin-only" data-tab="users" style="display: none;">
-                    <span>Usuários</span>
+                <button class="m-nav-btn active" data-tab="mesa" id="btn-master-mesa">
+                    <span class="label">Mesa</span>
                 </button>
-                <button class="m-nav-btn active" data-tab="players">
-                    <span>Jogadores</span>
+                <button class="m-nav-btn" data-tab="characters">
+                    <span>Personagens</span>
                 </button>
                 <button class="m-nav-btn" data-tab="initiative">
                     <span>Batalha</span>
                 </button>
                 <button class="m-nav-btn" data-tab="bestiary">
                     <span>NPCs</span>
+                </button>
+                <button class="m-nav-btn" data-tab="monsters">
+                    <span>Bestiário</span>
                 </button>
                 <button class="m-nav-btn" data-tab="log">
                     <span>Histórico</span>
@@ -44,66 +47,100 @@
         <!-- Área de Conteúdo Dinâmica -->
         <section class="master-content premium-card">
             
-            <div id="m-tab-players" class="m-tab-content active">
-                <div class="m-tab-header">
-                    <h2 class="cinzel">Jogadores</h2>
-                    <button class="btn-primary" onclick="startPlayerCreationByMaster()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Criar Personagem de Jogador</button>
-                </div>
-                <div id="master-grid" class="master-grid-layout m-empty-state">
-                    <p>Aguardando jogadores entrarem...</p>
-                </div>
-            </div>
-
-            <div id="m-tab-initiative" class="m-tab-content">
-                <div class="m-tab-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 class="cinzel">Batalha</h2>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn-ghost" id="btn-end-battle" onclick="window.endBattle()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem; display: none;">Encerrar Batalha</button>
-                        <button class="btn-primary" onclick="window.startBattleSetup()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Iniciar Batalha</button>
+            <!-- Aba Principal: Mesa -->
+            <div class="m-tab-content active" id="m-tab-mesa">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h1 class="cinzel">Mesa de Jogo</h1>
+                        <p class="muted-text">Personagens ativos na campanha atual</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-primary" onclick="window.openMesaSetup()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Gerenciar Mesa</button>
                     </div>
                 </div>
-                <div id="initiative-list" class="initiative-list m-empty-state">
-                    <p>Nenhuma batalha ativa no momento.</p>
+
+                <div class="m-grid" id="mesa-grid"></div>
+            </div>
+
+            <!-- ABA: Personagens (Todos do Banco) -->
+            <div id="m-tab-characters" class="m-tab-content">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Banco de Heróis</h2>
+                        <p class="muted-text">Todos os personagens registrados no sistema</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" onclick="renderAllCharacters()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Atualizar Lista</button>
+                    </div>
                 </div>
+                <div id="all-characters-grid" class="m-grid"></div>
+            </div>
+
+            <!-- ABA: Batalha -->
+            <div id="m-tab-initiative" class="m-tab-content">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Campo de Batalha</h2>
+                        <p class="muted-text">Controle de iniciativa e combate em tempo real</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" id="btn-end-battle" onclick="window.endBattle()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem; display: none;">Encerrar Batalha</button>
+                        <button class="btn-primary" onclick="window.startBattleSetup()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Iniciar Combate</button>
+                    </div>
+                </div>
+                <div id="initiative-list" class="initiative-list"></div>
             </div>
 
             <!-- ABA: NPCs -->
             <div id="m-tab-bestiary" class="m-tab-content">
-                <div class="m-tab-header">
-                    <h2 class="cinzel">NPCs</h2>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn-primary" onclick="startNPCCreation()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Criar NPC</button>
-                        <button class="btn-ghost" onclick="window.openNPCGeneratorSetup()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Gerar NPC</button>
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">NPCs</h2>
+                        <p class="muted-text">Personagens importantes da história e aliados</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-primary" onclick="startNPCCreation('npc')" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Criar NPC</button>
                     </div>
                 </div>
-                <div id="npcs-grid" class="master-grid-layout m-empty-state">
-                    <p>Sua lista de NPCs está vazia. Gere novos desafios!</p>
-                </div>
+                <div id="npcs-grid" class="m-grid"></div>
             </div>
 
+            <!-- ABA: Bestiário (Monstros) -->
+            <div id="m-tab-monsters" class="m-tab-content">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Bestiário</h2>
+                        <p class="muted-text">Ameças, monstros e inimigos prontos para o combate</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-primary" onclick="startNPCCreation('monster')" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Criar Monstro</button>
+                        <button class="btn-ghost" onclick="window.openNPCGeneratorSetup()" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Gerar Aleatório</button>
+                    </div>
+                </div>
+                <div id="monsters-grid" class="m-grid"></div>
+            </div>
+
+            <!-- ABA: Histórico -->
             <div id="m-tab-log" class="m-tab-content">
-                <div class="m-tab-header" style="justify-content: space-between; display: flex; align-items: center;">
-                    <h2 class="cinzel">Histórico</h2>
-                    <button class="btn-ghost" onclick="clearMasterLog()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem;">Limpar Histórico</button>
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Histórico</h2>
+                        <p class="muted-text">Registro automático de eventos e rolagens</p>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" onclick="clearMasterLog()" style="padding: 0.5rem 1rem; color: var(--red); border-color: var(--red); font-size: 0.8rem;">Limpar Histórico</button>
+                    </div>
                 </div>
-                <div id="master-log-history" class="log-history m-empty-state">
-                    <p>Nenhuma atividade registrada ainda.</p>
-                </div>
+                <div id="master-log-history" class="log-history"></div>
             </div>
 
-            <div id="m-tab-users" class="m-tab-content">
-                <div class="m-tab-header">
-                    <h2 class="cinzel">Usuários</h2>
-                    <button class="btn-primary" onclick="loadUsers()">Atualizar</button>
-                </div>
-                <div id="users-list" class="m-empty-state">
-                    <p>Configurando banco de dados...</p>
-                </div>
-            </div>
-
+            <!-- ABA: Notas -->
             <div id="m-tab-notes" class="m-tab-content">
-                <div class="m-tab-header">
-                    <h2 class="cinzel">Notas</h2>
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h1 class="cinzel">Grimório do Mestre</h1>
+                        <p class="muted-text">Anotações secretas, tramas e lore do mundo</p>
+                    </div>
                 </div>
                 <textarea id="master-private-notes" class="rp-textarea" placeholder="História, NPCs secretos, tesouros escondidos..." style="min-height: 60vh; width: 100%; border-radius: 12px; padding: 1.5rem;"></textarea>
             </div>
