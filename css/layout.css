@@ -36,6 +36,19 @@
     .sheet-body {
         gap: 0.8rem !important;
     }
+    /* Grades de Seleção (Raças, Classes, Perícias) */
+    .selection-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    /* Atributos (Step 4) em 3 colunas */
+    #step-4 .selection-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    .choice-card {
+        padding: 0.8rem !important;
+        font-size: 0.85rem;
+    }
 }
 
 /* ===== WIZARD & ROLE SELECTION ===== */

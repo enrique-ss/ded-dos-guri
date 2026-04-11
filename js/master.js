@@ -30,7 +30,9 @@ function createEntityCardHtml(entity, type, options = {}) {
         <div class="player-card ${isOnline ? 'is-online' : 'is-offline'} ${extraClasses}" onclick="openEntitySheet(${clickArgs})">
             ${isOnline ? '<div class="online-indicator" title="Online"></div>' : ''}
             
-            <button class="btn-delete-card" onclick="event.stopPropagation(); deleteEntityMaster('${dbId || p.id}', '${type}')" title="Excluir Permanentemente">×</button>
+            <button class="btn-delete-card" 
+                onclick="event.stopPropagation(); ${options.isMesaContext ? `removeFromMesa('${dbId || p.id}')` : `deleteEntityMaster('${dbId || p.id}', '${type}')`}" 
+                title="${options.isMesaContext ? 'Remover da Mesa' : 'Excluir Permanentemente'}">×</button>
             
             <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
                 ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : '👤')}
@@ -127,7 +129,6 @@ async function renderMesa() {
         grid.innerHTML = `
             <div class="m-empty-state">
                 <span>Nenhum personagem na mesa ainda.</span>
-                <button class="btn-ghost" onclick="window.openMesaSetup()" style="margin-top: 1rem; pointer-events: auto;">Gerenciar Mesa</button>
             </div>
         `;
         return;
@@ -143,7 +144,7 @@ async function renderMesa() {
         const onlineChar = onlineSocketId ? connectedPlayers[onlineSocketId] : null;
         const entity = onlineChar || (dbChar ? dbChar.data : null);
         if (!entity) return '';
-        return createEntityCardHtml(entity, onlineChar ? 'player' : 'db_character', { isOnline: !!onlineChar, dbId: dbId, socketId: onlineSocketId });
+        return createEntityCardHtml(entity, onlineChar ? 'player' : 'db_character', { isOnline: !!onlineChar, dbId: dbId, socketId: onlineSocketId, isMesaContext: true });
     }).join('');
 }
 
@@ -409,8 +410,17 @@ window.openDatabaseCharacter = id => openEntitySheet('db_character', id);
 
 window.clearMasterLog = function() {
     if (confirm('Tem certeza que deseja apagar todo o histórico?')) {
-        masterState.logHistory = []; saveMasterState(); renderLogHistory();
+        masterState.logHistory = [];
+        saveMasterState();
+        renderLogHistory();
     }
+};
+
+window.removeFromMesa = function(id) {
+    if (!confirm("Deseja remover este personagem da mesa? (Ele continuará salvo no seu Banco de Dados)")) return;
+    masterState.tableCharacters = (masterState.tableCharacters || []).filter(tid => tid != id);
+    saveMasterState();
+    renderMesa();
 };
 
 window.openNPCGeneratorSetup = function() {
