@@ -325,7 +325,7 @@ function render() {
         } else if (masterEditingId) {
             const targetView = $(currentView) || $('sheet-view');
             if (targetView) targetView.classList.add('active');
-            if (currentView === 'game-log-view') renderHistoryView();
+            if (currentView === 'game-log-view') renderSessionLog();
             else {
                 renderSheet();
                 if (currentView === 'items-view') renderItems();
@@ -351,7 +351,7 @@ function render() {
         if (targetView) {
             targetView.classList.add('active');
         }
-        if (currentView === 'game-log-view') renderHistoryView();
+        if (currentView === 'game-log-view') renderSessionLog();
         else {
             renderSheet();
             if (currentView === 'items-view') renderItems();

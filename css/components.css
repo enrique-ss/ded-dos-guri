@@ -571,9 +571,8 @@
     background: transparent !important; /* Remove background da div principal */
 }
 
-/* Pseudo-elementos para os backgrounds ficarem 100% estáticos fixos na tela inteira */
 #auth-screen::before, #role-selection::before, #creation-screen::before, #character-selection::before, #master-panel::before,
-#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before {
+#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before, #game-log-view::before {
     content: "";
     position: fixed;
     inset: 0;
@@ -582,16 +581,7 @@
     background-repeat: no-repeat;
     z-index: -1;
     pointer-events: none;
-    filter: brightness(0.4); /* Escurece as imagens diretamente pelas origens */
-}
-
-/* Modo Claro: Imagens originais ficam mais vivas */
-[data-theme="light"] #auth-screen::before, [data-theme="light"] #role-selection::before, 
-[data-theme="light"] #creation-screen::before, [data-theme="light"] #character-selection::before, 
-[data-theme="light"] #master-panel::before, [data-theme="light"] #sheet-view::before, 
-[data-theme="light"] #items-view::before, [data-theme="light"] #habilidades-view::before, 
-[data-theme="light"] #history-view::before {
-    filter: brightness(0.85);
+    filter: none; /* Brilho normal conforme solicitado */
 }
 
 #master-panel {
@@ -607,18 +597,19 @@
     background-image: url('../resources/mestre_light.jpg');
 }
 
-#sheet-view, #items-view, #habilidades-view, #history-view {
+#sheet-view, #items-view, #habilidades-view, #history-view, #game-log-view {
     background: transparent !important;
 }
 
-#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before {
+#sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before, #game-log-view::before {
     background-image: url('../resources/jogador_dark.jpg');
 }
 
 [data-theme="light"] #sheet-view::before, 
 [data-theme="light"] #items-view::before, 
 [data-theme="light"] #habilidades-view::before, 
-[data-theme="light"] #history-view::before {
+[data-theme="light"] #history-view::before,
+[data-theme="light"] #game-log-view::before {
     background-image: url('../resources/jogador_light.jpg');
 }
 
