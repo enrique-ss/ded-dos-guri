@@ -7,24 +7,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Estado global dos jogadores conectados: { socketId: state }
 let gamePlayers = {};
 
-app.use(express.static(path.join(__dirname, './')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
-
-// Rota para a página de admin
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
-});
 
 // Ponte para listar usuários reais do Supabase (Apenas para Admin)
 const { createClient } = require('@supabase/supabase-js');
 const supabaseAdmin = createClient(
-    'https://wnsjluwxqkgjttpsrrtp.supabase.co', 
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Induc2psdXd4cWtnanR0cHNycnRwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTc0NDI1NCwiZXhwIjoyMDkxMzIwMjU0fQ.Qlmhp4kG3y0_X6d2O7aetFj8eYLLfLhobotP-Kk8bCI'
+    process.env.SUPABASE_URL, 
+    process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 app.get('/api/admin/users', async (req, res) => {

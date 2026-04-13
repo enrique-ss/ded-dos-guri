@@ -27,12 +27,6 @@ function setupEvents() {
         const rCard = t.closest('.choice-card[data-role]');
         if (rCard) {
             const role = rCard.dataset.role;
-            if (role === 'admin') { 
-                // Redireciona para o fluxo de mestre se tentar admin
-                const mestreBtn = document.querySelector('.choice-card[data-role="mestre"]');
-                if (mestreBtn) mestreBtn.click();
-                return; 
-            }
             if (role === 'mestre') {
                 if (prompt("Código do Mestre:") === "4444") {
                     if (user) await loadMasterStateFromSupabase(); // Força update do state do mestre
@@ -230,7 +224,6 @@ function setupEvents() {
         const mNav = t.closest('.m-nav-btn');
         if (mNav && mNav.dataset.tab) {
             switchMasterTab(mNav.dataset.tab);
-            if (mNav.dataset.tab === 'users') loadUsers();
             if (window.innerWidth <= 900 && mNav.id !== 'btn-master-exit') {
                 const sb = document.getElementById('master-sidebar');
                 if (sb) sb.classList.add('sidebar-hidden');

@@ -44,7 +44,6 @@ function toggleAuthMode(mode) {
 async function logout() {
     if (supabaseClient) await supabaseClient.auth.signOut();
     user = null;
-    sessionStorage.removeItem('adminAuth');
     location.reload();
 }
 
@@ -57,40 +56,7 @@ async function clearSession() {
     user = null;
     roleSelected = false;
     isMaster = false;
-    sessionStorage.removeItem('adminAuth');
     window.location.href = window.location.origin + window.location.pathname;
-}
-
-async function loadUsers() {
-    const listEl = document.getElementById('users-list');
-    if (!listEl) return;
-    
-    listEl.innerHTML = '<div class="loader-spinner"></div><p>Buscando usuários...</p>';
-    
-    try {
-        const response = await fetch('/api/admin/users');
-        const users = await response.json();
-        
-        if (!users || users.length === 0) {
-            listEl.innerHTML = '<div class="muted-text txt-center">Nenhum usuário no sistema.</div>';
-            return;
-        }
-
-        listEl.innerHTML = `
-            <div style="background: var(--bg-overlay); border-radius: 12px; padding: 1.5rem;">
-                <h3 style="color: var(--gold); margin-bottom: 1rem;">Todos os Usuários (${users.length})</h3>
-                ${users.map(u => `
-                    <div style="padding: 0.75rem; border-bottom: 1px solid var(--panel-border); display: flex; justify-content: space-between; align-items: center;">
-                        <span>${u.email}</span>
-                        <small style="color: var(--txt-muted);">Criado: ${new Date(u.created_at).toLocaleDateString('pt-BR')}</small>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    } catch (error) {
-        console.error('Erro ao carregar usuários:', error);
-        listEl.innerHTML = '<div class="muted-text txt-center">Erro ao carregar dados do servidor.</div>';
-    }
 }
 
 window.logout = logout;
