@@ -43,13 +43,16 @@ function applySchema(db) {
 
 function recreateDatabase() {
   fs.mkdirSync(dataDir, { recursive: true });
-
-  if (fs.existsSync(dbPath)) {
-    fs.unlinkSync(dbPath);
-  }
-
   const db = new Database(dbPath);
+  db.pragma('foreign_keys = OFF');
+  db.exec(`
+    DROP TABLE IF EXISTS master_data;
+    DROP TABLE IF EXISTS characters;
+    DROP TABLE IF EXISTS users;
+  `);
+  db.pragma('foreign_keys = ON');
   applySchema(db);
+  db.exec('VACUUM;');
   db.close();
 }
 

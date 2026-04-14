@@ -16,12 +16,17 @@ function createEntityCardHtml(entity, type, options = {}) {
     const dexMod = Math.floor(((p.attr?.des || 10) - 10) / 2);
     const initDisplay = (p.initiativeRoll ? p.initiativeRoll : (dexMod >= 0 ? '+' : '') + dexMod);
 
+    // Define cor baseada no tipo
+    const statColor = type === 'npc' ? '#4a90e2' : (type === 'monster' ? '#e74c3c' : 'var(--gold)');
+
     // Define o ID de clique e o tipo para abertura de ficha
     let clickArgs;
     if (type === 'npc') {
         clickArgs = `'npc', '${p.id}'`;
     } else if (type === 'player') {
         clickArgs = `'player', '${options.socketId}'`;
+    } else if (type === 'monster') {
+        clickArgs = `'monster', '${p.id}'`;
     } else {
         clickArgs = `'db_character', '${dbId}'`;
     }
@@ -35,7 +40,7 @@ function createEntityCardHtml(entity, type, options = {}) {
                 title="${options.isMesaContext ? 'Remover da Mesa' : 'Excluir Permanentemente'}">×</button>
             
             <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
-                ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : '👤')}
+                ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : (type === 'monster' ? '�' : '�👤'))}
             </div>
             
             <strong>${p.name || 'Sem Nome'}</strong>
@@ -51,15 +56,15 @@ function createEntityCardHtml(entity, type, options = {}) {
             <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.ac || 10}</span>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${p.ac || 10}</span>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${initDisplay}</span>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${initDisplay}</span>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: var(--gold);">${p.speed || 9}m</span>
+                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${p.speed || 9}m</span>
                 </div>
             </div>
 
@@ -198,23 +203,23 @@ window.openMesaSetup = async function() {
     const chars = window._dbCharsCache || [];
     
     const html = `
-        <div id="mesa-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
-            <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
-                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Gerenciar Mesa</h2>
-                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;" id="mesa-selection-list">
+        <div id="mesa-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1rem;">
+            <div class="premium-card" style="width: 100%; max-width: 400px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Adicionar à Mesa</h2>
+                <div style="max-height: 50vh; overflow-y: auto; margin-bottom: 1rem;" id="mesa-selection-list">
                     ${chars.map(c => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer;">
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.6rem; margin-bottom: 0.4rem; border-radius: 8px; cursor: pointer;">
                             <span style="font-weight:700;">
-                                <input type="checkbox" class="mesa-check" value="${c.id}" ${masterState.tableCharacters.includes(c.id) ? 'checked' : ''} style="margin-right: 10px;"> 
+                                <input type="checkbox" class="mesa-check" value="${c.id}" ${masterState.tableCharacters.includes(c.id) ? 'checked' : ''} style="margin-right: 8px;"> 
                                 ${c.data.name}
                             </span>
                             <span class="label-tiny">${c.owner_email || 'Herói'}</span>
                         </label>
                     `).join('')}
                 </div>
-                <div style="display:flex; gap: 1rem;">
+                <div style="display:flex; gap: 0.5rem;">
                     <button class="btn-ghost" onclick="document.getElementById('mesa-setup-modal').remove()" style="flex:1;">Cancelar</button>
-                    <button class="btn-primary" onclick="window.confirmMesaSetup()" style="flex:1;">Salvar Mesa</button>
+                    <button class="btn-primary" onclick="window.confirmMesaSetup()" style="flex:1;">Salvar</button>
                 </div>
             </div>
         </div>
@@ -274,35 +279,35 @@ window.startBattleSetup = function() {
     const monsters = (masterState.monsters || []).filter(n => !n.isDeleted).map(n => ({ id: n.id, name: n.name, init: getInic(n), isPlayer: false }));
     
     const html = `
-        <div id="battle-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
-            <div class="premium-card" style="width: 100%; max-width: 500px; padding: 2rem;">
-                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem;">Setup de Batalha</h2>
-                <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--panel-border);">Mesa</h3>
+        <div id="battle-setup-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1rem;">
+            <div class="premium-card" style="width: 100%; max-width: 400px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Setup de Batalha</h2>
+                <div style="max-height: 50vh; overflow-y: auto; margin-bottom: 1rem;">
+                    <h3 style="color: var(--gold); font-size: 0.85rem; margin-bottom: 0.4rem; border-bottom: 1px solid var(--panel-border);">Mesa</h3>
                     ${mesaPlayers.map(p => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.5rem; margin-bottom: 0.3rem; border-radius: 6px;">
                             <span><input type="checkbox" class="battle-check player-check" value="${p.id}" data-name="${p.name}" data-init="${p.init}" checked data-socket="${p.socketId || ''}"> ${p.name}</span>
                             <span class="label-tiny">Ini: ${p.init}</span>
                         </label>
                     `).join('')}
                     
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top:1rem; border-bottom: 1px solid var(--panel-border);">NPCs & Aliados</h3>
+                    <h3 style="color: var(--gold); font-size: 0.85rem; margin-top:0.8rem; border-bottom: 1px solid var(--panel-border);">NPCs & Aliados</h3>
                     ${npcs.map(n => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.5rem; margin-bottom: 0.3rem; border-radius: 6px;">
                             <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
                             <span class="label-tiny">Ini: ${n.init}</span>
                         </label>
                     `).join('')}
 
-                    <h3 style="color: var(--gold); font-size: 0.9rem; margin-top:1rem; border-bottom: 1px solid var(--panel-border);">Bestiário</h3>
+                    <h3 style="color: var(--gold); font-size: 0.85rem; margin-top:0.8rem; border-bottom: 1px solid var(--panel-border);">Bestiário</h3>
                     ${monsters.map(n => `
-                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.8rem; margin-bottom: 0.5rem; border-radius: 8px;">
+                        <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.5rem; margin-bottom: 0.3rem; border-radius: 6px;">
                             <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
                             <span class="label-tiny">Ini: ${n.init}</span>
                         </label>
                     `).join('')}
                 </div>
-                <div style="display:flex; gap: 1rem;">
+                <div style="display:flex; gap: 0.5rem;">
                     <button class="btn-ghost" onclick="document.getElementById('battle-setup-modal').remove()" style="flex:1;">Cancelar</button>
                     <button class="btn-primary" onclick="window.confirmBattleSetup()" style="flex:1;">Gerar Ordem</button>
                 </div>
@@ -427,15 +432,36 @@ window.openNPCGeneratorSetup = function() {
     const raceOps = Object.keys(RACES).map(k => `<option value="${k}">${RACES[k].name}</option>`).join('');
     const classOps = Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k].name}</option>`).join('');
     const html = `
-        <div id="npc-gen-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1.5rem;">
-            <div class="premium-card" style="width: 100%; max-width: 450px; padding: 2.5rem;">
-                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 2rem;">Gerador de NPC</h2>
-                <div class="form-group" style="margin-bottom: 2rem;">
-                    <label class="label-tiny">Raça</label><select id="gen-npc-race" class="premium-input full-width">${raceOps}</select>
-                    <label class="label-tiny">Classe</label><select id="gen-npc-class" class="premium-input full-width">${classOps}</select>
-                    <label class="label-tiny">Nível</label><input type="number" id="gen-npc-level" class="premium-input full-width" value="1">
+        <div id="npc-gen-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1rem;">
+            <div class="premium-card" style="width: 100%; max-width: 380px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Gerador de NPC</h2>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="label-tiny">Nome (opcional)</label><input type="text" id="gen-npc-name" class="premium-input full-width" placeholder="Deixe vazio para nome aleatório" style="padding: 0.5rem;">
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Raça</label><select id="gen-npc-race" class="premium-input full-width" style="padding: 0.5rem;">${raceOps}</select>
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Classe</label><select id="gen-npc-class" class="premium-input full-width" style="padding: 0.5rem;">${classOps}</select>
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Nível</label><input type="number" id="gen-npc-level" class="premium-input full-width" value="1" style="padding: 0.5rem;">
                 </div>
-                <div style="display:flex; gap: 1rem;"><button class="btn-ghost" onclick="document.getElementById('npc-gen-modal').remove()">Cancelar</button><button class="btn-primary" onclick="window.confirmNPCGeneration()">Gerar</button></div>
+                <div style="display:flex; gap: 0.5rem; margin-top: 1rem;"><button class="btn-ghost" onclick="document.getElementById('npc-gen-modal').remove()" style="flex:1;">Cancelar</button><button class="btn-primary" onclick="window.confirmNPCGeneration()" style="flex:1;">Gerar</button></div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+};
+
+window.openMonsterGeneratorSetup = function() {
+    const raceOps = Object.keys(RACES).map(k => `<option value="${k}">${RACES[k].name}</option>`).join('');
+    const classOps = Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k].name}</option>`).join('');
+    const html = `
+        <div id="monster-gen-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1rem;">
+            <div class="premium-card" style="width: 100%; max-width: 380px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+                <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Gerador de Monstros</h2>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="label-tiny">Nome (opcional)</label><input type="text" id="gen-monster-name" class="premium-input full-width" placeholder="Deixe vazio para nome aleatório" style="padding: 0.5rem;">
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Raça</label><select id="gen-monster-race" class="premium-input full-width" style="padding: 0.5rem;">${raceOps}</select>
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Classe</label><select id="gen-monster-class" class="premium-input full-width" style="padding: 0.5rem;">${classOps}</select>
+                    <label class="label-tiny" style="margin-top: 0.5rem;">Nível</label><input type="number" id="gen-monster-level" class="premium-input full-width" value="1" style="padding: 0.5rem;">
+                </div>
+                <div style="display:flex; gap: 0.5rem; margin-top: 1rem;"><button class="btn-ghost" onclick="document.getElementById('monster-gen-modal').remove()" style="flex:1;">Cancelar</button><button class="btn-primary" onclick="window.confirmMonsterGeneration()" style="flex:1;">Gerar</button></div>
             </div>
         </div>
     `;
@@ -443,19 +469,122 @@ window.openNPCGeneratorSetup = function() {
 };
 
 window.confirmNPCGeneration = function() {
+    const name = document.getElementById('gen-npc-name').value.trim();
     const race = document.getElementById('gen-npc-race').value;
     const cls = document.getElementById('gen-npc-class').value;
     const level = parseInt(document.getElementById('gen-npc-level').value) || 1;
-    window.generateRandomNPC(race, cls, level);
+    window.generateRandomNPC(race, cls, level, name);
     document.getElementById('npc-gen-modal').remove();
 };
 
-window.generateRandomNPC = function(targetRace, targetCls, targetLevel) {
-    const name = "NPC_" + Math.floor(Math.random()*1000);
+window.confirmMonsterGeneration = function() {
+    const name = document.getElementById('gen-monster-name').value.trim();
+    const race = document.getElementById('gen-monster-race').value;
+    const cls = document.getElementById('gen-monster-class').value;
+    const level = parseInt(document.getElementById('gen-monster-level').value) || 1;
+    window.generateRandomMonster(race, cls, level, name);
+    document.getElementById('monster-gen-modal').remove();
+};
+
+window.generateRandomNPC = function(targetRace, targetCls, targetLevel, customName = null) {
+    const name = customName || "NPC_" + Math.floor(Math.random()*1000);
     const hpMax = (CLASSES[targetCls].hp + 2) * targetLevel;
     const npc = {
         ...getDefaultState(), id: Date.now(), isCreated: true, name, race: targetRace, cls: targetCls, level: targetLevel,
         hp: { current: hpMax, max: hpMax }, speed: RACES[targetRace].speed || 9, ac: 10
     };
     masterState.npcs.push(npc); saveMasterState(); renderBestiary();
+};
+
+window.generateRandomMonster = function(targetRace, targetCls, targetLevel, customName = null) {
+    const name = customName || "Monstro_" + Math.floor(Math.random()*1000);
+    const hpMax = (CLASSES[targetCls].hp + 2) * targetLevel;
+    const monster = {
+        ...getDefaultState(), id: Date.now(), isCreated: true, name, race: targetRace, cls: targetCls, level: targetLevel,
+        hp: { current: hpMax, max: hpMax }, speed: RACES[targetRace].speed || 9, ac: 10
+    };
+    if (!masterState.monsters) masterState.monsters = [];
+    masterState.monsters.push(monster); saveMasterState(); renderMonsters();
+};
+
+window.openCharacterCreationModal = async function() {
+    try {
+        const res = await authorizedFetch('/api/admin/users');
+        if (!res.ok) throw new Error('Erro ao buscar usuários');
+        const users = await res.json();
+        
+        const userOptions = users.map(u => `<option value="${u.id}">${u.email}</option>`).join('');
+        const raceOps = Object.keys(RACES).map(k => `<option value="${k}">${RACES[k].name}</option>`).join('');
+        const classOps = Object.keys(CLASSES).map(k => `<option value="${k}">${CLASSES[k].name}</option>`).join('');
+        
+        const html = `
+            <div id="char-create-modal" class="active fade-in" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display:flex; align-items:center; justify-content:center; z-index:99999; padding: 1rem;">
+                <div class="premium-card" style="width: 100%; max-width: 380px; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+                    <h2 class="cinzel" style="text-align: center; color: var(--gold); margin-bottom: 1rem; font-size: 1.2rem;">Criar Personagem</h2>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="label-tiny">Nome</label><input type="text" id="char-create-name" class="premium-input full-width" placeholder="Nome do herói" style="padding: 0.5rem;">
+                        <label class="label-tiny" style="margin-top: 0.5rem;">Jogador</label><select id="char-create-user" class="premium-input full-width" style="padding: 0.5rem;">${userOptions}</select>
+                        <label class="label-tiny" style="margin-top: 0.5rem;">Raça</label><select id="char-create-race" class="premium-input full-width" style="padding: 0.5rem;">${raceOps}</select>
+                        <label class="label-tiny" style="margin-top: 0.5rem;">Classe</label><select id="char-create-class" class="premium-input full-width" style="padding: 0.5rem;">${classOps}</select>
+                        <label class="label-tiny" style="margin-top: 0.5rem;">Nível</label><input type="number" id="char-create-level" class="premium-input full-width" value="1" style="padding: 0.5rem;">
+                    </div>
+                    <div style="display:flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="btn-ghost" onclick="document.getElementById('char-create-modal').remove()" style="flex:1;">Cancelar</button>
+                        <button class="btn-primary" onclick="window.confirmCharacterCreation()" style="flex:1;">Criar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+    } catch (err) {
+        alert('Erro ao carregar usuários: ' + err.message);
+    }
+};
+
+window.confirmCharacterCreation = async function() {
+    const userId = document.getElementById('char-create-user').value;
+    const name = document.getElementById('char-create-name').value.trim();
+    const race = document.getElementById('char-create-race').value;
+    const cls = document.getElementById('char-create-class').value;
+    const level = parseInt(document.getElementById('char-create-level').value) || 1;
+    
+    if (!name) {
+        alert('Por favor, insira um nome para o personagem.');
+        return;
+    }
+    
+    if (!userId) {
+        alert('Por favor, selecione um jogador.');
+        return;
+    }
+    
+    const hpMax = (CLASSES[cls].hp + 2) * level;
+    const charData = {
+        ...getDefaultState(),
+        id: crypto.randomUUID(),
+        name: name,
+        race: race,
+        cls: cls,
+        level: level,
+        hp: { current: hpMax, max: hpMax },
+        ac: 10,
+        speed: RACES[race].speed || 9
+    };
+    
+    try {
+        const res = await authorizedFetch('/api/admin/characters/precreate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targetUserId: userId, charData })
+        });
+        
+        if (!res.ok) throw new Error('Erro ao criar personagem');
+        
+        document.getElementById('char-create-modal').remove();
+        window._dbCharsCache = null; // Limpar cache para forçar refresh
+        renderAllCharacters();
+        alert('Personagem criado com sucesso!');
+    } catch (err) {
+        alert('Erro ao criar personagem: ' + err.message);
+    }
 };
