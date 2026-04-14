@@ -7,15 +7,26 @@
 }
 
 .master-sidebar {
-    width: 260px; display: flex; flex-direction: column; gap: 1.5rem;
-    padding: 1.5rem; 
-    background: var(--bg-glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
+    width: 82px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    background: var(--panel);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
     border: 1px solid var(--panel-border);
-    border-radius: var(--radius); height: 100%; transition: margin-left 0.3s ease, opacity 0.3s ease;
-    z-index: 1000; flex-shrink: 0;
+    border-radius: var(--radius);
+    height: 100%;
+    transition: width 0.35s ease, margin-left 0.3s ease, opacity 0.3s ease;
+    z-index: 1000;
+    flex-shrink: 0;
+    overflow-x: hidden;
+    overflow-y: overlay;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
 }
+
+.master-sidebar:hover { width: 260px; }
 
 .sidebar-hidden { margin-left: -320px !important; opacity: 0 !important; pointer-events: none; }
 
@@ -43,25 +54,123 @@
 }
 
 .m-nav-btn {
-    padding: 1rem 1.25rem; cursor: pointer; background: transparent;
+    padding: 1rem 0;
+    cursor: pointer;
+    background: transparent;
     color: var(--txt);
-    font-size: 0.95rem; font-weight: 700;
-    transition: all 0.2s; display: flex; align-items: center;
-    border-radius: 10px; width: 100%; border: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+    width: 100%;
+    border: none;
 }
-.m-nav-btn:hover { background: var(--bg-overlay); color: var(--gold); }
-.m-nav-btn.active { background: var(--gold) !important; color: #000 !important; box-shadow: 0 4px 15px var(--gold-glow); }
+.m-nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--gold); }
+.m-nav-btn.active { background: rgba(255,190,11,0.12) !important; color: var(--gold) !important; box-shadow: none; border-right: 3px solid var(--gold); }
+
+.sidebar-header {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--panel-border);
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 12px 0;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-nav::-webkit-scrollbar { width: 0; }
+
+.master-brand-mark {
+    width: 82px;
+    text-align: center;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.master-brand-full {
+    display: none;
+    align-items: center;
+    padding-left: 18px;
+}
+
+.master-brand-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(255, 190, 11, 0.18));
+}
+
+.master-brand-logo-expanded {
+    width: 44px;
+    height: 44px;
+}
+
+.master-sidebar:hover .master-brand-mark { display: none; }
+.master-sidebar:hover .master-brand-full { display: flex; }
+
+.m-nav-icon {
+    width: 82px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.m-nav-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.master-sidebar:hover .m-nav-text { opacity: 1; }
+
+.master-sidebar-bottom {
+    padding: 12px 0 18px;
+    border-top: 1px solid var(--panel-border);
+    flex-shrink: 0;
+}
+
+[data-theme="light"] .master-sidebar {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .m-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--gold);
+}
+
+[data-theme="light"] .m-nav-btn.active {
+    background: rgba(212, 154, 0, 0.12) !important;
+}
 
 .master-content { 
     flex: 1; 
     height: 100%; 
-    background: var(--bg-glass);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius);
-    border: 1px solid var(--panel-border);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+    border: none;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(0,0,0,0.1);
+    box-shadow: none;
 }
 
 .m-tab-content { 

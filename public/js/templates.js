@@ -17,9 +17,14 @@ const TemplateLoader = {
         
         for (const template of templates) {
             const html = await this.loadTemplate(template);
+            if (!html.trim()) {
+                continue;
+            }
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
-            app.appendChild(tempDiv.firstElementChild);
+            if (tempDiv.firstElementChild) {
+                app.appendChild(tempDiv.firstElementChild);
+            }
         }
     }
 };

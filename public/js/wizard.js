@@ -181,7 +181,7 @@ async function finalizePlayerPreCreation(char) {
     if (!targetUserIdByMaster) return alert("Erro: ID de usuário alvo não definido.");
     
     try {
-        const response = await fetch('/api/admin/characters/precreate', {
+        const response = await authorizedFetch('/api/admin/characters/precreate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -225,7 +225,7 @@ async function openUserSelectionModal(charData) {
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
     try {
-        const response = await fetch('/api/admin/users');
+        const response = await authorizedFetch('/api/admin/users');
         const users = await response.json();
         const listDiv = document.getElementById('modal-users-list');
         

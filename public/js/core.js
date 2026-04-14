@@ -1,38 +1,40 @@
 // ==================== SYSTEM CONFIG ====================
 const STORAGE_KEY_BASE = 'rpg_guri_v10';
+const AUTH_STORAGE_KEY = `${STORAGE_KEY_BASE}_offline_token`;
 const MASTER_STORAGE_KEY = 'rpg_guri_master_v1';
+const APP_MODE = window.APP_MODE || 'offline';
+const isOfflineMode = APP_MODE !== 'online';
 
 // ==================== REAL-TIME SETUP ====================
 let socket;
-try { socket = io(); } catch(e) { console.warn("Socket.io não disponível."); }
+try { socket = io(); } catch (e) { console.warn('Socket.io nao disponivel.'); }
 
 let isMaster = false;
-let connectedPlayers = {}; // { socketId: state }
-let masterEditingId = null; 
-let masterEditingType = 'player'; 
-let isCreatingNPC = false; 
-let roleSelected = false; 
+let connectedPlayers = {};
+let masterEditingId = null;
+let masterEditingType = 'player';
+let isCreatingNPC = false;
+let roleSelected = false;
 let user = null;
+let authToken = localStorage.getItem(AUTH_STORAGE_KEY) || '';
 let currentView = 'sheet-view';
 let userCharacters = [];
-let sessionLog = []; // Histórico da sessão atual para todos os usuários
+let sessionLog = [];
 let isPreCreatingPlayer = false;
 let targetUserIdByMaster = null;
 
 // ==================== SUPABASE SETUP ====================
 let supabaseClient = null;
 try {
-    const isPlaceholder = !SUPABASE_CONFIG || 
-                         SUPABASE_CONFIG.url.includes("SUA_URL") || 
-                         SUPABASE_CONFIG.anonKey.includes("SUA_KEY");
+    const isPlaceholder = !SUPABASE_CONFIG ||
+        SUPABASE_CONFIG.url.includes('SUA_URL') ||
+        SUPABASE_CONFIG.anonKey.includes('SUA_KEY');
 
-    if (typeof SUPABASE_CONFIG !== 'undefined' && !isPlaceholder) {
+    if (!isOfflineMode && typeof SUPABASE_CONFIG !== 'undefined' && !isPlaceholder) {
         supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
-    } else {
-        console.warn("Supabase: Configurações de placeholder detectadas ou ausentes.");
     }
 } catch (e) {
-    console.error("Supabase: Erro crítico ao iniciar cliente:", e);
+    console.error('Supabase: Erro critico ao iniciar cliente:', e);
 }
 
 // ==================== STATE ====================
@@ -48,12 +50,12 @@ let wizardData = {
     attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
     skills: []
 };
-let wizardSelection = null; 
+let wizardSelection = null;
 
 function getDefaultState() {
     return {
         isCreated: false,
-        name: 'Herói Sem Nome',
+        name: 'Heroi Sem Nome',
         race: '', cls: '', bg: 'Criminoso', align: 'Leal e Bom',
         level: 1, xp: 0, hp: { current: 10, max: 10 },
         ac: 10, speed: 9, initiativeRoll: 0, hd: '1d10', photo: '',
@@ -67,42 +69,124 @@ function getDefaultState() {
     };
 }
 
-
 function loadMasterState() {
     return {
-        activeTab: 'mesa', 
-        initiative: [], 
+        activeTab: 'mesa',
+        initiative: [],
         notes: '',
         npcs: [],
-        monsters: [], // Nova lista separada para o Bestiário
-        tableCharacters: [], // Lista de IDs de personagens do banco que estão na mesa atual
-        logHistory: [], // Histórico persistente do mestre
+        monsters: [],
+        tableCharacters: [],
+        logHistory: [],
         worldLore: { group: '', world: '', npcs: '' }
     };
 }
 
+function getAuthHeaders(extraHeaders = {}) {
+    const headers = { ...extraHeaders };
+    if (isOfflineMode && authToken) {
+        headers.Authorization = `Bearer ${authToken}`;
+    }
+    return headers;
+}
+
+async function apiRequest(url, options = {}) {
+    const headers = getAuthHeaders(options.headers || {});
+    if (!headers['Content-Type'] && options.body) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await fetch(url, { ...options, headers });
+    const text = await response.text();
+    const payload = text ? JSON.parse(text) : null;
+
+    if (!response.ok) {
+        throw new Error(payload?.error || 'Falha na requisicao.');
+    }
+
+    return payload;
+}
+
+async function authorizedFetch(url, options = {}) {
+    const headers = getAuthHeaders(options.headers || {});
+    return fetch(url, { ...options, headers });
+}
+
+function setOfflineSession(token, nextUser) {
+    authToken = token;
+    localStorage.setItem(AUTH_STORAGE_KEY, token);
+    user = nextUser;
+}
+
+function clearOfflineSession() {
+    authToken = '';
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+}
+
+function updateAuthFooter() {
+    const footer = document.querySelector('#auth-screen .muted-text');
+    if (!footer) return;
+    footer.textContent = isOfflineMode
+        ? 'Modo offline local em SQLite'
+        : 'Powered by Supabase & Ethereal Engine v13';
+}
+
 function saveMasterState() {
-    if (user && supabaseClient) saveMasterStateToSupabase();
+    if (!user) return;
+
+    if (isOfflineMode) {
+        saveMasterStateOffline();
+        return;
+    }
+
+    if (supabaseClient) saveMasterStateToSupabase();
+}
+
+async function saveMasterStateOffline() {
+    try {
+        await apiRequest('/api/master-state', {
+            method: 'PUT',
+            body: JSON.stringify({ state: masterState })
+        });
+    } catch (error) {
+        console.error('Erro ao salvar dados do Mestre offline:', error);
+    }
 }
 
 async function saveMasterStateToSupabase() {
     if (!user || !supabaseClient) return;
-    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000'; // Fixed UUID
+    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000';
     const { error } = await supabaseClient
         .from('master_data')
         .upsert({ id: MASTER_ROW_ID, data: masterState }, { onConflict: 'id' });
-    if (error) console.error("Erro ao salvar dados do Mestre no Supabase:", error);
+    if (error) console.error('Erro ao salvar dados do Mestre no Supabase:', error);
 }
 
 async function loadMasterStateFromSupabase() {
-    if (!user || !supabaseClient) return;
-    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000'; // Fixed UUID
-    const { data, error } = await supabaseClient
+    if (!user) return;
+
+    if (isOfflineMode) {
+        try {
+            const payload = await apiRequest('/api/master-state');
+            if (payload?.data) {
+                masterState = { ...masterState, ...payload.data };
+                if (isMaster) renderMasterPanel();
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados do Mestre offline:', error);
+        }
+        return;
+    }
+
+    if (!supabaseClient) return;
+
+    const MASTER_ROW_ID = '00000000-0000-0000-0000-000000000000';
+    const { data } = await supabaseClient
         .from('master_data')
         .select('data')
         .eq('id', MASTER_ROW_ID)
         .maybeSingle();
-    
+
     if (data && data.data) {
         masterState = {
             ...masterState,
@@ -168,7 +252,7 @@ if (socket) {
                 if (user) saveStateToSupabase();
                 roleSelected = false;
                 render();
-                alert("Sua ficha foi apagada pelo Mestre.");
+                alert('Sua ficha foi apagada pelo Mestre.');
                 return;
             }
             state = updatedData;
@@ -180,16 +264,15 @@ if (socket) {
 
     socket.on('newLogEntry', ({ timestamp, text }) => {
         const logObj = { timestamp, text };
-        sessionLog.push(logObj); // Salva no histórico global do cliente
-        
+        sessionLog.push(logObj);
+
         if (isMaster) {
             if (!masterState.logHistory) masterState.logHistory = [];
             masterState.logHistory.push(logObj);
             saveMasterState();
             if (masterState.activeTab === 'log') renderLogHistory();
-        } else {
-            // Se for jogador e estiver na visualização de histórico, renderiza
-            if (currentView === 'history-view') renderHistoryView();
+        } else if (currentView === 'history-view') {
+            renderHistoryView();
         }
     });
 
@@ -204,7 +287,21 @@ if (socket) {
 
 // ==================== CORE APP LOGIC ====================
 async function init() {
-    if (supabaseClient) {
+    updateAuthFooter();
+
+    if (isOfflineMode) {
+        if (authToken) {
+            try {
+                const payload = await apiRequest('/api/auth/me');
+                user = payload.user;
+                await loadStateFromSupabase();
+                await loadMasterStateFromSupabase();
+            } catch (error) {
+                clearOfflineSession();
+                user = null;
+            }
+        }
+    } else if (supabaseClient) {
         try {
             const { data: { user: existingUser } } = await supabaseClient.auth.getUser();
             if (existingUser) {
@@ -213,9 +310,10 @@ async function init() {
                 await loadMasterStateFromSupabase();
             }
         } catch (e) {
-            console.log('Erro ao recuperar usuário:', e.message);
+            console.log('Erro ao recuperar usuario:', e.message);
         }
     }
+
     buildGrids();
     setupEvents();
     render();
@@ -225,7 +323,7 @@ async function init() {
 }
 
 function loadState() {
-    // Usar getDefaultState() para limpar, caso precise, mas agora é manual.
+    // Estado local em memoria. Persistencia principal fica no banco ativo.
 }
 
 function wipeActiveState() {
@@ -243,16 +341,34 @@ function saveState() {
 }
 
 async function saveStateToSupabase() {
-    if (!user || !supabaseClient || !state.isCreated) return;
-    
-    const charData = { 
-        user_id: user.id, 
-        name: state.name, 
+    if (!user || !state.isCreated) return;
+
+    if (isOfflineMode) {
+        try {
+            const payload = await apiRequest('/api/characters', {
+                method: 'POST',
+                body: JSON.stringify({ state })
+            });
+
+            if (payload?.character?.id && !state.id) {
+                state.id = payload.character.id;
+                saveState();
+            }
+        } catch (error) {
+            console.error('Erro ao salvar no banco offline:', error);
+        }
+        return;
+    }
+
+    if (!supabaseClient) return;
+
+    const charData = {
+        user_id: user.id,
+        name: state.name,
         data: state,
         updated_at: new Date().toISOString()
     };
 
-    // Se já temos um ID, usamos ele para o upsert. Caso contrário, o Supabase criará um novo.
     if (state.id) charData.id = state.id;
 
     const { data, error } = await supabaseClient
@@ -262,24 +378,37 @@ async function saveStateToSupabase() {
         .single();
 
     if (error) {
-        console.error("Erro ao salvar no Supabase:", error);
+        console.error('Erro ao salvar no Supabase:', error);
     } else if (data && !state.id) {
-        // Se for um novo personagem, salvamos o ID gerado pelo banco
         state.id = data.id;
         saveState();
     }
 }
 
 async function loadAllCharactersFromSupabase() {
-    if (!user || !supabaseClient) return [];
+    if (!user) return [];
+
+    if (isOfflineMode) {
+        try {
+            const rows = await apiRequest('/api/characters');
+            userCharacters = rows || [];
+            return userCharacters;
+        } catch (error) {
+            console.error('Erro ao carregar personagens offline:', error);
+            return [];
+        }
+    }
+
+    if (!supabaseClient) return [];
+
     const { data, error } = await supabaseClient
         .from('characters')
         .select('*')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false });
-    
+
     if (error) {
-        console.error("Erro ao carregar personagens:", error);
+        console.error('Erro ao carregar personagens:', error);
         return [];
     }
     userCharacters = data || [];
@@ -287,8 +416,7 @@ async function loadAllCharactersFromSupabase() {
 }
 
 async function loadStateFromSupabase() {
-    // Agora o carregamento é disparado pela seleção do personagem.
-    // Esta função pode ser mantida para compatibilidade ou removida.
+    // O carregamento completo da ficha continua disparado pela selecao do personagem.
 }
 
 function render() {
@@ -306,12 +434,11 @@ function render() {
     if (!roleSelected) {
         const roleSel = $('role-selection');
         const charSel = $('character-selection');
-        
+
         if (charSel && charSel.classList.contains('active')) return;
 
         if (roleSel) {
             roleSel.classList.add('active');
-            const selectionGrid = roleSel.querySelector('.selection-grid');
             const logoutSection = roleSel.querySelector('#logout-section');
             if (logoutSection) logoutSection.style.display = 'block';
         }
@@ -341,10 +468,10 @@ function render() {
     } else if (!state.isCreated || state.isDeleted) {
         if (wizardData.active) {
             const creation = $('creation-screen');
-            if(creation) creation.classList.add('active');
+            if (creation) creation.classList.add('active');
         } else {
             const charSel = $('character-selection');
-            if(charSel) charSel.classList.add('active');
+            if (charSel) charSel.classList.add('active');
         }
     } else {
         const targetView = $(currentView) || $('sheet-view');
@@ -369,4 +496,9 @@ function switchView(viewId) {
     render();
 }
 
+window.apiRequest = apiRequest;
+window.authorizedFetch = authorizedFetch;
+window.setOfflineSession = setOfflineSession;
+window.clearOfflineSession = clearOfflineSession;
+window.isOfflineMode = isOfflineMode;
 window.initApp = init;

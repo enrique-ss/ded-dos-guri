@@ -1,59 +1,64 @@
 # D&D dos Guri
 
-Sistema de gerenciamento de fichas de personagem para RPG de mesa, com sincronização em tempo real entre mestre e jogadores.
+Sistema de gerenciamento de fichas de personagem para RPG de mesa, com sincronizacao em tempo real entre mestre e jogadores.
 
 ## Tecnologias
 
 - Node.js + Express
-- Socket.io (comunicação em tempo real)
-- Supabase (banco de dados e autenticação)
+- Socket.io
+- Supabase
 
 ## Estrutura do Projeto
 
-```
+```text
 rpg/
-├── src/
-│   └── index.js (servidor backend)
-│   └── setup.js (setup do banco)
-├── public/
-│   ├── css/ (estilos)
-│   ├── js/ (scripts frontend)
-│   ├── templates/ (páginas HTML)
-│   └── index.html
-├── docs/ (documentação)
-├── .env.example
-├── setup.sql (SQL para criar tabelas)
-├── package.json
-└── README.md
+|-- src/
+|   |-- index.js
+|   `-- setup.js
+|-- public/
+|   |-- css/
+|   |-- js/
+|   |-- templates/
+|   `-- index.html
+|-- docs/
+|-- .env.example
+|-- setup.sql
+|-- package.json
+`-- README.md
 ```
 
-## 🚀 Como rodar localmente
+## Como rodar localmente
 
-1. **Configurar variáveis de ambiente**
+1. Configure as variaveis de ambiente
    - Copie `.env.example` para `.env`
-   - Configure as variáveis do Supabase (URL, ANON_KEY, SERVICE_ROLE_KEY)
+   - Preencha `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY`
 
-2. **Configurar banco de dados no Supabase**
-   - Execute o SQL do arquivo `setup.sql` no SQL Editor do Supabase
+2. Configure o banco no Supabase
+   - Execute o SQL do arquivo `setup.sql` no SQL Editor
    - Isso cria as tabelas `characters` e `master_data`
 
-3. **Instalar dependências**
+3. Instale as dependencias
    ```bash
    npm install
    ```
 
-4. **Opções de execução**
+4. Inicie a aplicacao
    ```bash
-   npm run setup  # Drop/criar tabelas no Supabase
-   npm run dev    # Iniciar servidor (porta 3001)
-   npm run full   # Setup + dev (recomendado)
-   npm start      # Iniciar servidor
+   npm run dev
    ```
 
-5. **Acessar**
-   - Backend: http://localhost:3001
-   - Área de mestre: acessível pela senha 4444
+   Ou, se preferir manter o comando antigo:
+   ```bash
+   npm run full
+   ```
 
-## Variáveis de Ambiente
+5. Acesse
+   - App: `http://localhost:3001`
+   - Area de mestre: senha `4444`
 
-Copie `.env.example` para `.env` e configure suas credenciais do Supabase.
+## Scripts
+
+- `npm run dev`: inicia o servidor local
+- `npm run full`: mesmo comportamento do `dev`, mantido por compatibilidade
+- `npm run setup`: checa se o ambiente local esta pronto
+- `npm start`: inicia o servidor

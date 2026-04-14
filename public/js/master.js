@@ -75,7 +75,7 @@ function createEntityCardHtml(entity, type, options = {}) {
 async function ensureDbCharsCache(force = false) {
     if (!window._dbCharsCache || force) {
         try {
-            const res = await fetch('/api/admin/characters');
+            const res = await authorizedFetch('/api/admin/characters');
             if (!res.ok) throw new Error("Erro ao buscar personagens");
             window._dbCharsCache = await res.json();
         } catch (err) {
@@ -191,7 +191,7 @@ async function renderAllCharacters() {
 window.openMesaSetup = async function() {
     // Busca personagens do banco se não tiver cache
     if (!window._dbCharsCache) {
-        const res = await fetch('/api/admin/characters');
+        const res = await authorizedFetch('/api/admin/characters');
         window._dbCharsCache = await res.json();
     }
     
@@ -242,7 +242,7 @@ window.deleteEntityMaster = async function(id, type) {
         saveMasterState(); renderMonsters();
     } else {
         try {
-            const res = await fetch(`/api/admin/characters/${id}`, { method: 'DELETE' });
+            const res = await authorizedFetch(`/api/admin/characters/${id}`, { method: 'DELETE' });
             if (!res.ok) throw new Error("Erro ao excluir no servidor");
             
             masterState.tableCharacters = masterState.tableCharacters.filter(tid => tid != id);

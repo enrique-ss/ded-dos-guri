@@ -1,0 +1,114 @@
+<main id="master-panel" class="full-screen-modal">
+    <div class="master-hub-layout">
+        <aside id="master-sidebar" class="master-sidebar">
+            <div class="sidebar-header">
+                <div class="master-brand-mark">
+                    <img src="resources/favicon.png" alt="Logo do D&D dos Guri" class="master-brand-logo">
+                </div>
+                <div class="master-brand-full">
+                    <img src="resources/favicon.png" alt="Logo do D&D dos Guri" class="master-brand-logo master-brand-logo-expanded">
+                </div>
+            </div>
+
+            <div class="sidebar-nav" style="flex:1; overflow-y:auto;">
+                <button class="m-nav-btn active" data-tab="mesa" type="button"><span class="m-nav-icon">🎲</span><span class="m-nav-text">Mesa</span></button>
+                <button class="m-nav-btn" data-tab="initiative" type="button"><span class="m-nav-icon">⚔️</span><span class="m-nav-text">Iniciativa</span></button>
+                <button class="m-nav-btn" data-tab="bestiary" type="button"><span class="m-nav-icon">🧙</span><span class="m-nav-text">NPCs</span></button>
+                <button class="m-nav-btn" data-tab="monsters" type="button"><span class="m-nav-icon">🐉</span><span class="m-nav-text">Monstros</span></button>
+                <button class="m-nav-btn" data-tab="characters" type="button"><span class="m-nav-icon">📚</span><span class="m-nav-text">Banco</span></button>
+                <button class="m-nav-btn" data-tab="log" type="button"><span class="m-nav-icon">🕮</span><span class="m-nav-text">Historico</span></button>
+                <button class="m-nav-btn" data-tab="notes" type="button"><span class="m-nav-icon">✍️</span><span class="m-nav-text">Notas</span></button>
+            </div>
+
+            <div class="master-sidebar-bottom">
+                <button id="btn-master-exit" class="m-nav-btn" type="button"><span class="m-nav-icon" style="color:var(--red);">🚪</span><span class="m-nav-text" style="color:var(--red);">Sair</span></button>
+            </div>
+        </aside>
+
+        <div class="master-content">
+            <section id="m-tab-mesa" class="m-tab-content active premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Mesa Atual</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" type="button" onclick="window.openMesaSetup()">Gerenciar mesa</button>
+                        <button class="btn-primary" type="button" onclick="window.startBattleSetup()">Iniciar batalha</button>
+                    </div>
+                </div>
+                <div id="mesa-grid" class="m-grid"></div>
+            </section>
+
+            <section id="m-tab-initiative" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Ordem de Iniciativa</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button id="btn-end-battle" class="btn-danger" type="button" onclick="window.endBattle()" style="display:none;">Encerrar batalha</button>
+                    </div>
+                </div>
+                <div id="initiative-list" class="initiative-list"></div>
+            </section>
+
+            <section id="m-tab-bestiary" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">NPCs</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-primary" type="button" onclick="window.openNPCGeneratorSetup()">Gerar NPC</button>
+                    </div>
+                </div>
+                <div id="npcs-grid" class="m-grid"></div>
+            </section>
+
+            <section id="m-tab-monsters" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Bestiario</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-primary" type="button" onclick="window.openNPCGeneratorSetup()">Gerar criatura</button>
+                    </div>
+                </div>
+                <div id="monsters-grid" class="m-grid"></div>
+            </section>
+
+            <section id="m-tab-characters" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Personagens Salvos</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" type="button" onclick="renderAllCharacters()">Atualizar</button>
+                    </div>
+                </div>
+                <div id="all-characters-grid" class="m-grid"></div>
+            </section>
+
+            <section id="m-tab-log" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Historico da Sessao</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <button class="btn-ghost" type="button" onclick="window.clearMasterLog()">Limpar historico</button>
+                    </div>
+                </div>
+                <div id="master-log-history" class="log-history"></div>
+            </section>
+
+            <section id="m-tab-notes" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Notas Privadas</h2>
+                    </div>
+                </div>
+                <textarea id="master-private-notes" class="premium-input" rows="12" placeholder="Anote segredos, ganchos, nomes e ideias da campanha..."></textarea>
+            </section>
+        </div>
+    </div>
+
+    <button id="master-sidebar-toggle" class="master-sidebar-toggle" type="button" aria-label="Alternar menu do mestre">☰</button>
+</main>
