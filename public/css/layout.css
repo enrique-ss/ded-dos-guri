@@ -586,23 +586,9 @@
 }
 
 @media (min-width: 900px) {
-    .master-sidebar.sidebar-hidden {
-        margin-left: 0 !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        position: relative !important;
-    }
     .master-sidebar-toggle {
         display: none !important;
     }
 }
 
-@media (max-width: 899px) {
-    .master-sidebar {
-        position: absolute;
-        width: 80%;
-        max-width: 300px;
-        box-shadow: 10px 0 30px var(--bg-overlay);
-    }
-}
 

@@ -188,20 +188,9 @@ function setupEvents() {
         }
 
         // Master UI
-        const sidebarToggle = t.closest('#master-sidebar-toggle') || t.closest('#master-sidebar-close');
-        if (sidebarToggle) {
-            const sb = document.getElementById('master-sidebar');
-            if (sb) sb.classList.toggle('sidebar-hidden');
-            return;
-        }
-
         const mNav = t.closest('.m-nav-btn');
         if (mNav && mNav.dataset.tab) {
             switchMasterTab(mNav.dataset.tab);
-            if (window.innerWidth <= 900 && mNav.id !== 'btn-master-exit') {
-                const sb = document.getElementById('master-sidebar');
-                if (sb) sb.classList.add('sidebar-hidden');
-            }
             return;
         }
 
