@@ -187,38 +187,6 @@ function setupEvents() {
             }
         }
 
-        if (t.closest('#btn-reset-char')) {
-            if (isMaster && masterEditingType === 'npc') {
-                masterEditingId = null; masterState.activeTab = 'bestiary'; render();
-            } else if (!isMaster) {
-                if (state.inBattle) {
-                    alert("❌ Você não pode apagar sua ficha durante um combate ativo!");
-                    return;
-                }
-                if (confirm('Deseja realmente APAGAR este personagem?')) {
-                    const old = state.name; 
-                    state.isDeleted = true;
-                    
-                    sendSystemLog(`☠️ <strong>${old}</strong> se foi... sua lenda termina aqui.`);
-                    
-                    broadcastChange();
-                    saveState();
-                    if (user) saveStateToSupabase();
-                    
-                    // Chama endpoint DELETE para remover do banco de dados
-                    if (state.id) {
-                        fetch(`/api/characters/${state.id}`, { method: 'DELETE' })
-                            .catch(err => console.error('Erro ao excluir personagem do servidor:', err));
-                    }
-                    
-                    setTimeout(() => {
-                        location.reload();
-                    }, 500);
-                }
-            }
-            return;
-        }
-
         // Master UI
         const sidebarToggle = t.closest('#master-sidebar-toggle') || t.closest('#master-sidebar-close');
         if (sidebarToggle) {

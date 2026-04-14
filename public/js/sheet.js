@@ -46,10 +46,6 @@ function renderHeader() {
                 <button class="nav-btn" id="btn-back-to-role" style="color: var(--txt-muted);">
                     <span>Voltar</span>
                 </button>
-                
-                <button class="nav-btn btn-reset" id="btn-reset-char" style="color: var(--red); display: ${!isMaster ? 'block' : 'none'}">
-                    <span>Resetar</span>
-                </button>
             </div>
         </header>
     `;
@@ -161,8 +157,6 @@ function renderSheet() {
             if (!isMaster) el.readOnly = true; 
         }
     });
-
-    if ($('btn-reset-char')) $('btn-reset-char').style.display = !isMaster ? 'block' : 'none';
 
     // Item creation visibility
     if ($('add-attack')) $('add-attack').style.display = isMaster ? 'block' : 'none';
