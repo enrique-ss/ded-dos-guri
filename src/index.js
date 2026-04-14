@@ -363,7 +363,13 @@ if (!supabaseEnabled) {
     try {
       const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
       if (error) throw error;
-      res.json(users);
+      // Formata os usuários para ter id e email no formato esperado pelo frontend
+      const formattedUsers = users.map(u => ({
+        id: u.id,
+        email: u.email,
+        created_at: u.created_at
+      }));
+      res.json(formattedUsers);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
