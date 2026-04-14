@@ -591,4 +591,14 @@
     }
 }
 
+@media (max-width: 899px) {
+    .master-hub-layout {
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        gap: 0;
+        min-height: 100vh;
+    }
+}
+
 
