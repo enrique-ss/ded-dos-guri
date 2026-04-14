@@ -429,6 +429,26 @@ function setupEvents() {
 }
 
 let isRenderingSelection = false;
+
+window.deleteCharacter = async function(charId) {
+    if (!confirm('Deseja realmente excluir este personagem?')) return;
+    
+    try {
+        const headers = getAuthHeaders();
+        const res = await fetch(`/api/characters/${charId}`, { 
+            method: 'DELETE',
+            headers: headers
+        });
+        if (!res.ok) throw new Error('Erro ao excluir personagem');
+        
+        // Atualiza a lista de personagens
+        userCharacters = userCharacters.filter(c => c.id !== charId);
+        renderCharacterSelection();
+    } catch (err) {
+        alert('Erro ao excluir personagem: ' + err.message);
+    }
+};
+
 async function renderCharacterSelection() {
     if (isRenderingSelection) return;
     isRenderingSelection = true;
@@ -447,6 +467,7 @@ async function renderCharacterSelection() {
             card.className = 'choice-card char-card';
             card.dataset.id = char.id;
             card.innerHTML = `
+                <button class="btn-delete-char" onclick="event.stopPropagation(); deleteCharacter('${char.id}')" title="Excluir personagem">×</button>
                 <div class="char-name">${data.name || 'Herói Sem Nome'}</div>
                 <div class="char-meta">${data.race} ${data.cls} - Nível ${data.level}</div>
             `;

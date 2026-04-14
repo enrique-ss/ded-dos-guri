@@ -436,12 +436,15 @@ if (!supabaseEnabled) {
     if (!ensureSupabaseEnabled(res)) return;
     try {
       const { id } = req.params;
-      const userId = req.authUser?.id;
+      const token = readAuthToken(req);
       
-      if (!userId) {
+      if (!token) {
         res.status(401).json({ error: 'Não autorizado' });
         return;
       }
+
+      const payload = jwt.verify(token, jwtSecret);
+      const userId = payload.sub;
 
       const { error } = await supabaseAdmin
         .from('characters')
