@@ -6,7 +6,7 @@
                     <img src="resources/favicon.png" alt="Logo do D&D dos Guri" class="master-brand-logo">
                 </div>
                 <div class="master-brand-full">
-                    <img src="resources/favicon.png" alt="Logo do D&D dos Guri" class="master-brand-logo master-brand-logo-expanded">
+                    <img src="resources/favicon.png" alt="Logo do D&D dos Guri" class="master-brand-logo">
                 </div>
             </div>
 
@@ -43,8 +43,8 @@
                         <h2 class="cinzel">Batalha</h2>
                     </div>
                     <div class="m-header-actions">
-                        <button class="btn-primary" type="button" onclick="window.startBattleSetup()">Iniciar batalha</button>
-                        <button id="btn-end-battle" class="btn-danger" type="button" onclick="window.endBattle()" style="display:none;">Encerrar batalha</button>
+                        <button id="btn-start-battle" class="btn-primary" type="button" onclick="window.startBattleSetup()">Iniciar batalha</button>
+                        <button id="btn-end-battle" class="btn-ghost" type="button" onclick="window.endBattle()" style="display:none; color: var(--red); border-color: var(--red);">Encerrar batalha</button>
                     </div>
                 </div>
                 <div id="initiative-list" class="initiative-list"></div>
@@ -92,7 +92,7 @@
                         <h2 class="cinzel">Historico da Sessao</h2>
                     </div>
                     <div class="m-header-actions">
-                        <button class="btn-ghost" type="button" onclick="window.clearMasterLog()">Limpar historico</button>
+                        <button class="btn-ghost" type="button" onclick="window.clearMasterLog()" style="color: var(--red); border-color: var(--red);">Limpar historico</button>
                     </div>
                 </div>
                 <div id="master-log-history" class="log-history"></div>

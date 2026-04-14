@@ -431,6 +431,30 @@ if (!supabaseEnabled) {
       res.status(500).json({ error: err.message });
     }
   });
+
+  app.delete('/api/characters/:id', async (req, res) => {
+    if (!ensureSupabaseEnabled(res)) return;
+    try {
+      const { id } = req.params;
+      const userId = req.authUser?.id;
+      
+      if (!userId) {
+        res.status(401).json({ error: 'Não autorizado' });
+        return;
+      }
+
+      const { error } = await supabaseAdmin
+        .from('characters')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 }
 
 io.on('connection', (socket) => {

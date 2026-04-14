@@ -1,3 +1,25 @@
+/* ===== CUSTOM SCROLLBARS ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-overlay);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--panel-border);
+    border-radius: 4px;
+    border: 2px solid var(--bg-overlay);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold);
+    border-color: var(--bg-overlay);
+}
+
 /* ATRIBUTO DRAFTER (Wizard Step 4) */
 .array-chip {
     background: var(--bg-glass);

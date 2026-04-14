@@ -205,6 +205,12 @@ function setupEvents() {
                     saveState();
                     if (user) saveStateToSupabase();
                     
+                    // Chama endpoint DELETE para remover do banco de dados
+                    if (state.id) {
+                        fetch(`/api/characters/${state.id}`, { method: 'DELETE' })
+                            .catch(err => console.error('Erro ao excluir personagem do servidor:', err));
+                    }
+                    
                     setTimeout(() => {
                         location.reload();
                     }, 500);

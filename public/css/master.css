@@ -101,20 +101,18 @@
 
 .master-brand-full {
     display: none;
+    width: 82px;
+    text-align: center;
+    flex-shrink: 0;
     align-items: center;
-    padding-left: 18px;
+    justify-content: center;
 }
 
 .master-brand-logo {
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(255, 190, 11, 0.18));
-}
-
-.master-brand-logo-expanded {
-    width: 44px;
-    height: 44px;
 }
 
 .master-sidebar:hover .master-brand-mark { display: none; }

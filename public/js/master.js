@@ -31,6 +31,16 @@ function createEntityCardHtml(entity, type, options = {}) {
         clickArgs = `'db_character', '${dbId}'`;
     }
 
+    // Renderiza condições se existirem
+    const conditionsHtml = (p.conditions && p.conditions.length > 0) ? `
+        <div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; justify-content: center;">
+            ${p.conditions.map(cId => {
+                const cond = CONDITIONS[cId];
+                return cond ? `<span style="font-size: 1.1rem; cursor: help;" title="${cond.name}">${cond.icon}</span>` : '';
+            }).join('')}
+        </div>
+    ` : '';
+
     return `
         <div class="player-card ${isOnline ? 'is-online' : 'is-offline'} ${extraClasses}" onclick="openEntitySheet(${clickArgs})">
             ${isOnline ? '<div class="online-indicator" title="Online"></div>' : ''}
@@ -40,7 +50,7 @@ function createEntityCardHtml(entity, type, options = {}) {
                 title="${options.isMesaContext ? 'Remover da Mesa' : 'Excluir Permanentemente'}">×</button>
             
             <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
-                ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : (type === 'monster' ? '�' : '�👤'))}
+                ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : (type === 'monster' ? '🐉' : '👤'))}
             </div>
             
             <strong>${p.name || 'Sem Nome'}</strong>
@@ -68,6 +78,7 @@ function createEntityCardHtml(entity, type, options = {}) {
                 </div>
             </div>
 
+            ${conditionsHtml}
             ${type === 'db_character' && p.userEmail ? `<div class="label-tiny" style="opacity: 0.5; font-size: 0.5rem; margin-top: 8px;">Dono: ${p.userEmail}</div>` : ''}
         </div>
     `;
@@ -294,7 +305,7 @@ window.startBattleSetup = function() {
                     <h3 style="color: var(--gold); font-size: 0.85rem; margin-top:0.8rem; border-bottom: 1px solid var(--panel-border);">NPCs & Aliados</h3>
                     ${npcs.map(n => `
                         <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.5rem; margin-bottom: 0.3rem; border-radius: 6px;">
-                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
+                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}" data-type="npc"> ${n.name}</span>
                             <span class="label-tiny">Ini: ${n.init}</span>
                         </label>
                     `).join('')}
@@ -302,7 +313,7 @@ window.startBattleSetup = function() {
                     <h3 style="color: var(--gold); font-size: 0.85rem; margin-top:0.8rem; border-bottom: 1px solid var(--panel-border);">Bestiário</h3>
                     ${monsters.map(n => `
                         <label style="display:flex; justify-content:space-between; align-items:center; background: var(--bg-overlay); padding: 0.5rem; margin-bottom: 0.3rem; border-radius: 6px;">
-                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}"> ${n.name}</span>
+                            <span><input type="checkbox" class="battle-check npc-check" value="${n.id}" data-name="${n.name}" data-init="${n.init}" data-type="monster"> ${n.name}</span>
                             <span class="label-tiny">Ini: ${n.init}</span>
                         </label>
                     `).join('')}
@@ -324,6 +335,7 @@ window.confirmBattleSetup = function() {
         name: c.dataset.name,
         val: parseInt(c.dataset.init) || 0,
         isPlayer: c.classList.contains('player-check'),
+        type: c.dataset.type || (c.classList.contains('player-check') ? 'player' : 'npc'),
         socketId: c.dataset.socket
     })).sort((a,b) => b.val - a.val);
     
@@ -332,7 +344,8 @@ window.confirmBattleSetup = function() {
     
     combatants.forEach(c => {
         if (c.isPlayer && c.socketId) socket.emit('masterUpdatePlayer', { targetId: c.socketId, data: { ...connectedPlayers[c.socketId], inBattle: true } });
-        else if (!c.isPlayer) { const npc = masterState.npcs.find(n => n.id == c.id); if (npc) npc.inBattle = true; }
+        else if (c.type === 'monster') { const monster = (masterState.monsters || []).find(n => n.id == c.id); if (monster) monster.inBattle = true; }
+        else { const npc = masterState.npcs.find(n => n.id == c.id); if (npc) npc.inBattle = true; }
     });
 
     sendSystemLog(`⚔️ <strong>Início de Combate!</strong>`);
@@ -348,7 +361,9 @@ function renderInitiative() {
     const list = document.getElementById('initiative-list');
     if (!list) return;
     const hasBattle = masterState.battleOrder && masterState.battleOrder.length > 0;
+    const btnStart = document.getElementById('btn-start-battle');
     const btnEnd = document.getElementById('btn-end-battle');
+    if (btnStart) btnStart.style.display = hasBattle ? 'none' : 'block';
     if (btnEnd) btnEnd.style.display = hasBattle ? 'block' : 'none';
     if (!hasBattle) { 
         list.innerHTML = '<div class="m-empty-state">Nenhum combate ativo.</div>'; 
@@ -356,11 +371,19 @@ function renderInitiative() {
     }
     list.classList.remove('m-empty-state');
     list.innerHTML = masterState.battleOrder.map(item => {
-        let entity = item.isPlayer ? connectedPlayers[item.socketId] : masterState.npcs.find(n => n.id == item.id);
+        let entity;
+        if (item.isPlayer) {
+            entity = connectedPlayers[item.socketId];
+        } else if (item.type === 'monster') {
+            entity = (masterState.monsters || []).find(n => n.id == item.id);
+        } else {
+            entity = masterState.npcs.find(n => n.id == item.id);
+        }
         const hpStr = entity ? `<span style="font-size:0.85rem; opacity:0.8; font-weight: 500; margin-left: 12px; color: var(--gold);">HP: ${entity.hp.current}/${entity.hp.max}</span>` : '';
         const dangerStr = entity && entity.hp.current <= 0 ? 'color: var(--red); text-decoration: line-through; opacity: 0.6;' : 'color: var(--txt);';
+        const borderColor = item.isPlayer ? 'var(--gold)' : (item.type === 'monster' ? 'var(--red)' : '#4a90e2');
         return `
-            <div class="initiative-row" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${item.isPlayer ? 'var(--gold)' : 'var(--red)'};">
+            <div class="initiative-row" style="display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 10px; border-left: 4px solid ${borderColor};">
                 <div class="init-score" style="font-size: 1.4rem; font-weight: 900; color: var(--gold); min-width: 40px; text-align: center; margin-right: 1rem;">${item.val}</div>
                 <div class="init-name" style="flex: 1; ${dangerStr}"><strong style="font-size: 1rem;">${item.name}</strong> ${hpStr}</div>
             </div>
@@ -394,6 +417,7 @@ window.openEntitySheet = function(type, id) {
     let entity;
     if (type === 'player') entity = connectedPlayers[id];
     else if (type === 'npc') entity = masterState.npcs.find(n => n.id == id);
+    else if (type === 'monster') entity = (masterState.monsters || []).find(n => n.id == id);
     else if (type === 'db_character') {
         const charEntry = (window._dbCharsCache || []).find(c => c.id === id);
         if (charEntry) entity = charEntry.data;
