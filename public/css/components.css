@@ -153,6 +153,35 @@
     transform: translateY(-1px);
 }
 
+/* ===== MASTER SIDEBAR TOGGLE ===== */
+.master-sidebar-toggle {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: var(--bg-glass);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    color: var(--txt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.master-sidebar-toggle:hover {
+    transform: scale(1.1);
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
 /* ===== THEME TOGGLE BUTTON ===== */
 .theme-toggle-btn {
     position: fixed;

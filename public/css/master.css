@@ -28,12 +28,16 @@
 
 .master-sidebar:hover { width: 260px; }
 
+.sidebar-hidden { margin-left: -320px !important; opacity: 0 !important; pointer-events: none; }
+
 @media (max-width: 900px) {
     .master-sidebar {
-        width: 100%;
-        border-radius: 0;
-        border: none;
-        box-shadow: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1005;
+        box-shadow: 10px 0 40px rgba(0,0,0,0.3);
     }
     .m-header {
         flex-direction: column;
@@ -285,6 +289,13 @@
 }
 
 /* MASTER TOOLS */
+.master-sidebar-toggle {
+    position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px;
+    background: var(--bg-glass); border: 1px solid var(--panel-border);
+    border-radius: 50%; color: var(--txt); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; box-shadow: 0 4px 15px var(--bg-overlay);
+    backdrop-filter: blur(10px); z-index: 1001;
+}
 
 /* Status Indicators */
 .online-indicator {
