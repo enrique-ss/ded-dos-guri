@@ -1,5 +1,3 @@
-// ==================== WIZARD & BUILDER LOGIC ====================
-
 function buildGrids() {
     renderChoiceGrid('race-grid', RACES, wizardData.race, 'race');
     renderChoiceGrid('class-grid', CLASSES, wizardData.cls, 'cls');

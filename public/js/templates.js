@@ -1,4 +1,4 @@
-// Sistema de Carregamento de Templates
+// Carregamento de templates
 const TemplateLoader = {
     async loadTemplate(templateName) {
         try {
@@ -29,10 +29,10 @@ const TemplateLoader = {
     }
 };
 
-// Carregar templates ao iniciar e então inicializar o app
+// Carrega templates e inicia app
 document.addEventListener('DOMContentLoaded', async () => {
     await TemplateLoader.loadAllTemplates();
-    // Chamar inicialização do app após carregar templates
+    // Inicia app após carregar templates
     if (typeof initApp === 'function') {
         initApp();
     }

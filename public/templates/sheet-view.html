@@ -1,15 +1,14 @@
 <main id="sheet-view" class="full-screen-modal">
     <div id="sheet-container" class="sheet-container read-only">
 
-        <!-- CABEÇALHO COM NAVEGAÇÃO -->
-        <!-- CABEÇALHO PADRONIZADO (Injetado via JS) -->
+        <!-- Cabeçalho -->
         <div class="character-header-placeholder"></div>
 
         <div class="sheet-body">
-            <!-- ================= COLUNA ESQUERDA ================= -->
+            <!-- Coluna esquerda -->
             <div class="sheet-col">
 
-                <!-- 2. ATRIBUTOS BASE -->
+                <!-- Atributos -->
                 <div class="premium-card">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Atributos</label>
@@ -63,9 +62,9 @@
 
             </div>
 
-            <!-- ================= COLUNA CENTRAL ================= -->
+            <!-- Coluna central -->
             <div class="sheet-col">
-                <!-- 5. BLOCO DE COMBATE -->
+                <!-- Combate -->
                 <div class="premium-card">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Combate</label>
@@ -73,37 +72,37 @@
                     </div>
 
                     <div class="combat-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
-                        <!-- 1. Pontos de Vida -->
+                        <!-- Pontos de Vida -->
                         <div class="combat-stat-item" style="background: rgba(255, 62, 77, 0.1); border: 1px solid rgba(255, 62, 77, 0.3); grid-column: span 2;">
                             <label class="label-tiny" style="color: var(--red);">Pontos de Vida</label>
                             <div id="hp-text" class="stat-big" style="color: var(--red); cursor: pointer;">10 / 10</div>
                         </div>
 
-                        <!-- 2. Armadura -->
+                        <!-- Armadura -->
                         <div class="combat-stat-item">
                             <label class="label-tiny">Armadura</label>
                             <input type="number" id="display-ac" class="stat-big" value="10" readonly title="Classe de Armadura" style="padding: 0;">
                         </div>
 
-                        <!-- 3. Iniciativa -->
+                        <!-- Iniciativa -->
                         <div class="combat-stat-item">
                             <label class="label-tiny">Iniciativa</label>
                             <div id="display-initiative" class="stat-big" style="cursor: pointer;">0</div>
                         </div>
 
-                        <!-- 4. Deslocamento -->
+                        <!-- Deslocamento -->
                         <div class="combat-stat-item">
                             <label class="label-tiny">Deslocamento</label>
                             <div id="display-speed" class="stat-big">9m</div>
                         </div>
 
-                        <!-- 5. Dados de Vida (HD) -->
+                        <!-- Dados de Vida -->
                         <div class="combat-stat-item">
                             <label class="label-tiny">Dados de Vida</label>
                             <div id="display-hd" class="stat-big" style="font-size: 1.2rem; cursor: pointer;">1 d10</div>
                         </div>
 
-                        <!-- 6. Resgate da Morte -->
+                        <!-- Resgate da Morte -->
                         <div class="combat-stat-item" style="grid-column: span 2;">
                             <label class="label-tiny" style="margin-bottom:0.5rem;">Resgate da Morte</label>
                             <div class="death-saves" style="flex-direction: row; gap: 1rem; justify-content: center;">
@@ -122,7 +121,7 @@
                     </div>
                 </div>
 
-                <!-- PERÍCIAS (SKILLS) -->
+                <!-- Perícias -->
                 <div class="premium-card" style="flex: 1;">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Perícias</label>
@@ -133,10 +132,10 @@
 
             </div>
 
-            <!-- ================= COLUNA DIREITA ================= -->
+            <!-- Coluna direita -->
             <div class="sheet-col">
                 
-                <!-- INSPIRAÇÃO, PROFICIÊNCIA E SALVAGUARDAS -->
+                <!-- Bônus e Salvaguardas -->
                 <div class="premium-card" style="flex: 1;">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Bônus e Salvaguardas</label>
@@ -164,7 +163,7 @@
                     <div class="skills-list saves-list" id="saves-list"></div>
                 </div>
 
-                <!-- CONDIÇÕES E ESTADOS -->
+                <!-- Condições -->
                 <div class="premium-card">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Condições e Estados</label>

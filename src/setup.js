@@ -58,7 +58,7 @@ function recreateDatabase() {
 
 function configurarBanco() {
   recreateDatabase();
-  console.log(`Banco offline recriado em ${dbPath}`);
+  console.log(`Banco recriado em ${dbPath}`);
   return true;
 }
 

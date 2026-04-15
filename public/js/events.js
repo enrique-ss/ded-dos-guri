@@ -1,5 +1,3 @@
-// ==================== EVENT LISTENERS & DELEGATION ====================
-
 const debounceMasterList = debounce(() => {
     if (isMaster) renderMasterPanel();
 }, 1000);
@@ -23,7 +21,7 @@ function setupEvents() {
     document.addEventListener('click', async e => {
         const t = e.target;
 
-        // Role Selection
+        // Seleção de papel
         const rCard = t.closest('.choice-card[data-role]');
         if (rCard) {
             const role = rCard.dataset.role;
@@ -41,7 +39,7 @@ function setupEvents() {
             return;
         }
 
-        // Character Selection Logic
+        // Seleção de personagem
         const charCard = t.closest('.char-card[data-id]');
         if (charCard) {
             const charId = charCard.dataset.id;
@@ -82,7 +80,7 @@ function setupEvents() {
             return;
         }
 
-        // Common Nav
+        // Navegação comum
         if (t.closest('#btn-master-exit') || t.closest('#btn-back-to-role')) {
             if (isMaster) {
                 if (masterEditingId) {
@@ -110,7 +108,7 @@ function setupEvents() {
             return;
         }
 
-        // Sheet Actions
+        // Ações da ficha
         if (t.closest('#container-inspiration')) {
             if (isMaster) {
                 const current = state.inspiration === true ? 1 : (parseInt(state.inspiration) || 0);
@@ -187,7 +185,7 @@ function setupEvents() {
             }
         }
 
-        // Master UI
+        // Interface do mestre
         const sidebarToggle = t.closest('#master-sidebar-toggle') || t.closest('#master-sidebar-close');
         if (sidebarToggle) {
             const sb = document.getElementById('master-sidebar');
@@ -208,7 +206,7 @@ function setupEvents() {
         const nav = t.closest('.nav-btn');
         if (nav && nav.dataset.view) switchView(nav.dataset.view);
 
-        // Stats Prompts
+        // Alteração de atributos
         if (isMaster) {
             const attrBox = t.closest('.attr-block[data-attr]');
             if (attrBox) {
@@ -241,7 +239,7 @@ function setupEvents() {
                 if (val !== null) { state.race = val; renderSheet(); broadcastChange(); }
             }
             
-            // Criação de Itens pelo Mestre
+            // Criação de itens pelo mestre
             if (t.id === 'add-attack') {
                 const name = prompt("Nome:");
                 if (name) {
@@ -273,7 +271,7 @@ function setupEvents() {
                 }
             }
 
-            // Habilidades
+            // Magias e truques
             if (t.id === 'add-cantrip') {
                 const name = prompt("Nome do Truque:");
                 if (name) {
@@ -306,12 +304,12 @@ function setupEvents() {
             }
         }
 
-        // Wizard steps
+        // Passos do wizard
         const stepMatch = t.id?.match(/btn-(step|back)-(\d+)/);
         if (stepMatch) goToStep(parseInt(stepMatch[2]));
         if (t.id === 'btn-finish') finishCreation();
 
-        // Wizard selections
+        // Seleções do wizard
         const cCard = t.closest('.choice-card[data-id]');
         if (cCard && !cCard.classList.contains('choice-skill')) {
             const k = cCard.dataset.key;
@@ -364,14 +362,14 @@ function setupEvents() {
         if (id.startsWith('lore-')) {
             masterState.worldLore = masterState.worldLore || {};
             masterState.worldLore[id.replace('lore-', '')] = e.target.value;
-            saveMasterState(); // Salva no Supabase
-            broadcastChange(); // Notifica outros clientes que o lore mudou
+            saveMasterState();
+            broadcastChange();
         }
     });
 
-    // Auto-save fields as they type
+    // Auto-salvar campos
     document.addEventListener('input', (e) => {
-        if (!isMaster && !wizardData.active) return; // Bloqueio total de edição para jogadores
+        if (!isMaster && !wizardData.active) return; // Jogadores não editam
         const id = e.target.id;
         const val = e.target.value;
         if (id === 'master-private-notes') { masterState.notes = val; saveMasterState(); return; }
@@ -409,7 +407,7 @@ window.deleteCharacter = async function(charId) {
         });
         if (!res.ok) throw new Error('Erro ao excluir personagem');
         
-        // Atualiza a lista de personagens
+        // Atualiza lista
         userCharacters = userCharacters.filter(c => c.id !== charId);
         renderCharacterSelection();
     } catch (err) {
@@ -428,7 +426,7 @@ async function renderCharacterSelection() {
 
         container.innerHTML = '';
         
-        // Lista de personagens existentes
+        // Personagens existentes
         list.forEach(char => {
             const data = char.data;
             const card = document.createElement('div');
@@ -442,7 +440,7 @@ async function renderCharacterSelection() {
             container.appendChild(card);
         });
 
-        // Botão de Novo Personagem
+        // Botão novo personagem
         const newCard = document.createElement('div');
         newCard.className = 'choice-card char-card char-card-new';
         newCard.id = 'btn-new-character';
@@ -452,7 +450,7 @@ async function renderCharacterSelection() {
         `;
         container.appendChild(newCard);
 
-        // Trocar telas
+        // Troca de tela
         document.getElementById('role-selection')?.classList.remove('active');
         document.getElementById('character-selection')?.classList.add('active');
     } finally {

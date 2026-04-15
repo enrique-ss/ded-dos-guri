@@ -50,9 +50,7 @@ function renderHeader() {
         </header>
     `;
 
-    // A navegação de 'Voltar' agora é gerenciada centralmente pelo events.js via delegação de cliques.
-    
-    // A exclusão agora é gerenciada exclusivamente pelo events.js
+    // Navegação e exclusão gerenciadas pelo events.js
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === currentView);
     });
@@ -66,9 +64,8 @@ function renderSheet() {
     const container = document.getElementById('sheet-container') || document.querySelector('.sheet-container');
     if (!container) return;
 
-    const isEditing = isMaster; // APENAS MESTRE EDITA APÓS CRIAÇÃO
+    const isEditing = isMaster; // Apenas mestre edita após criação
 
-    // 1. Text & Value Mapping (Radical Reduction)
     const mappings = {
         'display-class': CLASSES[state.cls]?.name || '',
         'display-race': RACES[state.race]?.name || '',
@@ -87,20 +84,20 @@ function renderSheet() {
 
     document.querySelectorAll('#display-name').forEach(el => el.value = state.name);
 
-    // 2. Photo Handling
+    // Foto
     document.querySelectorAll('#display-photo').forEach(pImg => {
         pImg.src = state.photo || '';
         pImg.style.display = state.photo ? 'block' : 'none';
     });
 
-    // 3. Status & Logic Batch
+    // Campos
     document.querySelectorAll('input, textarea').forEach(el => {
         if (!el.classList.contains('protected-field')) el.readOnly = !isMaster;
     });
 
     const profBonus = state.profBonusOverride || (Math.ceil(state.level / 4) + 1);
     
-    // 4. Attribute Refactor
+    // Atributos
     ['for', 'des', 'con', 'int', 'sab', 'car'].forEach(a => {
         const val = state.attr[a];
         const mod = Math.floor((val - 10) / 2);
@@ -109,7 +106,7 @@ function renderSheet() {
         if ($(`val-${a}`)?.closest('.attr-block')) $(`val-${a}`).closest('.attr-block').classList.toggle('master-editable', isMaster);
     });
 
-    // 5. Consolidated Logic
+    // Lógica
     if ($('check-inspiration')) {
         const insp = state.inspiration === true ? 1 : (parseInt(state.inspiration) || 0);
         $('check-inspiration').textContent = insp;
@@ -121,23 +118,23 @@ function renderSheet() {
         $('display-hd').textContent = state.hd || defaultHD;
     }
 
-    // Death Saves
+    // Salvamentos de morte
     ['success', 'fail'].forEach(type => {
         document.querySelectorAll(`.ds-${type}`).forEach((el, i) => el.classList.toggle('active', i < state.deathSaves[type]));
     });
 
-    // Toggle master-editable batch
+    // Editável pelo mestre
     ['display-level', 'display-ac', 'display-initiative', 'display-speed', 'hp-text', 'display-hd', 'container-inspiration', 'container-prof-bonus', 'display-name-header', 'display-photo-header'].forEach(id => {
         if ($(id)) $(id).classList.toggle('master-editable', isMaster);
     });
 
-    // Sub-renders
+    // Sub-renderizações
     renderSkillBlock('saves-list', ['for', 'des', 'con', 'int', 'sab', 'car'], 'saves', profBonus);
     renderSkillBlock('skills-list', SKILLS, 'profs', profBonus);
     renderConditionsToggle();
     renderItems();
 
-    // Individual RP fields (History Tab)
+    // Campos RP
     ['bg', 'align', 'rpTraits', 'rpIdeals', 'rpBonds', 'rpFlaws'].forEach(f => {
         const id = f.startsWith('rp') ? `rp-${f.slice(2).toLowerCase()}` : `display-${f}`;
         const el = $(id);
@@ -147,7 +144,7 @@ function renderSheet() {
         }
     });
 
-    // Global Lore (Carregado do masterState vindo do servidor)
+    // Lore global
     const worldLore = masterState.worldLore || {};
     ['group', 'world', 'npcs'].forEach(key => {
         const el = $(`lore-${key}`);
@@ -158,7 +155,7 @@ function renderSheet() {
         }
     });
 
-    // Item creation visibility
+    // Visibilidade de criação de itens
     if ($('add-attack')) $('add-attack').style.display = isMaster ? 'block' : 'none';
     if ($('add-armor')) $('add-armor').style.display = isMaster ? 'block' : 'none';
     if ($('add-utility')) $('add-utility').style.display = isMaster ? 'block' : 'none';
@@ -206,7 +203,7 @@ function renderItems() {
     });
 }
 
-// Global Handlers
+// Handlers globais
 window.toggleSave = (a) => toggleList('saves', a);
 window.toggleSkill = (s) => toggleList('profs', s);
 function toggleList(key, val) { if (!isMaster) return; state[key] = state[key].includes(val) ? state[key].filter(x => x !== val) : [...state[key], val]; renderSheet(); broadcastChange(); }
@@ -258,7 +255,7 @@ function renderGenericTable(containerId, data, headers, type, removeFn) {
 }
 
 window.removeGenericItem = (type, i, containerId) => {
-    // Determine which removal function to use based on containerId or type
+    // Determina função de remoção baseada no container
     if (['attacks-list', 'armors-list', 'utility-list'].includes(containerId)) {
         removeItem(type, i);
     } else {
@@ -281,7 +278,7 @@ function renderSessionLog() {
             </div>
         `).join('');
     
-    // Auto-scroll para o final
+    // Auto-scroll
     list.scrollTop = list.scrollHeight;
 }
 

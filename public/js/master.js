@@ -1,9 +1,4 @@
-// ==================== MASTER HUB LOGIC ====================
-
-/**
- * Função central para gerar o HTML de qualquer card de entidade (Player, NPC, DB Character)
- * Garante padronização visual em todo o painel do mestre.
- */
+// Gera HTML de cards de entidades (Player, NPC, Monstro)
 function createEntityCardHtml(entity, type, options = {}) {
     if (!entity) return '';
     
@@ -84,10 +79,7 @@ function createEntityCardHtml(entity, type, options = {}) {
     `;
 }
 
-/** 
- * Garante que a cache de personagens do banco esteja preenchida. 
- * Resolvido problema onde Mesa só funcionava após entrar na aba Personagens.
- */
+// Garante cache de personagens do banco
 async function ensureDbCharsCache(force = false) {
     if (!window._dbCharsCache || force) {
         try {

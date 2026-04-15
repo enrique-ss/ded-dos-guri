@@ -1,4 +1,4 @@
-/* ===== Master Hub Module ===== */
+/* Painel do mestre */
 
 .master-hub-layout {
     display: flex; flex-direction: row; gap: 1.5rem;

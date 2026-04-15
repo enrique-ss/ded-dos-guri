@@ -1,4 +1,4 @@
-/* ===== CUSTOM SCROLLBARS ===== */
+/* Scrollbars */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -20,7 +20,7 @@
     border-color: var(--bg-overlay);
 }
 
-/* ATRIBUTO DRAFTER (Wizard Step 4) */
+/* Atributo drafter */
 .array-chip {
     background: var(--bg-glass);
     border: 2px solid var(--panel-border);

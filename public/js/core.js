@@ -1,11 +1,9 @@
-// ==================== SYSTEM CONFIG ====================
 const STORAGE_KEY_BASE = 'rpg_guri_v10';
 const AUTH_STORAGE_KEY = `${STORAGE_KEY_BASE}_offline_token`;
 const MASTER_STORAGE_KEY = 'rpg_guri_master_v1';
 const APP_MODE = window.APP_MODE || 'offline';
 const isOfflineMode = APP_MODE !== 'online';
 
-// ==================== REAL-TIME SETUP ====================
 let socket;
 try { socket = io(); } catch (e) { console.warn('Socket.io nao disponivel.'); }
 
@@ -23,7 +21,6 @@ let sessionLog = [];
 let isPreCreatingPlayer = false;
 let targetUserIdByMaster = null;
 
-// ==================== SUPABASE SETUP ====================
 let supabaseClient = null;
 try {
     const isPlaceholder = !SUPABASE_CONFIG ||
@@ -37,7 +34,6 @@ try {
     console.error('Supabase: Erro critico ao iniciar cliente:', e);
 }
 
-// ==================== STATE ====================
 let state = getDefaultState();
 let masterState = loadMasterState();
 
@@ -196,7 +192,6 @@ async function loadMasterStateFromSupabase() {
     }
 }
 
-// ==================== SYNC LOGIC ====================
 function broadcastChange() {
     if (!socket || masterEditingType === 'npc') return;
     if (isMaster && masterEditingId) {
@@ -229,7 +224,6 @@ function debounce(func, wait) {
     };
 }
 
-// --- SOCKET LISTENERS ---
 if (socket) {
     socket.on('updatePlayersList', (players) => {
         connectedPlayers = players;
@@ -285,7 +279,6 @@ if (socket) {
     });
 }
 
-// ==================== CORE APP LOGIC ====================
 async function init() {
     updateAuthFooter();
 

@@ -1,4 +1,4 @@
-/* HEADER INPUTS */
+/* Header */
 .truncate-label {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -784,4 +784,4 @@ body.is-master .read-only .skill-row {
     0% { filter: brightness(1); }
     100% { filter: brightness(1.5); }
 }
-
+

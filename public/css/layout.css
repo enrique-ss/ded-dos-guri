@@ -1,4 +1,4 @@
-/* ===== SCREENS & ISOLATION ===== */
+/* Telas */
 .full-screen-modal {
     background: var(--bg);
     display: none;
@@ -36,12 +36,12 @@
     .sheet-body {
         gap: 0.8rem !important;
     }
-    /* Grades de Seleção (Raças, Classes, Perícias) */
+    /* Grades de seleção */
     .selection-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.8rem !important;
     }
-    /* Atributos (Step 4) em 3 colunas */
+    /* Atributos em 3 colunas */
     #step-4 .selection-grid {
         grid-template-columns: repeat(3, 1fr) !important;
     }
