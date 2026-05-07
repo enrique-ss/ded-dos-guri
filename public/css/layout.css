@@ -2,14 +2,14 @@
 .full-screen-modal {
     background: var(--bg);
     display: none;
-    padding: 1.5rem;
-    min-height: 100vh;
-}
-
-@media (min-width: 1400px) {
-    .full-screen-modal {
-        padding: 3rem 5rem;
-    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
 .full-screen-modal.active {
@@ -23,7 +23,14 @@
 
 @media (max-width: 600px) {
     .full-screen-modal {
-        padding: 0.8rem !important;
+        padding: 0 !important;
+    }
+    .master-hub-layout {
+        padding: 0.5rem;
+        gap: 1rem;
+    }
+    .m-tab-content {
+        padding: 0.5rem;
     }
     .sheet-container {
         width: 100% !important;
@@ -224,13 +231,19 @@
     display: none;
 }
 
-/* ===== SHEET LAYOUT: 3 COLUMNS ===== */
+/* ===== SHEET LAYOUT: RESPONSIVE FULL SCREEN ===== */
 .sheet-container {
-    max-width: 1280px;
-    margin: 0 auto;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    margin: 0;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: var(--gap);
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
 }
 
 .sheet-header {
@@ -258,6 +271,10 @@
     grid-template-columns: 1fr;
     gap: var(--gap);
     align-items: start;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.5rem;
 }
 
 @media (min-width: 1100px) {
@@ -267,8 +284,12 @@
 }
 
 @media (max-width: 600px) {
+    .sheet-container {
+        padding: 0.5rem;
+    }
     .sheet-body {
         gap: 0.6rem;
+        padding-right: 0.3rem;
     }
 
     .sheet-col {

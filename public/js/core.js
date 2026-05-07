@@ -489,6 +489,74 @@ function switchView(viewId) {
     render();
 }
 
+/* Função de navegação entre telas - baseada na biblioteca */
+function mostrarTela(id) {
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+
+    const elementoTela = document.getElementById(id);
+    if (elementoTela) {
+        elementoTela.classList.add('active');
+    }
+
+    document.querySelectorAll('.side-btn').forEach((btn) => btn.classList.remove('active'));
+
+    const botoes = document.querySelectorAll('.side-btn');
+    botoes.forEach((btn) => {
+        if (btn.onclick && btn.onclick.toString().includes(id)) {
+            btn.classList.add('active');
+        }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Fechar menu mobile se estiver aberto
+    if (typeof closeMobileMenu === 'function' && window.innerWidth <= 900) {
+        closeMobileMenu();
+    }
+}
+
+// Expor globalmente
+window.mostrarTela = mostrarTela;
+
+/* Funções auxiliares para menu mobile - baseadas na biblioteca */
+function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active');
+    }
+}
+
+function closeMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar && overlay) {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+    }
+}
+
+function toggleTheme() {
+    const rootElement = document.documentElement;
+    const isLight = rootElement.getAttribute('data-theme') === 'light';
+    
+    if (isLight) {
+        rootElement.removeAttribute('data-theme');
+        localStorage.setItem('rpg_theme', 'dark');
+    } else {
+        rootElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('rpg_theme', 'light');
+    }
+}
+
+// Expor globalmente
+window.toggleMobileMenu = toggleMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
+window.toggleTheme = toggleTheme;
+
 window.apiRequest = apiRequest;
 window.authorizedFetch = authorizedFetch;
 window.setOfflineSession = setOfflineSession;

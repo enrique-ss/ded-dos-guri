@@ -2,42 +2,42 @@
 
 [data-theme="dark"], :root {
     --bg: #0b0c14;
-    --panel: rgba(11, 12, 20, 0.7);
-    --panel-border: rgba(255, 255, 255, 0.12);
+    --panel: rgba(11, 12, 20, 0.8);
+    --panel-border: rgba(255, 255, 255, 0.15);
     --gold: #ffbe0b;
-    --gold-glow: rgba(255, 190, 11, 0.3);
+    --gold-glow: rgba(255, 190, 11, 0.4);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #ffffff;
-    --txt-muted: #ffffff; 
+    --txt-muted: rgba(255, 255, 255, 0.8); 
     --radius: 20px;
     --gap: 1.25rem;
 
     /* GLASS REINFORCED */
-    --bg-glass: rgba(11, 12, 20, 0.75);
-    --bg-overlay: rgba(0, 0, 0, 0.5);
-    --bg-accent: rgba(255, 255, 255, 0.05);
+    --bg-glass: rgba(11, 12, 20, 0.8);
+    --bg-overlay: rgba(0, 0, 0, 0.6);
+    --bg-accent: rgba(255, 255, 255, 0.08);
     --bg-circle: #000000;
-    --glass-blur: blur(15px) saturate(180%);
+    --glass-blur: blur(20px) saturate(180%);
 }
 
 [data-theme="light"] {
     --bg: #ffffff;
-    --panel: rgba(255, 255, 255, 0.75);
-    --panel-border: rgba(0, 0, 0, 0.15);
+    --panel: rgba(255, 255, 255, 0.85);
+    --panel-border: rgba(0, 0, 0, 0.18);
     --gold: #d49a00;    /* Dourado modo claro */
-    --gold-glow: rgba(212, 154, 0, 0.25);
+    --gold-glow: rgba(212, 154, 0, 0.3);
     --red: #ff3e4d;
     --green: #06d6a0;
     --txt: #000000;
-    --txt-muted: #2d3436;
+    --txt-muted: rgba(0, 0, 0, 0.7);
 
     /* GLASS REINFORCED */
-    --bg-glass: rgba(255, 255, 255, 0.85);
-    --bg-overlay: rgba(0, 0, 0, 0.05);
-    --bg-accent: rgba(0, 0, 0, 0.04);
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-overlay: rgba(0, 0, 0, 0.08);
+    --bg-accent: rgba(0, 0, 0, 0.06);
     --bg-circle: #ffffff;
-    --glass-blur: blur(20px) saturate(200%);
+    --glass-blur: blur(25px) saturate(200%);
 }
 
 /* TELAS PRINCIPAIS AGORA SEGUEM O TEMA (LIGHT/DARK) */
