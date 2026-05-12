@@ -21,7 +21,7 @@
     display: none !important;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
     .full-screen-modal {
         padding: 0 !important;
     }
@@ -566,8 +566,22 @@
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 9000;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 900px) {
+    #master-log-wrapper {
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        max-height: 28vh;
+        border-radius: 12px 12px 0 0;
+        border-bottom: none;
+        box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+    }
 }
 
 .log-header {

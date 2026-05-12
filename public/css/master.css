@@ -294,6 +294,13 @@
     animation: slideInLeft 0.3s ease-out;
 }
 
+@media (max-width: 600px) {
+    .log-entry {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+}
+
 .log-time {
     font-size: 0.7rem;
     opacity: 0.5;

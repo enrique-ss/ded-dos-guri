@@ -73,6 +73,12 @@ body {
     color: var(--txt);
     position: relative;
     line-height: 1.6;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body::before {
@@ -85,6 +91,14 @@ body::before {
     background-attachment: fixed;
     z-index: -2;
 }
+
+@media (max-width: 900px) {
+    body::before {
+        display: none !important;
+        background-image: none !important;
+    }
+}
+
 .app-container {
     max-width: 1300px;
     margin: 0 auto;
