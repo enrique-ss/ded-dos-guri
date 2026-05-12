@@ -181,14 +181,6 @@
     transition: all 0.3s ease;
 }
 
-@media (max-width: 900px) {
-    .master-sidebar-toggle {
-        bottom: auto;
-        top: 20px;
-        right: 20px;
-    }
-}
-
 .master-sidebar-toggle:hover {
     transform: scale(1.1);
     border-color: var(--gold);
@@ -216,14 +208,6 @@
     -webkit-backdrop-filter: var(--glass-blur);
     z-index: 9999;
     transition: all 0.3s ease;
-}
-
-@media (max-width: 900px) {
-    .theme-toggle-btn {
-        bottom: auto;
-        top: 20px;
-        right: 80px;
-    }
 }
 
 .theme-toggle-btn:hover {
@@ -628,7 +612,6 @@
     filter: none; /* Brilho normal conforme solicitado */
 }
 
-
 #master-panel {
     background: transparent !important;
 }
@@ -829,13 +812,3 @@
 }
 
 
-/* FORÇAR REMOÇÃO DE ESTRELAS/FUNDOS NO MOBILE */
-@media (max-width: 900px) {
-    #auth-screen::before, #role-selection::before, #creation-screen::before, #character-selection::before, #master-panel::before,
-    #sheet-view::before, #items-view::before, #habilidades-view::before, #history-view::before, #game-log-view::before,
-    body::before {
-        background-image: none !important;
-        background: var(--bg) !important;
-        display: none !important;
-    }
-}
