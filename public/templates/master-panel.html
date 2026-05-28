@@ -33,7 +33,6 @@
                     </div>
                     <div class="m-header-actions">
                         <button class="btn-primary" type="button" onclick="window.openCharacterCreationModal()">Criar Personagem</button>
-                        <button class="btn-ghost" type="button" onclick="window.syncDbCharacters()" style="padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: center;">🔄 Atualizar</button>
                     </div>
                 </div>
                 
@@ -116,6 +115,7 @@
                     <button class="btn-ghost rules-filter-btn" data-filter="adventure" onclick="window.setRulesFilter('adventure')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🌲 Aventura</button>
                     <button class="btn-ghost rules-filter-btn" data-filter="states" onclick="window.setRulesFilter('states')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🤢 Estados</button>
                     <button class="btn-ghost rules-filter-btn" data-filter="actions" onclick="window.setRulesFilter('actions')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚡ Habilidades</button>
+                    <button class="btn-ghost rules-filter-btn" data-filter="mechanics" onclick="window.setRulesFilter('mechanics')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚙️ Mecânicas da Ficha</button>
                 </div>
                 
                 <div id="rules-content-container" style="display: flex; flex-direction: column; gap: 1rem; max-height: calc(100vh - 280px); overflow-y: auto; padding-right: 0.5rem;">

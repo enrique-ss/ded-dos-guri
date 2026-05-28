@@ -221,6 +221,7 @@ if (!supabaseEnabled) {
       offlineDb
         .prepare('DELETE FROM characters WHERE id = ? AND user_id = ?')
         .run(state.id, req.authUser.id);
+      io.emit('dbCharactersChanged');
       res.json({ success: true, deleted: true, id: state.id });
       return;
     }
@@ -247,6 +248,7 @@ if (!supabaseEnabled) {
       now
     );
 
+    io.emit('dbCharactersChanged');
     res.json({
       success: true,
       character: {
@@ -263,6 +265,7 @@ if (!supabaseEnabled) {
       .prepare('DELETE FROM characters WHERE id = ? AND user_id = ?')
       .run(req.params.id, req.authUser.id);
 
+    io.emit('dbCharactersChanged');
     res.json({ success: true });
   });
 
@@ -342,6 +345,7 @@ if (!supabaseEnabled) {
       now
     );
 
+    io.emit('dbCharactersChanged');
     res.json({ success: true });
   });
 
@@ -355,6 +359,7 @@ if (!supabaseEnabled) {
 
   app.delete('/api/admin/characters/:id', requireOfflineAuth, (req, res) => {
     offlineDb.prepare('DELETE FROM characters WHERE id = ?').run(req.params.id);
+    io.emit('dbCharactersChanged');
     res.json({ success: true });
   });
 } else {
@@ -387,6 +392,7 @@ if (!supabaseEnabled) {
       };
       const { error } = await supabaseAdmin.from('characters').insert(insertData);
       if (error) throw error;
+      io.emit('dbCharactersChanged');
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -426,6 +432,7 @@ if (!supabaseEnabled) {
         .eq('id', id);
 
       if (error) throw error;
+      io.emit('dbCharactersChanged');
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -453,6 +460,7 @@ if (!supabaseEnabled) {
         .eq('user_id', userId);
 
       if (error) throw error;
+      io.emit('dbCharactersChanged');
       res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });

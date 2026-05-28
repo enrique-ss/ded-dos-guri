@@ -277,6 +277,12 @@ if (socket) {
         banner.classList.remove('hidden');
         setTimeout(() => banner.classList.add('hidden'), 8000);
     });
+
+    socket.on('dbCharactersChanged', () => {
+        if (typeof window.syncDbCharacters === 'function') {
+            window.syncDbCharacters();
+        }
+    });
 }
 
 async function init() {

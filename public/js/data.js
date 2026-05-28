@@ -275,6 +275,83 @@ const DND_5E_RULES = [
 • <strong>Inteligência:</strong> Arcanismo (magias, planos), História (fatos passados, reinos), Investigação (dedução, pistas), Natureza (plantas, clima, animais selvagens), Religião (divindades, ritos).<br>
 • <strong>Sabedoria:</strong> Adestrar Animais (acalmar feras), Intuição (detectar mentiras), Medicina (tratar feridas), Percepção (ouvir e ver o ambiente), Sobrevivência (rastrear, caçar, guiar).<br>
 • <strong>Carisma:</strong> Atuação (apresentações), Enganação (mentir, disfarçar), Intimidação (ameaçar), Persuasão (convencer com diplomacia).`
+    },
+    // --- CATEGORIA: Mecânicas da Ficha ---
+    {
+        id: 'calc-modificadores',
+        title: 'Modificadores de Atributo',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'Como converter o valor de um atributo (ex: Força 15) em um modificador.',
+        content: `• O <strong>Modificador de Atributo</strong> dita o bônus ou penalidade em jogadas de dado.<br>
+• <strong>Fórmula:</strong> <code>(Valor do Atributo - 10) ÷ 2</code> (arredondado para baixo).<br>
+• Exemplos Práticos:<br>
+&nbsp;&nbsp;- Valor 8 ou 9 = -1<br>
+&nbsp;&nbsp;- Valor 10 ou 11 = +0<br>
+&nbsp;&nbsp;- Valor 12 ou 13 = +1<br>
+&nbsp;&nbsp;- Valor 14 ou 15 = +2<br>
+&nbsp;&nbsp;- Valor 16 ou 17 = +3<br>
+&nbsp;&nbsp;- Valor 18 ou 19 = +4<br>
+&nbsp;&nbsp;- Valor 20 = +5`
+    },
+    {
+        id: 'calc-proficiencia',
+        title: 'Bônus de Proficiência',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'O bônus que representa o treinamento geral e experiência do personagem.',
+        content: `• O <strong>Bônus de Proficiência</strong> escala de acordo com o Nível Total do personagem.<br>
+• Ele é adicionado a testes de atributo, testes de resistência (saves) e jogadas de ataque com armas ou ferramentas em que o personagem é proficiente.<br>
+• <strong>Fórmula Escalar:</strong><br>
+&nbsp;&nbsp;- Nível 1 a 4: <strong>+2</strong><br>
+&nbsp;&nbsp;- Nível 5 a 8: <strong>+3</strong><br>
+&nbsp;&nbsp;- Nível 9 a 12: <strong>+4</strong><br>
+&nbsp;&nbsp;- Nível 13 a 16: <strong>+5</strong><br>
+&nbsp;&nbsp;- Nível 17 a 20: <strong>+6</strong><br>
+• O bônus <strong>nunca</strong> é adicionado ao dano, apenas a jogadas de d20 para tentar um sucesso.`
+    },
+    {
+        id: 'calc-ca',
+        title: 'Classe de Armadura (CA)',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'Como é calculada a defesa (Classe de Armadura) de uma criatura.',
+        content: `• A <strong>CA (Classe de Armadura)</strong> determina a dificuldade de acertar um ataque físico ou à distância contra o personagem.<br>
+• <strong>Sem Armadura:</strong> <code>10 + Modificador de Destreza</code>.<br>
+• <strong>Armadura Leve:</strong> <code>CA Base da Armadura + Modificador de Destreza</code>.<br>
+• <strong>Armadura Média:</strong> <code>CA Base da Armadura + Modificador de Destreza (máximo de +2)</code>.<br>
+• <strong>Armadura Pesada:</strong> <code>CA Base da Armadura</code> (Ignora modificador de destreza, e pode exigir Força mínima).<br>
+• <strong>Escudos:</strong> Qualquer escudo equipado concede <strong>+2</strong> na CA (não cumulativo com múltiplos escudos).`
+    },
+    {
+        id: 'calc-iniciativa',
+        title: 'Iniciativa',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'O cálculo base para o turno na ordem de batalha.',
+        content: `• A <strong>Iniciativa</strong> é simplesmente um teste de Destreza.<br>
+• <strong>Valor Passivo na Ficha:</strong> O bônus exibido na ficha é exatamente igual ao <strong>Modificador de Destreza</strong> do personagem.<br>
+• Quando o combate se inicia, o jogador rola <code>1d20 + Iniciativa</code>.`
+    },
+    {
+        id: 'calc-dadosvida',
+        title: 'Dados de Vida & PV Máximo',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'Como se define a vida e a capacidade de se curar nos descansos.',
+        content: `• <strong>Dados de Vida (Hit Dice):</strong> O personagem possui uma quantidade de Dados de Vida igual ao seu <strong>Nível</strong>. O tipo do dado (d6, d8, d10, d12) é definido pela sua <strong>Classe</strong>.<br>
+• <strong>PV no Nível 1:</strong> <code>Valor máximo do Dado de Vida + Modificador de Constituição</code>.<br>
+• <strong>PV em Níveis Subsequentes:</strong> Ao subir de nível, você rola seu Dado de Vida (ou pega a média arredondada para cima) e soma seu <strong>Modificador de Constituição</strong> para aumentar seu PV Máximo.`
+    },
+    {
+        id: 'calc-pericias',
+        title: 'Total de Perícias & Salvaguardas',
+        category: 'mechanics',
+        categoryName: 'Mecânicas da Ficha',
+        summary: 'A lógica de soma de habilidades.',
+        content: `• Os bônus na aba de perícias e resistências (saves) seguem a regra:<br>
+• <strong>Sem Proficiência:</strong> Apenas o <code>Modificador do Atributo correspondente</code>.<br>
+• <strong>Com Proficiência:</strong> <code>Modificador do Atributo + Bônus de Proficiência</code>.<br>
+• <strong>Expertise (Especialização):</strong> Algumas classes (como Ladino e Bardo) permitem dobrar o Bônus de Proficiência em perícias específicas.`
     }
 ];
-

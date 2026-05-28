@@ -144,7 +144,7 @@ window.setCharFilter = function(filter) {
 window.syncDbCharacters = async function() {
     window._dbCharsCache = null;
     await ensureDbCharsCache(true);
-    renderMesa();
+    renderMasterPanel();
 };
 
 window.filterDbCharacters = function() {
@@ -324,7 +324,7 @@ window.deleteEntityMaster = async function(id, type) {
             masterState.tableCharacters = masterState.tableCharacters.filter(tid => tid != id);
             if (window._dbCharsCache) window._dbCharsCache = window._dbCharsCache.filter(c => c.id != id);
             
-            saveMasterState(); renderMesa(); renderAllCharacters();
+            saveMasterState(); renderMasterPanel();
             
         } catch (err) {
             alert("Erro ao excluir: " + err.message);
@@ -666,7 +666,7 @@ window.confirmCharacterCreation = async function() {
         
         document.getElementById('char-create-modal').remove();
         window._dbCharsCache = null; // Limpar cache para forçar refresh
-        renderAllCharacters();
+        renderMasterPanel();
         alert('Personagem criado com sucesso!');
     } catch (err) {
         alert('Erro ao criar personagem: ' + err.message);
@@ -817,7 +817,7 @@ window.renderRules = function() {
             
             return {
                 id: `condition-${key}`,
-                title: `${cond.icon} Condição: ${cond.name}`,
+                title: `${cond.icon} ${cond.name}`,
                 category: 'states',
                 categoryName: 'Estados & Condições',
                 summary: `Efeitos e penalidades do estado "${cond.name}" no combate.`,
