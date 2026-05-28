@@ -122,6 +122,7 @@ async function renderMasterPanel() {
         case 'monsters': renderMonsters(); break; // Nova aba de Monstros
         case 'characters': await renderAllCharacters(); break;
         case 'log': renderLogHistory(); break;
+        case 'rules': renderRules(); break;
         case 'notes': 
             const area = document.getElementById('master-private-notes');
             if (area) area.value = masterState.notes;
@@ -129,30 +130,97 @@ async function renderMasterPanel() {
     }
 }
 
+// Estado do filtro de personagens
+window.charActiveFilter = window.charActiveFilter || 'all';
+
+window.setCharFilter = function(filter) {
+    window.charActiveFilter = filter;
+    document.querySelectorAll('.char-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    renderMesa();
+};
+
+window.syncDbCharacters = async function() {
+    window._dbCharsCache = null;
+    await ensureDbCharsCache(true);
+    renderMesa();
+};
+
+window.filterDbCharacters = function() {
+    renderMesa();
+};
+
+window.toggleMesaStatus = function(dbId) {
+    const isActive = (masterState.tableCharacters || []).includes(dbId);
+    if (isActive) {
+        // Remove da mesa (vai para inativo/banco)
+        masterState.tableCharacters = masterState.tableCharacters.filter(id => id !== dbId);
+    } else {
+        // Adiciona à mesa (ativa)
+        if (!masterState.tableCharacters) masterState.tableCharacters = [];
+        masterState.tableCharacters.push(dbId);
+    }
+    saveMasterState();
+    renderMesa();
+};
+
 async function renderMesa() {
     const grid = document.getElementById('mesa-grid');
     if (!grid) return;
 
-    if (!masterState.tableCharacters || masterState.tableCharacters.length === 0) {
-        grid.innerHTML = `
-            <div class="m-empty-state">
-                <span>Nenhum personagem na mesa ainda.</span>
-            </div>
-        `;
+    const allChars = window._dbCharsCache || [];
+    const activeIds = masterState.tableCharacters || [];
+    const filter = window.charActiveFilter || 'all';
+    const searchInput = document.getElementById('char-search');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    // Aplica filtro de status
+    let charsToShow = allChars;
+    if (filter === 'active') {
+        charsToShow = allChars.filter(c => activeIds.includes(c.id));
+    } else if (filter === 'inactive') {
+        charsToShow = allChars.filter(c => !activeIds.includes(c.id));
+    }
+
+    // Aplica busca por texto
+    if (query) {
+        charsToShow = charsToShow.filter(c => {
+            const name = (c.data?.name || '').toLowerCase();
+            const email = (c.owner_email || '').toLowerCase();
+            return name.includes(query) || email.includes(query);
+        });
+    }
+
+    if (charsToShow.length === 0) {
+        grid.innerHTML = `<div class="m-empty-state"><span>Nenhum personagem encontrado.</span></div>`;
         return;
     }
 
-    const onlineMap = {};
     grid.classList.remove('m-empty-state');
-    Object.values(connectedPlayers).forEach(p => { if (p.id) onlineMap[p.id] = p; });
 
-    grid.innerHTML = masterState.tableCharacters.map(dbId => {
-        const dbChar = (window._dbCharsCache || []).find(c => c.id === dbId);
+    grid.innerHTML = charsToShow.map(c => {
+        const dbId = c.id;
+        const isActive = activeIds.includes(dbId);
         const onlineSocketId = Object.keys(connectedPlayers).find(k => connectedPlayers[k].id === dbId);
         const onlineChar = onlineSocketId ? connectedPlayers[onlineSocketId] : null;
-        const entity = onlineChar || (dbChar ? dbChar.data : null);
+        const entity = onlineChar || c.data;
         if (!entity) return '';
-        return createEntityCardHtml(entity, onlineChar ? 'player' : 'db_character', { isOnline: !!onlineChar, dbId: dbId, socketId: onlineSocketId, isMesaContext: true });
+
+        const statusLabel = isActive ? 'Na Mesa' : 'No Banco';
+        const statusClass = isActive ? 'active' : '';
+        const toggleTitle = isActive ? 'Remover da Mesa' : 'Adicionar à Mesa';
+
+        // Cria card base e injeta botão de status no lugar do btn-delete-card original
+        const baseCard = createEntityCardHtml(
+            entity,
+            onlineChar ? 'player' : 'db_character',
+            { isOnline: !!onlineChar, dbId: dbId, socketId: onlineSocketId, isMesaContext: false, extraClasses: isActive ? 'is-active-on-table' : 'is-inactive' }
+        );
+
+        // Insere botão de status antes do botão de deletar (injeta após a primeira <div class="player-card)
+        const statusBtn = `<button class="btn-mesa-status ${statusClass}" onclick="event.stopPropagation(); window.toggleMesaStatus('${dbId}')" title="${toggleTitle}">${statusLabel}</button>`;
+        return baseCard.replace(/(<div class="player-card[^>]*>)/, `$1\n            ${statusBtn}`);
     }).join('');
 }
 
@@ -603,4 +671,206 @@ window.confirmCharacterCreation = async function() {
     } catch (err) {
         alert('Erro ao criar personagem: ' + err.message);
     }
+};
+
+// ==========================================
+// SISTEMA DE REGRAS D&D 5E
+// ==========================================
+
+window.rulesActiveFilter = 'all';
+
+window.setRulesFilter = function(filterValue) {
+    window.rulesActiveFilter = filterValue;
+    
+    // Atualiza classes ativas dos botões de filtro
+    document.querySelectorAll('.rules-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filterValue);
+    });
+    
+    window.renderRules();
+};
+
+window.filterRules = function() {
+    window.renderRules();
+};
+
+window.toggleRuleAccordion = function(ruleId) {
+    const card = document.querySelector(`.rule-card[data-id="${ruleId}"]`);
+    if (!card) return;
+    
+    const isExpanded = card.classList.contains('expanded');
+    
+    // Opcional: fechar outros accordions para focar apenas neste
+    document.querySelectorAll('.rule-card.expanded').forEach(c => {
+        if (c !== card) c.classList.remove('expanded');
+    });
+    
+    card.classList.toggle('expanded', !isExpanded);
+};
+
+window.renderRules = function() {
+    const container = document.getElementById('rules-content-container');
+    if (!container) return;
+    
+    const searchInput = document.getElementById('rules-search');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    
+    // Filtra e junta regras fixas e dinamicamente as condições
+    let rulesToRender = [...(DND_5E_RULES || [])];
+    
+    // Se a categoria for 'states' ou 'all', nós também incluímos as condições do game
+    if (window.rulesActiveFilter === 'states' || window.rulesActiveFilter === 'all') {
+        const conditionsRules = Object.keys(CONDITIONS || {}).map(key => {
+            const cond = CONDITIONS[key];
+            let detail = '';
+            
+            switch(key) {
+                case 'blinded':
+                    detail = `• Uma criatura cega não pode ver e falha automaticamente em qualquer teste de habilidade que requeira visão.<br>
+• Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem.`;
+                    break;
+                case 'poisoned':
+                    detail = `• Uma criatura envenenada tem desvantagem em jogadas de ataque e testes de habilidade.`;
+                    break;
+                case 'frightened':
+                    detail = `• Uma criatura amedrontada tem desvantagem em testes de habilidade e jogadas de ataque enquanto a fonte do seu medo estiver em sua linha de visão.<br>
+• A criatura não pode se mover voluntariamente para mais perto da fonte do seu medo.`;
+                    break;
+                case 'restrained':
+                    detail = `• O deslocamento de uma criatura imobilizada torna-se 0, e ela não pode se beneficiar de qualquer bônus em seu deslocamento.<br>
+• Jogadas de ataque contra a criatura têm vantagem, e as jogadas de ataque da criatura têm desvantagem.<br>
+• A criatura tem desvantagem em testes de salvaguarda de Destreza.`;
+                    break;
+                case 'paralyzed':
+                    detail = `• Uma criatura paralisada está incapacitada (não pode realizar ações ou reações) e não pode se mover ou falar.<br>
+• A criatura falha automaticamente em testes de salvaguarda de Força e Destreza.<br>
+• Jogadas de ataque contra a criatura têm vantagem.<br>
+• Qualquer ataque que atinja a criatura é um acerto crítico se o atacante estiver a até 1,5 metro da criatura.`;
+                    break;
+                case 'exhausted':
+                    detail = `• A exaustão é medida em 6 níveis progressivos:<br>
+&nbsp;&nbsp;- <strong>Nível 1:</strong> Desvantagem em testes de habilidade.<br>
+&nbsp;&nbsp;- <strong>Nível 2:</strong> Deslocamento reduzido à metade.<br>
+&nbsp;&nbsp;- <strong>Nível 3:</strong> Desvantagem em jogadas de ataque e salvaguardas.<br>
+&nbsp;&nbsp;- <strong>Nível 4:</strong> PV Máximo reduzido à metade.<br>
+&nbsp;&nbsp;- <strong>Nível 5:</strong> Deslocamento reduzido a 0.<br>
+&nbsp;&nbsp;- <strong>Nível 6:</strong> Morte.<br>
+• Um descanso longo reduz o nível de exaustão de uma criatura em 1, contanto que ela tenha ingerido água e comida.`;
+                    break;
+                case 'prone':
+                    detail = `• A única opção de movimento de uma criatura caída é rastejar (gasta dobro de movimento), a menos que ela se levante (gasta metade do deslocamento total).<br>
+• A criatura tem desvantagem em jogadas de ataque corpo a corpo e à distância.<br>
+• Jogadas de ataque contra a criatura têm vantagem se o atacante estiver a até 1,5 metro da criatura; caso contrário, a jogada de ataque tem desvantagem.`;
+                    break;
+                case 'bleeding':
+                    detail = `• A criatura está sangrando ativamente.<br>
+• No início de cada um de seus turnos, a criatura perde 1d4 pontos de vida.<br>
+• O sangramento pode ser estancado por uma magia de cura ou por um teste bem-sucedido de Sabedoria (Medicina) CD 10 feito por qualquer criatura como uma ação.`;
+                    break;
+                case 'cursed':
+                    detail = `• A criatura está sob efeito de uma maldição mágica severa.<br>
+• Enquanto amaldiçoada, a criatura tem desvantagem em testes de habilidade e salvaguardas com um atributo específico definido pelo conjurador da maldição.<br>
+• Pode exigir magias como "Remover Maldição" para ser dissipada.`;
+                    break;
+                case 'blessed':
+                    detail = `• A criatura é abençoada divinamente.<br>
+• Sempre que a criatura fizer uma jogada de ataque ou teste de salvaguarda antes da magia acabar, ela pode rolar um **d4 adicional** e adicionar o valor ao resultado obtido.`;
+                    break;
+                case 'hasted':
+                    detail = `• A criatura move-se com velocidade incrível.<br>
+• O deslocamento da criatura é **dobrado**, ela ganha um bônus de **+2 na CA**, tem vantagem em salvaguardas de Destreza e ganha uma **ação adicional** a cada turno (apenas para Atacar, Disparar, Desengajar, Esconder ou Usar Objeto).`;
+                    break;
+                case 'invisible':
+                    detail = `• Uma criatura invisível é impossível de ser vista sem ajuda mágica ou sentidos especiais.<br>
+• Para propósitos de furtividade, a criatura está totalmente obscura.<br>
+• Jogadas de ataque contra a criatura têm desvantagem, e as jogadas de ataque da criatura têm vantagem.`;
+                    break;
+                case 'inspired':
+                    detail = `• A criatura possui Inspiração do Mestre ou Bardo.<br>
+• Pode gastar sua Inspiração para ganhar **Vantagem** em uma jogada de ataque, teste de habilidade ou teste de salvaguarda d20.`;
+                    break;
+                case 'shielded':
+                    detail = `• A criatura é protegida por barreiras mágicas ou escudos.<br>
+• Ganha um bônus temporário de **+5 na Classe de Armadura (CA)** e torna-se imune à magia Mísseis Mágicos (Magic Missile).`;
+                    break;
+                case 'enraged':
+                    detail = `• A criatura entra em estado de Fúria implacável (comum a bárbaros).<br>
+• Tem vantagem em testes de Força e salvaguardas de Força.<br>
+• Recebe bônus no dano de ataques corpo a corpo baseados em Força.<br>
+• Possui resistência a danos de concussão, cortante e perfurante.`;
+                    break;
+                case 'regenerating':
+                    detail = `• A criatura recupera vida ativamente no início de cada um dos seus turnos (ex: 5 ou 10 PV).<br>
+• Se sofrer certos tipos de dano (como fogo ou ácido), a regeneração pode não funcionar no turno seguinte.`;
+                    break;
+                case 'flying':
+                    detail = `• A criatura tem deslocamento de voo e pode planar e voar livremente pelo ar.<br>
+• Se sofrer a condição Caído ou se seu deslocamento for reduzido a 0 enquanto voa (e ela não puder planar), ela cai livremente sofrendo dano de queda.`;
+                    break;
+                case 'heroic':
+                    detail = `• A criatura exala uma aura de heroísmo puro.<br>
+• É imune a ser amedrontada e ganha pontos de vida temporários no início de cada um de seus turnos.`;
+                    break;
+                default:
+                    detail = `• Condição ou estado ativo especial. Consulte o Mestre para efeitos específicos.`;
+            }
+            
+            return {
+                id: `condition-${key}`,
+                title: `${cond.icon} Condição: ${cond.name}`,
+                category: 'states',
+                categoryName: 'Estados & Condições',
+                summary: `Efeitos e penalidades do estado "${cond.name}" no combate.`,
+                content: detail
+                // color não definido aqui — themeColor de 'states' será sempre #9b59b6
+            };
+        });
+        rulesToRender = [...rulesToRender, ...conditionsRules];
+    }
+    
+    // Aplica Filtro de Categoria
+    if (window.rulesActiveFilter !== 'all') {
+        rulesToRender = rulesToRender.filter(r => r.category === window.rulesActiveFilter);
+    }
+    
+    // Aplica Filtro de Busca por Texto
+    if (query !== '') {
+        rulesToRender = rulesToRender.filter(r => 
+            r.title.toLowerCase().includes(query) || 
+            r.summary.toLowerCase().includes(query) || 
+            r.content.toLowerCase().includes(query)
+        );
+    }
+    
+    if (rulesToRender.length === 0) {
+        container.innerHTML = `
+            <div class="m-empty-state" style="padding: 3rem 1rem;">
+                <span>Nenhuma regra encontrada para sua busca ou filtro.</span>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = rulesToRender.map(rule => {
+        const themeColor = rule.category === 'battle' ? 'var(--red)' : (rule.category === 'adventure' ? 'var(--green)' : (rule.category === 'states' ? '#9b59b6' : 'var(--gold)'));
+        // Estados sempre roxo — ignora cond.color para garantir consistência
+        const activeColor = rule.category === 'states' ? '#9b59b6' : (rule.color || themeColor);
+        return `
+            <div class="rule-card premium-card" data-id="${rule.id}" onclick="window.toggleRuleAccordion('${rule.id}')" style="--rule-color: ${activeColor}; cursor: pointer; border-left: 5px solid var(--rule-color); padding: 1.2rem; transition: all 0.25s ease; border-radius: 12px; background: rgba(255,255,255,0.02); margin-bottom: 0.8rem; box-sizing: border-box;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;">
+                    <div style="flex:1;">
+                        <span class="label-tiny" style="color: var(--rule-color) !important; font-size: 0.65rem; margin-bottom: 0.3rem; display:inline-block; border: 1px solid var(--rule-color); padding: 0.1rem 0.4rem; border-radius: 4px;">${rule.categoryName}</span>
+                        <h3 class="cinzel" style="margin: 0; font-size: 1.05rem; color: var(--txt); font-weight: 700; letter-spacing: 0.5px;">${rule.title}</h3>
+                        <p style="margin: 0.4rem 0 0; font-size: 0.8rem; opacity: 0.6; line-height: 1.3;">${rule.summary}</p>
+                    </div>
+                    <span class="rule-arrow" style="transition: transform 0.25s ease; display: inline-block;"></span>
+                </div>
+                <div class="rule-details" style="max-height: 0; overflow: hidden; transition: all 0.3s cubic-bezier(0, 1, 0, 1); margin-top: 0; opacity: 0; font-size: 0.88rem; line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0;">
+                    <div style="padding: 1rem 0.5rem 0.5rem 0.5rem;">
+                        ${rule.content}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 };

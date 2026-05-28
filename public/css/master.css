@@ -370,3 +370,182 @@
     padding: 1rem 0;
     width: 100%;
 }
+
+/* ==========================================
+   ESTILOS ADICIONAIS DO PAINEL DE REGRAS
+   ========================================== */
+
+.rules-filter-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--panel-border) !important;
+    background: var(--bg-glass) !important;
+    color: var(--txt) !important;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.rules-filter-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Cores específicas de filtros hover/active */
+.rules-filter-btn[data-filter="all"]:hover { border-color: var(--gold) !important; color: var(--gold) !important; box-shadow: 0 6px 15px rgba(0,0,0,0.15), 0 0 10px var(--gold-glow); }
+.rules-filter-btn[data-filter="all"].active {
+    background: var(--gold) !important; border-color: var(--gold) !important; color: var(--txt-contrast) !important;
+    box-shadow: 0 0 20px var(--gold-glow), 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+[data-theme="light"] .rules-filter-btn[data-filter="all"].active { color: #000 !important; font-weight: 800; }
+
+.rules-filter-btn[data-filter="battle"]:hover { border-color: var(--red) !important; color: var(--red) !important; box-shadow: 0 6px 15px rgba(0,0,0,0.15), 0 0 10px rgba(255, 62, 77, 0.3); }
+.rules-filter-btn[data-filter="battle"].active {
+    background: var(--red) !important; border-color: var(--red) !important; color: #fff !important;
+    box-shadow: 0 0 20px rgba(255, 62, 77, 0.4), 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.rules-filter-btn[data-filter="adventure"]:hover { border-color: var(--green) !important; color: var(--green) !important; box-shadow: 0 6px 15px rgba(0,0,0,0.15), 0 0 10px rgba(6, 214, 160, 0.3); }
+.rules-filter-btn[data-filter="adventure"].active {
+    background: var(--green) !important; border-color: var(--green) !important; color: #0b0c14 !important; font-weight: 800;
+    box-shadow: 0 0 20px rgba(6, 214, 160, 0.4), 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.rules-filter-btn[data-filter="states"]:hover { border-color: #9b59b6 !important; color: #9b59b6 !important; box-shadow: 0 6px 15px rgba(0,0,0,0.15), 0 0 10px rgba(155, 89, 182, 0.3); }
+.rules-filter-btn[data-filter="states"].active {
+    background: #9b59b6 !important; border-color: #9b59b6 !important; color: #fff !important;
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.4), 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.rules-filter-btn[data-filter="actions"]:hover { border-color: var(--gold) !important; color: var(--gold) !important; box-shadow: 0 6px 15px rgba(0,0,0,0.15), 0 0 10px var(--gold-glow); }
+.rules-filter-btn[data-filter="actions"].active {
+    background: var(--gold) !important; border-color: var(--gold) !important; color: var(--txt-contrast) !important;
+    box-shadow: 0 0 20px var(--gold-glow), 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+[data-theme="light"] .rules-filter-btn[data-filter="actions"].active { color: #000 !important; font-weight: 800; }
+
+
+/* Cards de regras responsivos e com cores correspondentes */
+.rule-card {
+    --rule-color: var(--gold);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 5px solid var(--rule-color) !important;
+}
+
+.rule-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2), 0 0 10px var(--rule-color);
+}
+
+[data-theme="light"] .rule-card:hover {
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+
+.rule-card.expanded {
+    background: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25), 0 0 15px var(--rule-color) !important;
+    border-color: var(--rule-color) !important;
+}
+
+[data-theme="light"] .rule-card.expanded {
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+
+.rule-card.expanded .rule-details {
+    max-height: 2000px !important;
+    opacity: 1 !important;
+    margin-top: 0.8rem !important;
+    padding-top: 0.8rem !important;
+}
+
+/* Seta minimalista pura em CSS (chevron) - livre de emojis */
+.rule-arrow {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid var(--rule-color);
+    border-bottom: 2px solid var(--rule-color);
+    transform: rotate(-45deg);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-right: 6px;
+}
+
+.rule-card.expanded .rule-arrow {
+    transform: rotate(45deg) !important;
+}
+
+.rule-details strong {
+    color: var(--rule-color);
+    font-weight: 700;
+}
+
+/* ==========================================
+   ESTILOS DE UNIFICAÇÃO DE MESA & BANCO
+   ========================================== */
+
+.player-card.is-inactive {
+    opacity: 0.55;
+    filter: grayscale(0.25);
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.player-card.is-inactive:hover {
+    opacity: 1;
+    filter: none;
+    border-color: var(--panel-border) !important;
+}
+
+
+
+/* Garante botão de deletar no canto superior direito */
+.player-card .btn-delete-card {
+    right: 10px !important;
+    left: auto !important;
+    top: 10px !important;
+}
+
+/* Ajusta botão de status para ficar no canto superior esquerdo */
+.btn-mesa-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: auto;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.62rem;
+    font-weight: 800;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+    color: var(--txt);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.player-card:hover .btn-mesa-status { opacity: 1; }
+
+.btn-mesa-status:hover {
+    transform: scale(1.05);
+}
+
+.btn-mesa-status.active {
+    background: rgba(255, 190, 11, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    opacity: 1;
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* Personagem ativo na mesa tem borda dourada sutil */
+.player-card.is-active-on-table {
+    border-color: rgba(255, 190, 11, 0.3) !important;
+}
+
+.player-card.is-active-on-table:hover {
+    border-color: var(--gold) !important;
+}
+
+
+

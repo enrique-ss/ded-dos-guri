@@ -11,12 +11,12 @@
             </div>
 
             <div class="sidebar-nav" style="flex:1; overflow-y:auto;">
-                <button class="m-nav-btn active" data-tab="mesa" type="button"><span class="m-nav-icon">🎲</span><span class="m-nav-text">Mesa</span></button>
+                <button class="m-nav-btn active" data-tab="mesa" type="button"><span class="m-nav-icon">🎲</span><span class="m-nav-text">Personagens</span></button>
                 <button class="m-nav-btn" data-tab="initiative" type="button"><span class="m-nav-icon">⚔️</span><span class="m-nav-text">Batalha</span></button>
                 <button class="m-nav-btn" data-tab="bestiary" type="button"><span class="m-nav-icon">🧙</span><span class="m-nav-text">NPCs</span></button>
                 <button class="m-nav-btn" data-tab="monsters" type="button"><span class="m-nav-icon">🐉</span><span class="m-nav-text">Bestiário</span></button>
-                <button class="m-nav-btn" data-tab="characters" type="button"><span class="m-nav-icon">📚</span><span class="m-nav-text">Banco</span></button>
                 <button class="m-nav-btn" data-tab="log" type="button"><span class="m-nav-icon">📜</span><span class="m-nav-text">Historico</span></button>
+                <button class="m-nav-btn" data-tab="rules" type="button"><span class="m-nav-icon">📖</span><span class="m-nav-text">Regras</span></button>
             </div>
 
             <div class="master-sidebar-bottom">
@@ -26,14 +26,26 @@
 
         <div class="master-content">
             <section id="m-tab-mesa" class="m-tab-content active premium-card">
-                <div class="m-header">
+                <div class="m-header" style="margin-bottom: 1rem;">
                     <div class="m-header-info">
-                        <h2 class="cinzel">Mesa Atual</h2>
+                        <h2 class="cinzel">Personagens</h2>
+                        <p style="margin-top: 0.2rem; font-size: 0.85rem; opacity: 0.7;">Gerencie os personagens ativos na mesa e salvos no banco de dados.</p>
                     </div>
                     <div class="m-header-actions">
-                        <button class="btn-primary" type="button" onclick="window.openMesaSetup()">Adicionar à mesa</button>
+                        <button class="btn-primary" type="button" onclick="window.openCharacterCreationModal()">Criar Personagem</button>
+                        <button class="btn-ghost" type="button" onclick="window.syncDbCharacters()" style="padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: center;">🔄 Atualizar</button>
                     </div>
                 </div>
+                
+                <div class="char-filters" style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn-ghost active char-filter-btn" data-filter="all" onclick="window.setCharFilter('all')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">Todos</button>
+                        <button class="btn-ghost char-filter-btn" data-filter="active" onclick="window.setCharFilter('active')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🎲 Ativos na Mesa</button>
+                        <button class="btn-ghost char-filter-btn" data-filter="inactive" onclick="window.setCharFilter('inactive')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">📚 Apenas no Banco</button>
+                    </div>
+                    <input type="text" id="char-search" class="premium-input" placeholder="Buscar herói..." style="width: 240px; padding: 0.5rem 1rem; font-size: 0.9rem;" oninput="window.filterDbCharacters()">
+                </div>
+                
                 <div id="mesa-grid" class="m-grid"></div>
             </section>
 
@@ -74,17 +86,7 @@
                 <div id="monsters-grid" class="m-grid"></div>
             </section>
 
-            <section id="m-tab-characters" class="m-tab-content premium-card">
-                <div class="m-header">
-                    <div class="m-header-info">
-                        <h2 class="cinzel">Personagens Salvos</h2>
-                    </div>
-                    <div class="m-header-actions">
-                        <button class="btn-primary" type="button" onclick="window.openCharacterCreationModal()">Criar Personagem</button>
-                    </div>
-                </div>
-                <div id="all-characters-grid" class="m-grid"></div>
-            </section>
+
 
             <section id="m-tab-log" class="m-tab-content premium-card">
                 <div class="m-header">
@@ -96,6 +98,28 @@
                     </div>
                 </div>
                 <div id="master-log-history" class="log-history"></div>
+            </section>
+
+            <section id="m-tab-rules" class="m-tab-content premium-card">
+                <div class="m-header">
+                    <div class="m-header-info">
+                        <h2 class="cinzel">Regras do D&D 5e</h2>
+                    </div>
+                    <div class="m-header-actions">
+                        <input type="text" id="rules-search" class="premium-input" placeholder="Buscar regra..." style="width: 240px; padding: 0.5rem 1rem; font-size: 0.9rem;" oninput="window.filterRules()">
+                    </div>
+                </div>
+                
+                <div class="rules-filters" style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <button class="btn-ghost active rules-filter-btn" data-filter="all" onclick="window.setRulesFilter('all')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">Todas</button>
+                    <button class="btn-ghost rules-filter-btn" data-filter="battle" onclick="window.setRulesFilter('battle')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚔️ Combate</button>
+                    <button class="btn-ghost rules-filter-btn" data-filter="adventure" onclick="window.setRulesFilter('adventure')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🌲 Aventura</button>
+                    <button class="btn-ghost rules-filter-btn" data-filter="states" onclick="window.setRulesFilter('states')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🤢 Estados</button>
+                    <button class="btn-ghost rules-filter-btn" data-filter="actions" onclick="window.setRulesFilter('actions')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚡ Habilidades</button>
+                </div>
+                
+                <div id="rules-content-container" style="display: flex; flex-direction: column; gap: 1rem; max-height: calc(100vh - 280px); overflow-y: auto; padding-right: 0.5rem;">
+                </div>
             </section>
 
         </div>
