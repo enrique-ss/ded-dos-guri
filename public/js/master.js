@@ -28,10 +28,10 @@ function createEntityCardHtml(entity, type, options = {}) {
 
     // Renderiza condições se existirem
     const conditionsHtml = (p.conditions && p.conditions.length > 0) ? `
-        <div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; justify-content: center;">
+        <div class="d-flex flex-wrap gap-sm mt-sm justify-center">
             ${p.conditions.map(cId => {
                 const cond = CONDITIONS[cId];
-                return cond ? `<span style="font-size: 1.1rem; cursor: help;" title="${cond.name}">${cond.icon}</span>` : '';
+                return cond ? `<span class="font-size-lg cursor-help" title="${cond.name}">${cond.icon}</span>` : '';
             }).join('')}
         </div>
     ` : '';
@@ -44,37 +44,37 @@ function createEntityCardHtml(entity, type, options = {}) {
                 onclick="event.stopPropagation(); ${options.isMesaContext ? `removeFromMesa('${dbId || p.id}')` : `deleteEntityMaster('${dbId || p.id}', '${type}')`}" 
                 title="${options.isMesaContext ? 'Remover da Mesa' : 'Excluir Permanentemente'}">×</button>
             
-            <div class="char-portrait-container" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+            <div class="char-portrait-container mb-md" style="width: 60px; height: 60px;">
                 ${p.photo ? `<img src="${p.photo}" class="char-portrait" style="display:block">` : (type === 'npc' ? '👾' : (type === 'monster' ? '🐉' : '👤'))}
             </div>
             
             <strong>${p.name || 'Sem Nome'}</strong>
-            <div class="label-tiny" style="margin-top: 0.2rem; font-size: 0.6rem;">
+            <div class="label-tiny mt-xs" style="font-size: 0.6rem;">
                 ${RACES[p.race]?.name || p.race || ''} • ${CLASSES[p.cls]?.name || ''} • Nv.${p.level || 1}
             </div>
             
-            <div class="hp-bar-container" style="margin-top: 0.6rem;">
+            <div class="hp-bar-container mt-sm">
                 <div class="hp-bar-fill ${hpClass}" style="width: ${hpPercent}%"></div>
             </div>
-            <div style="margin-top: 0.3rem; font-size: 0.8rem; font-weight: 800;">${p.hp.current} / ${p.hp.max} HP</div>
+            <div class="mt-xs font-weight-bold font-size-sm">${p.hp.current} / ${p.hp.max} HP</div>
 
-            <div class="card-stats-mini" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; margin-top: 0.8rem; border-top: 1px solid var(--panel-border); padding-top: 0.6rem;">
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">CA</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${p.ac || 10}</span>
+            <div class="card-stats-mini d-grid mt-sm p-sm" style="grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; border-top: 1px solid var(--panel-border);">
+                <div class="d-flex flex-column align-center">
+                    <label class="label-tiny m-0" style="font-size: 0.5rem; opacity: 0.7;">CA</label>
+                    <span class="font-weight-bold" style="font-size: 0.85rem; color: ${statColor};">${p.ac || 10}</span>
                 </div>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">INI</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${initDisplay}</span>
+                <div class="d-flex flex-column align-center">
+                    <label class="label-tiny m-0" style="font-size: 0.5rem; opacity: 0.7;">INI</label>
+                    <span class="font-weight-bold" style="font-size: 0.85rem; color: ${statColor};">${initDisplay}</span>
                 </div>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <label class="label-tiny" style="margin:0; font-size: 0.5rem; opacity: 0.7;">DESL</label>
-                    <span style="font-size: 0.85rem; font-weight: 900; color: ${statColor};">${p.speed || 9}m</span>
+                <div class="d-flex flex-column align-center">
+                    <label class="label-tiny m-0" style="font-size: 0.5rem; opacity: 0.7;">DESL</label>
+                    <span class="font-weight-bold" style="font-size: 0.85rem; color: ${statColor};">${p.speed || 9}m</span>
                 </div>
             </div>
 
             ${conditionsHtml}
-            ${type === 'db_character' && p.userEmail ? `<div class="label-tiny" style="opacity: 0.5; font-size: 0.5rem; margin-top: 8px;">Dono: ${p.userEmail}</div>` : ''}
+            ${type === 'db_character' && p.userEmail ? `<div class="label-tiny mt-sm" style="opacity: 0.5; font-size: 0.5rem;">Dono: ${p.userEmail}</div>` : ''}
         </div>
     `;
 }
@@ -856,17 +856,17 @@ window.renderRules = function() {
         // Estados sempre roxo — ignora cond.color para garantir consistência
         const activeColor = rule.category === 'states' ? '#9b59b6' : (rule.color || themeColor);
         return `
-            <div class="rule-card premium-card" data-id="${rule.id}" onclick="window.toggleRuleAccordion('${rule.id}')" style="--rule-color: ${activeColor}; cursor: pointer; border-left: 5px solid var(--rule-color); padding: 1.2rem; transition: all 0.25s ease; border-radius: 12px; background: rgba(255,255,255,0.02); margin-bottom: 0.8rem; box-sizing: border-box;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;">
+            <div class="rule-card" data-id="${rule.id}" onclick="window.toggleRuleAccordion('${rule.id}')" style="--rule-color: ${activeColor};">
+                <div class="d-flex justify-between align-center gap-md">
                     <div style="flex:1;">
-                        <span class="label-tiny" style="color: var(--rule-color) !important; font-size: 0.65rem; margin-bottom: 0.3rem; display:inline-block; border: 1px solid var(--rule-color); padding: 0.1rem 0.4rem; border-radius: 4px;">${rule.categoryName}</span>
-                        <h3 class="cinzel" style="margin: 0; font-size: 1.05rem; color: var(--txt); font-weight: 700; letter-spacing: 0.5px;">${rule.title}</h3>
-                        <p style="margin: 0.4rem 0 0; font-size: 0.8rem; opacity: 0.6; line-height: 1.3;">${rule.summary}</p>
+                        <span class="rule-category-badge">${rule.categoryName}</span>
+                        <h3 class="cinzel rule-title">${rule.title}</h3>
+                        <p class="rule-summary">${rule.summary}</p>
                     </div>
-                    <span class="rule-arrow" style="transition: transform 0.25s ease; display: inline-block;"></span>
+                    <span class="rule-arrow">▼</span>
                 </div>
-                <div class="rule-details" style="max-height: 0; overflow: hidden; transition: all 0.3s cubic-bezier(0, 1, 0, 1); margin-top: 0; opacity: 0; font-size: 0.88rem; line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0;">
-                    <div style="padding: 1rem 0.5rem 0.5rem 0.5rem;">
+                <div class="rule-details">
+                    <div class="rule-details-inner">
                         ${rule.content}
                     </div>
                 </div>

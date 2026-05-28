@@ -5,13 +5,13 @@ function renderHeader() {
     if (!placeholder) return;
 
     placeholder.innerHTML = `
-        <header class="sheet-header premium-card read-only" style="margin-bottom: 1rem;">
+        <header class="sheet-header premium-card read-only mb-md">
             <div class="header-main">
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <div class="char-portrait-container" id="portrait-main" ${isMaster ? 'onclick="this.querySelector(\'input\').click()" style="cursor: pointer;"' : ''}>
+                <div class="d-flex gap-md align-center flex-wrap">
+                    <div class="char-portrait-container cursor-pointer" id="portrait-main" ${isMaster ? 'onclick="this.querySelector(\'input\').click()"' : ''}>
                         <span style="pointer-events: none;">👤</span>
                         <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'}; pointer-events: none;">
-                        ${isMaster ? '<input type="file" accept="image/*" style="display:none" onchange="window.handleMasterPhoto(this)">' : ''}
+                        ${isMaster ? '<input type="file" accept="image/*" class="hidden" onchange="window.handleMasterPhoto(this)">' : ''}
                     </div>
 
                     <div class="header-identity">
@@ -43,7 +43,7 @@ function renderHeader() {
                     <span>Histórico</span>
                 </button>` : ''}
                 
-                <button class="nav-btn" id="btn-back-to-role" style="color: var(--txt-muted);">
+                <button class="nav-btn muted-text" id="btn-back-to-role">
                     <span>Voltar</span>
                 </button>
             </div>
@@ -172,7 +172,7 @@ function renderSkillBlock(containerId, dataSource, stateKey, profBonus) {
             <div class="skill-row ${isMaster ? 'master-editable' : ''}" onclick="${containerId === 'saves-list' ? 'toggleSave' : 'toggleSkill'}('${s.id}')">
                 <div class="dot-check ${isProf ? 'active' : ''}"></div>
                 <span class="skill-val">${(total >= 0 ? '+' : '') + total}</span>
-                <span class="skill-name">${s.name} ${s.attr !== s.id ? `<small style="color: var(--gold); margin-left: 0.2rem;">(${s.attr.toUpperCase()})</small>` : ''}</span>
+                <span class="skill-name">${s.name} ${s.attr !== s.id ? `<small class="color-gold" style="margin-left: 0.2rem;">(${s.attr.toUpperCase()})</small>` : ''}</span>
             </div>`;
     }).join('');
 }
@@ -270,11 +270,11 @@ function renderSessionLog() {
     if (!list) return;
 
     list.innerHTML = sessionLog.length === 0 
-        ? '<p class="muted-text txt-center" style="padding: 3rem; opacity: 0.5;">As crônicas ainda estão em branco...</p>' 
+        ? '<p class="muted-text text-center p-lg" style="opacity: 0.5;">As crônicas ainda estão em branco...</p>' 
         : sessionLog.map(log => `
-            <div class="log-entry" style="margin-bottom: 0.8rem;">
+            <div class="log-entry mb-sm">
                 <div class="log-time">${log.timestamp}</div>
-                <div style="font-size: 0.9rem; line-height: 1.4;">${log.text}</div>
+                <div class="font-size-sm" style="line-height: 1.4;">${log.text}</div>
             </div>
         `).join('');
     

@@ -20,7 +20,7 @@
             </div>
 
             <div class="master-sidebar-bottom">
-                <button id="btn-master-exit" class="m-nav-btn" type="button"><span class="m-nav-icon" style="color:var(--red);">🚪</span><span class="m-nav-text" style="color:var(--red);">Sair</span></button>
+                <button id="btn-master-exit" class="m-nav-btn" type="button"><span class="m-nav-icon color-red">🚪</span><span class="m-nav-text color-red">Sair</span></button>
             </div>
         </aside>
 
@@ -36,13 +36,13 @@
                     </div>
                 </div>
                 
-                <div class="char-filters" style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn-ghost active char-filter-btn" data-filter="all" onclick="window.setCharFilter('all')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">Todos</button>
-                        <button class="btn-ghost char-filter-btn" data-filter="active" onclick="window.setCharFilter('active')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🎲 Ativos na Mesa</button>
-                        <button class="btn-ghost char-filter-btn" data-filter="inactive" onclick="window.setCharFilter('inactive')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">📚 Apenas no Banco</button>
+                <div class="char-filters d-flex gap-md mb-lg flex-wrap align-center justify-between w-100" style="border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
+                    <div class="d-flex gap-sm">
+                        <button class="btn-ghost active char-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="all" onclick="window.setCharFilter('all')" style="padding: 0.5rem 1.2rem;">Todos</button>
+                        <button class="btn-ghost char-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="active" onclick="window.setCharFilter('active')" style="padding: 0.5rem 1.2rem;">🎲 Ativos na Mesa</button>
+                        <button class="btn-ghost char-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="inactive" onclick="window.setCharFilter('inactive')" style="padding: 0.5rem 1.2rem;">📚 Apenas no Banco</button>
                     </div>
-                    <input type="text" id="char-search" class="premium-input" placeholder="Buscar herói..." style="width: 240px; padding: 0.5rem 1rem; font-size: 0.9rem;" oninput="window.filterDbCharacters()">
+                    <input type="text" id="char-search" class="premium-input max-w-400 font-size-md" placeholder="Buscar herói..." style="padding: 0.5rem 1rem;" oninput="window.filterDbCharacters()">
                 </div>
                 
                 <div id="mesa-grid" class="m-grid"></div>
@@ -109,13 +109,13 @@
                     </div>
                 </div>
                 
-                <div class="rules-filters" style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                    <button class="btn-ghost active rules-filter-btn" data-filter="all" onclick="window.setRulesFilter('all')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">Todas</button>
-                    <button class="btn-ghost rules-filter-btn" data-filter="battle" onclick="window.setRulesFilter('battle')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚔️ Combate</button>
-                    <button class="btn-ghost rules-filter-btn" data-filter="adventure" onclick="window.setRulesFilter('adventure')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🌲 Aventura</button>
-                    <button class="btn-ghost rules-filter-btn" data-filter="states" onclick="window.setRulesFilter('states')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">🤢 Estados</button>
-                    <button class="btn-ghost rules-filter-btn" data-filter="actions" onclick="window.setRulesFilter('actions')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚡ Habilidades</button>
-                    <button class="btn-ghost rules-filter-btn" data-filter="mechanics" onclick="window.setRulesFilter('mechanics')" style="padding: 0.5rem 1.2rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700;">⚙️ Mecânicas da Ficha</button>
+                <div class="rules-filters d-flex gap-md mb-lg flex-wrap">
+                    <button class="btn-ghost active rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="all" onclick="window.setRulesFilter('all')" style="padding: 0.5rem 1.2rem;">Todas</button>
+                    <button class="btn-ghost rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="battle" onclick="window.setRulesFilter('battle')" style="padding: 0.5rem 1.2rem;">⚔️ Combate</button>
+                    <button class="btn-ghost rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="adventure" onclick="window.setRulesFilter('adventure')" style="padding: 0.5rem 1.2rem;">🌲 Aventura</button>
+                    <button class="btn-ghost rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="states" onclick="window.setRulesFilter('states')" style="padding: 0.5rem 1.2rem;">🤢 Estados</button>
+                    <button class="btn-ghost rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="actions" onclick="window.setRulesFilter('actions')" style="padding: 0.5rem 1.2rem;">⚡ Habilidades</button>
+                    <button class="btn-ghost rules-filter-btn border-radius-md font-size-sm font-weight-bold" data-filter="mechanics" onclick="window.setRulesFilter('mechanics')" style="padding: 0.5rem 1.2rem;">⚙️ Mecânicas da Ficha</button>
                 </div>
                 
                 <div id="rules-content-container" style="display: flex; flex-direction: column; gap: 1rem; max-height: calc(100vh - 280px); overflow-y: auto; padding-right: 0.5rem;">
