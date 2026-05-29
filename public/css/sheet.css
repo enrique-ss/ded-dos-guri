@@ -863,7 +863,7 @@ body.is-master .read-only .skill-row {
         width: 100% !important;
         height: auto !important;
         overflow: visible !important;
-        page-break-after: always !important;
+        page-break-after: auto !important;
         background: #ffffff !important;
         padding: 0 !important;
         margin: 0 !important;
