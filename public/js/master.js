@@ -475,17 +475,30 @@ function renderLogHistory() {
 
 window.openEntitySheet = function(type, id) {
     let entity;
-    if (type === 'player') entity = connectedPlayers[id];
-    else if (type === 'npc') entity = masterState.npcs.find(n => n.id == id);
-    else if (type === 'monster') entity = (masterState.monsters || []).find(n => n.id == id);
-    else if (type === 'db_character') {
+    masterEditingOwner = null; // Reset owner info
+
+    if (type === 'player') {
+        entity = connectedPlayers[id];
+        // Tenta obter o email do jogador conectado via cache do banco
+        const dbChar = (window._dbCharsCache || []).find(c => c.id === entity?.id);
+        masterEditingOwner = dbChar?.owner_email || entity?.userEmail || null;
+    } else if (type === 'npc') {
+        entity = masterState.npcs.find(n => n.id == id);
+        masterEditingOwner = null; // NPC não tem dono
+    } else if (type === 'monster') {
+        entity = (masterState.monsters || []).find(n => n.id == id);
+        masterEditingOwner = null;
+    } else if (type === 'db_character') {
         const charEntry = (window._dbCharsCache || []).find(c => c.id === id);
-        if (charEntry) entity = charEntry.data;
+        if (charEntry) {
+            entity = charEntry.data;
+            masterEditingOwner = charEntry.owner_email || null;
+        }
     }
-    
+
     if (!entity) return;
     masterEditingId = id;
-    masterEditingType = type === 'db_character' ? 'player' : type; 
+    masterEditingType = type === 'db_character' ? 'player' : type;
     state = entity;
     currentView = 'sheet-view';
     const container = document.getElementById('sheet-container');

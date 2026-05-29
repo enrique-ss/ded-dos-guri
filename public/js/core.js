@@ -11,6 +11,7 @@ let isMaster = false;
 let connectedPlayers = {};
 let masterEditingId = null;
 let masterEditingType = 'player';
+let masterEditingOwner = null;
 let isCreatingNPC = false;
 let roleSelected = false;
 let user = null;
