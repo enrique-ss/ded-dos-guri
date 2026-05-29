@@ -449,12 +449,12 @@
     letter-spacing: 0;
     font-weight: 400;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 190, 11, 0.25);
-    z-index: 9999999;
+    z-index: 2147483647; /* Valor máximo de z-index em 32-bit */
     pointer-events: auto; /* Allow scrolling and touching tooltip content */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.25s, visibility 0.25s;
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

@@ -117,26 +117,27 @@ function autoCropAndCenter(file, name, bg, align) {
             canvas.width = 300;
             canvas.height = 300;
             const ctx = canvas.getContext('2d');
-            
+
             // Calcular a escala para preencher o quadrado
             const size = 300;
             const scaleX = size / img.width;
             const scaleY = size / img.height;
             const scale = Math.max(scaleX, scaleY);
-            
+
             const scaledWidth = img.width * scale;
             const scaledHeight = img.height * scale;
-            
+
             // Calcular posição centralizada
             const offsetX = (size - scaledWidth) / 2;
             const offsetY = (size - scaledHeight) / 2;
-            
+
             // Desenhar imagem centralizada
             ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
-            
+
             // Comprimir e converter para base64
             const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-            
+
+            console.log('Foto processada. Tamanho:', compressedDataUrl.length, 'bytes');
             finalizeWizard(name, bg, align, compressedDataUrl);
         };
         img.src = e.target.result;
@@ -180,6 +181,7 @@ function finalizeWizard(name, bg, align, photo) {
     char.race = wizardData.race;
     char.cls = wizardData.cls;
     char.photo = photo;
+    console.log('finalizeWizard - Foto recebida:', !!photo, 'Tamanho:', photo ? photo.length : 0);
     char.attr = { ...wizardData.attr };
     char.profs = [...wizardData.skills];
     char.bg = bg || '';

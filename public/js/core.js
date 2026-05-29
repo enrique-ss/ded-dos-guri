@@ -343,6 +343,8 @@ function saveState() {
 async function saveStateToSupabase() {
     if (!user || !state.isCreated) return;
 
+    console.log('Salvando estado no Supabase. Foto presente:', !!state.photo, 'Tamanho da foto:', state.photo ? state.photo.length : 0);
+
     if (isOfflineMode) {
         try {
             const payload = await apiRequest('/api/characters', {
@@ -379,9 +381,12 @@ async function saveStateToSupabase() {
 
     if (error) {
         console.error('Erro ao salvar no Supabase:', error);
+        console.error('Dados sendo salvos:', JSON.stringify(charData).substring(0, 200) + '...');
     } else if (data && !state.id) {
         state.id = data.id;
         saveState();
+    } else if (data) {
+        console.log('Estado salvo com sucesso no Supabase. ID:', data.id);
     }
 }
 

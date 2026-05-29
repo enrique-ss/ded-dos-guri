@@ -47,16 +47,17 @@ function setupEvents() {
             if (charObj) {
                 state = charObj.data;
                 state.id = charId; // Garantir que o ID está no state
+                console.log('Personagem carregado. Foto presente:', !!state.photo, 'Tamanho da foto:', state.photo ? state.photo.length : 0);
                 roleSelected = true;
                 isMaster = false;
                 wizardData.active = false;
                 document.getElementById('character-selection')?.classList.remove('active');
-                
+
                 // Identificar para o mestre
                 if (socket) {
                     socket.emit('playerIdentify', { ...state, userEmail: user.email });
                 }
-                
+
                 render();
             }
             return;

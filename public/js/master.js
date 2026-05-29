@@ -74,7 +74,6 @@ function createEntityCardHtml(entity, type, options = {}) {
             </div>
 
             ${conditionsHtml}
-            ${type === 'db_character' && p.userEmail ? `<div class="label-tiny mt-sm" style="opacity: 0.5; font-size: 0.5rem;">Dono: ${p.userEmail}</div>` : ''}
         </div>
     `;
 }
