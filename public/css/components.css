@@ -431,49 +431,63 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) translateY(-80px);
-    background: var(--bg-glass);
-    border: 1px solid var(--gold);
-    border-radius: 10px;
-    padding: 0.7rem 1rem;
-    font-size: 0.78rem;
-    color: var(--txt);
-    line-height: 1.5;
+    transform: translate(-50%, -50%);
+    background: rgba(11, 12, 20, 0.98); /* Rich, fully opaque dark color for high contrast */
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    font-size: 0.85rem;
+    color: #ffffff; /* Always crisp white for peak readability */
+    line-height: 1.6;
     white-space: pre-line;
-    width: 260px;
-    max-width: 90vw;
+    width: 320px;
+    max-width: 85vw;
+    max-height: 60vh;
+    overflow-y: auto;
     text-align: left;
     text-transform: none;
     letter-spacing: 0;
     font-weight: 400;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 190, 11, 0.25);
     z-index: 9999999;
-    pointer-events: none;
+    pointer-events: auto; /* Allow scrolling and touching tooltip content */
     opacity: 0;
-    transition: opacity 0.2s;
+    visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+    
+    /* Fine-styled scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) rgba(0, 0, 0, 0.2);
+}
+
+/* Custom scrollbar for webkit inside tooltips */
+.info-icon::after::-webkit-scrollbar {
+    width: 6px;
+}
+.info-icon::after::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+.info-icon::after::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+[data-theme="light"] .info-icon::after {
+    background: rgba(255, 255, 255, 0.98);
+    color: #000000;
+    border-color: var(--gold);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 10px rgba(212, 154, 0, 0.1);
 }
 
 .info-icon:hover::after {
     opacity: 1;
+    visibility: visible;
 }
 
-/* Pequeno triângulo abaixo do tooltip */
+/* Hide floating triangle arrow as tooltip is now a centered screen modal */
 .info-icon::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + 4px);
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: var(--gold);
-    z-index: 1000;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.info-icon:hover::before {
-    opacity: 1;
+    display: none !important;
 }
 
 /* MASTER PLAYER CARDS WRAPPER */

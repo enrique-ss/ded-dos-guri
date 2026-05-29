@@ -876,7 +876,7 @@ window.renderRules = function() {
                         <h3 class="cinzel rule-title">${rule.title}</h3>
                         <p class="rule-summary">${rule.summary}</p>
                     </div>
-                    <span class="rule-arrow">▼</span>
+                    <span class="rule-arrow"></span>
                 </div>
                 <div class="rule-details">
                     <div class="rule-details-inner">
