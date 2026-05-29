@@ -80,6 +80,11 @@
     z-index: 10;
 }
 
+/* Esconde seção PDF-only no modo normal */
+.pdf-only {
+    display: none !important;
+}
+
 .badge-role {
     background: var(--gold);
     color: var(--txt-contrast);
@@ -839,9 +844,21 @@ body.is-master .read-only .skill-row {
         display: none !important;
     }
 
-    /* Esconde header na segunda página (history-view) */
-    #history-view .sheet-header {
+    /* Esconde Condições e Estados do PDF */
+    .conditions-card {
         display: none !important;
+    }
+
+    /* Mostra Alma e Personalidade no PDF */
+    .pdf-only {
+        display: block !important;
+    }
+
+    /* Layout 2x2 para Alma e Personalidade no PDF */
+    .pdf-personality-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
     }
 
     /* Fundo branco, texto preto - economia de tinta */
@@ -882,6 +899,7 @@ body.is-master .read-only .skill-row {
     .sheet-container {
         width: 100% !important;
         height: auto !important;
+        max-height: none !important;
         max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -1107,38 +1125,6 @@ body.is-master .read-only .skill-row {
         min-height: auto !important;
         max-height: none !important;
         overflow: visible !important;
-    }
-
-    /* History-view - mostrar todo o conteúdo sem scroll */
-    #history-view {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-    }
-
-    #history-view .sheet-container {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-    }
-
-    #history-view .sheet-body {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-    }
-
-    #history-view .sheet-col {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-    }
-
-    #history-view .premium-card {
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        page-break-inside: auto !important;
     }
 }
 

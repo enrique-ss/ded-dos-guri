@@ -164,13 +164,46 @@
                 </div>
 
                 <!-- Condições -->
-                <div class="premium-card">
+                <div class="premium-card conditions-card">
                     <div class="section-title">
                         <label class="label-tiny" style="margin-bottom:0;">Condições e Estados</label>
                         <span class="info-icon" data-tip="ESTADOS E EFEITOS:&#10;&#10;Representam bônus ou penalidades temporárias aplicadas ao herói por magias, venenos ou situações ambientais.&#10;&#10;DICA: O mestre pode ativar ou desativar esses estados conforme a aventura progride.">i</span>
                     </div>
                     <div id="conditions-toggle-grid" class="conditions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; justify-items: start;">
                         <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- Alma e Personalidade (PDF only) -->
+                <div class="premium-card personality-card pdf-only">
+                    <div class="section-title">
+                        <label class="label-tiny" style="margin-bottom:0;">Alma e Personalidade</label>
+                    </div>
+                    <div class="form-group pdf-personality-grid">
+                        <div class="detail-item">
+                            <label class="label-tiny">Antecedente</label>
+                            <textarea id="display-bg-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Alinhamento</label>
+                            <textarea id="display-align-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Traços de Personalidade</label>
+                            <textarea id="rp-traits-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Ideais</label>
+                            <textarea id="rp-ideals-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Vínculos</label>
+                            <textarea id="rp-bonds-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
+                        <div class="detail-item">
+                            <label class="label-tiny">Fraquezas</label>
+                            <textarea id="rp-flaws-pdf" class="rp-textarea" style="min-height: 2.2rem; overflow: hidden;"></textarea>
+                        </div>
                     </div>
                 </div>
 

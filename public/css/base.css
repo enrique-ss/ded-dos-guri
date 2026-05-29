@@ -143,10 +143,6 @@ select {
 /* For the sheet, we want block for full width scrolling */
 
 img {
-    filter: brightness(0.6);
-    transition: filter 0.4s ease;
-}
-
-img:hover {
-    filter: brightness(0.85); /* Efeito suave de hover */
+    filter: none;
+    transition: none;
 }

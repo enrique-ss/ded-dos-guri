@@ -100,6 +100,14 @@ function renderSheet() {
         pImg.style.display = state.photo ? 'block' : 'none';
     });
 
+    // Preencher campos PDF de Alma e Personalidade
+    if ($('display-bg-pdf')) $('display-bg-pdf').value = state.bg || '';
+    if ($('display-align-pdf')) $('display-align-pdf').value = state.align || '';
+    if ($('rp-traits-pdf')) $('rp-traits-pdf').value = state.rpTraits || '';
+    if ($('rp-ideals-pdf')) $('rp-ideals-pdf').value = state.rpIdeals || '';
+    if ($('rp-bonds-pdf')) $('rp-bonds-pdf').value = state.rpBonds || '';
+    if ($('rp-flaws-pdf')) $('rp-flaws-pdf').value = state.rpFlaws || '';
+
     // Campos
     document.querySelectorAll('input, textarea').forEach(el => {
         if (!el.classList.contains('protected-field')) el.readOnly = !isMaster;
@@ -300,7 +308,7 @@ window.removeAbility = (type, i) => {
 
 window.downloadPDF = function() {
     const prevView = currentView;
-    const viewsToPrint = ['sheet-view', 'history-view'];
+    const viewsToPrint = ['sheet-view'];
 
     // 1. Mark body to trigger print stylesheet
     document.body.classList.add('is-printing-all');
