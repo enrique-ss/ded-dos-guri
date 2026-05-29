@@ -104,10 +104,73 @@ function finishCreation() {
 
     const file = document.getElementById('create-photo').files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => finalizeWizard(name, bg, align, e.target.result);
-        reader.readAsDataURL(file);
+        autoCropAndCenter(file, name, bg, align);
     } else finalizeWizard(name, bg, align, '');
+}
+
+function autoCropAndCenter(file, name, bg, align) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 300;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            
+            // Calcular a escala para preencher o quadrado
+            const size = 300;
+            const scaleX = size / img.width;
+            const scaleY = size / img.height;
+            const scale = Math.max(scaleX, scaleY);
+            
+            const scaledWidth = img.width * scale;
+            const scaledHeight = img.height * scale;
+            
+            // Calcular posição centralizada
+            const offsetX = (size - scaledWidth) / 2;
+            const offsetY = (size - scaledHeight) / 2;
+            
+            // Desenhar imagem centralizada
+            ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+            
+            // Comprimir e converter para base64
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            
+            finalizeWizard(name, bg, align, compressedDataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function compressImage(file, maxWidth, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 function finalizeWizard(name, bg, align, photo) {

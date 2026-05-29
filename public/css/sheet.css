@@ -1104,7 +1104,41 @@ body.is-master .read-only .skill-row {
         color: #000000 !important;
         resize: none !important;
         height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
         overflow: visible !important;
+    }
+
+    /* History-view - mostrar todo o conteúdo sem scroll */
+    #history-view {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    #history-view .sheet-container {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    #history-view .sheet-body {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    #history-view .sheet-col {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    #history-view .premium-card {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        page-break-inside: auto !important;
     }
 }
 
