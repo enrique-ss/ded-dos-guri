@@ -16,11 +16,6 @@ function renderHeader() {
 
                     <div class="header-identity">
                         <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" ${isMaster ? '' : 'readonly'}>
-                        ${isMaster && masterEditingOwner ? `
-                        <div class="master-owner-badge">
-                            <span class="owner-icon">👤</span>
-                            <span class="owner-label">${masterEditingOwner}</span>
-                        </div>` : ''}
                         <div class="header-sub">
                             <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
                             <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
