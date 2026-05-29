@@ -1122,9 +1122,27 @@ body.is-master .read-only .skill-row {
         color: #000000 !important;
         resize: none !important;
         height: auto !important;
+        min-height: 40px !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    /* Textareas de Alma e Personalidade no PDF - altura adaptativa */
+    .pdf-personality-grid .rp-textarea {
+        height: auto !important;
         min-height: auto !important;
         max-height: none !important;
         overflow: visible !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+    }
+
+    /* Garantir que o grid de personalidade se expanda */
+    .pdf-personality-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 15px !important;
+        align-items: start !important;
     }
 }
 

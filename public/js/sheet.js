@@ -310,6 +310,23 @@ window.downloadPDF = function() {
     const prevView = currentView;
     const viewsToPrint = ['sheet-view'];
 
+    // Preencher campos PDF de Alma e Personalidade
+    const $ = id => document.getElementById(id);
+    if ($('display-bg-pdf')) $('display-bg-pdf').value = state.bg || '';
+    if ($('display-align-pdf')) $('display-align-pdf').value = state.align || '';
+    if ($('rp-traits-pdf')) $('rp-traits-pdf').value = state.rpTraits || '';
+    if ($('rp-ideals-pdf')) $('rp-ideals-pdf').value = state.rpIdeals || '';
+    if ($('rp-bonds-pdf')) $('rp-bonds-pdf').value = state.rpBonds || '';
+    if ($('rp-flaws-pdf')) $('rp-flaws-pdf').value = state.rpFlaws || '';
+
+    // Ajustar altura dos textareas de Alma e Personalidade para o conteúdo
+    setTimeout(() => {
+        document.querySelectorAll('.pdf-personality-grid .rp-textarea').forEach(textarea => {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        });
+    }, 100);
+
     // 1. Mark body to trigger print stylesheet
     document.body.classList.add('is-printing-all');
 
