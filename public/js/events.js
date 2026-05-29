@@ -400,12 +400,22 @@ window.deleteCharacter = async function(charId) {
     if (!confirm('Deseja realmente excluir este personagem?')) return;
     
     try {
-        const headers = getAuthHeaders();
-        const res = await fetch(`/api/characters/${charId}`, { 
-            method: 'DELETE',
-            headers: headers
-        });
-        if (!res.ok) throw new Error('Erro ao excluir personagem');
+        if (!isOfflineMode && supabaseClient) {
+            const { error } = await supabaseClient
+                .from('characters')
+                .delete()
+                .eq('id', charId)
+                .eq('user_id', user.id);
+            
+            if (error) throw error;
+        } else {
+            const headers = getAuthHeaders();
+            const res = await fetch(`/api/characters/${charId}`, { 
+                method: 'DELETE',
+                headers: headers
+            });
+            if (!res.ok) throw new Error('Erro ao excluir personagem');
+        }
         
         // Atualiza lista
         userCharacters = userCharacters.filter(c => c.id !== charId);
