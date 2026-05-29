@@ -1,55 +1,64 @@
 function renderHeader() {
-    const activeView = document.querySelector('.full-screen-modal.active');
-    if (!activeView) return;
-    const placeholder = activeView.querySelector('.character-header-placeholder');
-    if (!placeholder) return;
+    const activeViews = document.querySelectorAll('.full-screen-modal.active');
+    if (activeViews.length === 0) return;
 
-    placeholder.innerHTML = `
-        <header class="sheet-header premium-card read-only mb-md">
-            <div class="header-main">
-                <div class="d-flex gap-md align-center flex-wrap">
-                    <div class="char-portrait-container cursor-pointer" id="portrait-main" ${isMaster ? 'onclick="this.querySelector(\'input\').click()"' : ''}>
-                        <span style="pointer-events: none;">👤</span>
-                        <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'}; pointer-events: none;">
-                        ${isMaster ? '<input type="file" accept="image/*" class="hidden" onchange="window.handleMasterPhoto(this)">' : ''}
-                    </div>
+    activeViews.forEach(activeView => {
+        const placeholder = activeView.querySelector('.character-header-placeholder');
+        if (!placeholder) return;
 
-                    <div class="header-identity">
-                        <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" ${isMaster ? '' : 'readonly'}>
-                        <div class="header-sub">
-                            <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
-                            <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
-                            <div class="badge-role" id="display-level-header">Nível ${state.level || 1}</div>
-                            ${isMaster && masterEditingOwner ? `<div class="badge-role badge-owner" id="display-owner-header">👤 ${masterEditingOwner}</div>` : ''}
+        const viewId = activeView.id;
+
+        placeholder.innerHTML = `
+            <header class="sheet-header premium-card read-only mb-md">
+                <div class="header-main">
+                    <div class="d-flex gap-md align-center flex-wrap">
+                        <div class="char-portrait-container cursor-pointer" id="portrait-main" ${isMaster ? 'onclick="this.querySelector(\'input\').click()"' : ''}>
+                            <span style="pointer-events: none;">👤</span>
+                            <img id="display-photo-header" src="${state.photo || ''}" alt="Avatar" class="char-portrait" style="display: ${state.photo ? 'block' : 'none'}; pointer-events: none;">
+                            ${isMaster ? '<input type="file" accept="image/*" class="hidden" onchange="window.handleMasterPhoto(this)">' : ''}
+                        </div>
+
+                        <div class="header-identity">
+                            <input type="text" id="display-name-header" class="char-name-input protected-field" value="${state.name}" ${isMaster ? '' : 'readonly'}>
+                            <div class="header-sub">
+                                <div class="badge-role" id="display-class-header">${CLASSES[state.cls]?.name || state.cls || ''}</div>
+                                <div class="badge-role" id="display-race-header">${RACES[state.race]?.name || state.race || ''}</div>
+                                <div class="badge-role" id="display-level-header">Nível ${state.level || 1}</div>
+                                ${isMaster && masterEditingOwner ? `<div class="badge-role badge-owner" id="display-owner-header">👤 ${masterEditingOwner}</div>` : ''}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="header-nav">
-                <button class="nav-btn ${currentView === 'sheet-view' ? 'active' : ''}" data-view="sheet-view" onclick="switchView('sheet-view')">
-                    <span>Ficha</span>
-                </button>
-                <button class="nav-btn ${currentView === 'items-view' ? 'active' : ''}" data-view="items-view" onclick="switchView('items-view')">
-                    <span>Itens</span>
-                </button>
-                <button class="nav-btn ${currentView === 'habilidades-view' ? 'active' : ''}" data-view="habilidades-view" onclick="switchView('habilidades-view')">
-                    <span>Magias</span>
-                </button>
-                <button class="nav-btn ${currentView === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
-                    <span>Notas</span>
-                </button>
-                ${!isMaster ? `
-                <button class="nav-btn ${currentView === 'game-log-view' ? 'active' : ''}" data-view="game-log-view" onclick="switchView('game-log-view')">
-                    <span>Histórico</span>
-                </button>` : ''}
-                
-                <button class="nav-btn muted-text" id="btn-back-to-role">
-                    <span>Voltar</span>
-                </button>
-            </div>
-        </header>
-    `;
+                <div class="header-nav">
+                    <button class="nav-btn ${viewId === 'sheet-view' ? 'active' : ''}" data-view="sheet-view" onclick="switchView('sheet-view')">
+                        <span>Ficha</span>
+                    </button>
+                    <button class="nav-btn ${viewId === 'items-view' ? 'active' : ''}" data-view="items-view" onclick="switchView('items-view')">
+                        <span>Itens</span>
+                    </button>
+                    <button class="nav-btn ${viewId === 'habilidades-view' ? 'active' : ''}" data-view="habilidades-view" onclick="switchView('habilidades-view')">
+                        <span>Magias</span>
+                    </button>
+                    <button class="nav-btn ${viewId === 'history-view' ? 'active' : ''}" data-view="history-view" onclick="switchView('history-view')">
+                        <span>Notas</span>
+                    </button>
+                    ${!isMaster ? `
+                    <button class="nav-btn ${viewId === 'game-log-view' ? 'active' : ''}" data-view="game-log-view" onclick="switchView('game-log-view')">
+                        <span>Histórico</span>
+                    </button>` : ''}
+                    
+                    <button class="nav-btn font-weight-bold pdf-btn-color" onclick="window.downloadPDF()">
+                        <span>📥 PDF</span>
+                    </button>
+
+                    <button class="nav-btn muted-text" id="btn-back-to-role">
+                        <span>Voltar</span>
+                    </button>
+                </div>
+            </header>
+        `;
+    });
 
     // Navegação e exclusão gerenciadas pelo events.js
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -287,4 +296,67 @@ window.removeAbility = (type, i) => {
     const keyMap = { 'Cantrip': 'cantrips', 'SpellActive': 'spellsActive', 'SpellInactive': 'spellsInactive' };
     state[keyMap[type]].splice(i, 1); 
     renderHabilidades(); broadcastChange(); 
+};
+
+window.downloadPDF = function() {
+    const prevView = currentView;
+    const viewsToPrint = ['sheet-view', 'items-view', 'habilidades-view', 'history-view'];
+
+    // 1. Mark body to trigger print stylesheet
+    document.body.classList.add('is-printing-all');
+
+    // 2. Enable active class on all views to make them visible to print
+    viewsToPrint.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) {
+            el.classList.add('active');
+            el.classList.add('print-force-active');
+        }
+    });
+
+    // 3. Temporarily render each view to ensure it is fully filled with fresh details
+    const origCurrentView = currentView;
+    
+    currentView = 'sheet-view';
+    renderHeader();
+    renderSheet();
+    
+    currentView = 'items-view';
+    renderHeader();
+    renderItems();
+    
+    currentView = 'habilidades-view';
+    renderHeader();
+    renderHabilidades();
+    
+    currentView = 'history-view';
+    renderHeader();
+    // Force history values mapping
+    ['bg', 'align', 'rpTraits', 'rpIdeals', 'rpBonds', 'rpFlaws'].forEach(f => {
+        const id = f.startsWith('rp') ? `rp-${f.slice(2).toLowerCase()}` : `display-${f}`;
+        const el = document.getElementById(id);
+        if (el) el.value = state[f] || '';
+    });
+    
+    // Restore global view tracker
+    currentView = origCurrentView;
+
+    // 4. Trigger high resolution browser print/save as PDF
+    setTimeout(() => {
+        window.print();
+
+        // 5. Clean up classes and return layout to screen-only state
+        document.body.classList.remove('is-printing-all');
+        viewsToPrint.forEach(v => {
+            const el = document.getElementById(v);
+            if (el) {
+                el.classList.remove('print-force-active');
+                if (v !== prevView) {
+                    el.classList.remove('active');
+                }
+            }
+        });
+        
+        switchView(prevView);
+    }, 250);
 };
