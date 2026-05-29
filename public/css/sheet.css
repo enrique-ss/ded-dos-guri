@@ -869,12 +869,17 @@ body.is-master .read-only .skill-row {
         margin: 0 !important;
     }
 
+    @page {
+        size: A4 portrait;
+        margin: 1.2cm !important;
+    }
+
     .sheet-container {
         width: 100% !important;
         height: auto !important;
         max-width: 100% !important;
-        padding: 10mm !important;
-        margin: 0 !important;
+        padding: 0 !important;
+        margin: 0 auto !important; /* Centered! */
         overflow: visible !important;
         background: #ffffff !important;
         border: none !important;
@@ -883,28 +888,42 @@ body.is-master .read-only .skill-row {
 
     .sheet-body {
         display: grid !important;
-        grid-template-columns: 240px 1fr 260px !important;
-        gap: 12px !important;
+        grid-template-columns: 1fr 1.1fr !important; /* Elegant 2-column print layout */
+        gap: 15px !important;
         overflow: visible !important;
         height: auto !important;
         padding: 0 !important;
         background: #ffffff !important;
+        width: 100% !important;
     }
 
-    /* Apenas para a aba de notas e itens que usam layout de grade alternativo */
+    /* Wrap third column full-width below the first two columns to fit beautifully on paper */
+    .sheet-body > .sheet-col:nth-child(3) {
+        grid-column: span 2 !important;
+    }
+
+    /* Layout for history and items in 2 columns */
     .sheet-body.history-grid {
         grid-template-columns: 1fr 1fr !important;
         gap: 15px !important;
+        width: 100% !important;
     }
     
     .sheet-body.items-grid-layout {
         grid-template-columns: 1fr 1fr !important;
         gap: 15px !important;
+        width: 100% !important;
+    }
+
+    /* Span third card full-width in items/spells view */
+    .sheet-body.items-grid-layout > .premium-card:nth-child(3) {
+        grid-column: span 2 !important;
     }
 
     .sheet-col {
-        gap: 12px !important;
+        gap: 15px !important;
         overflow: visible !important;
+        width: 100% !important;
     }
 
     /* Cartões e caixas estilizados para impressão em papel */
