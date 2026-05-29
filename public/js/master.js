@@ -284,7 +284,6 @@ window.openMesaSetup = async function() {
                                 <input type="checkbox" class="mesa-check" value="${c.id}" ${masterState.tableCharacters.includes(c.id) ? 'checked' : ''} style="margin-right: 8px;"> 
                                 ${c.data.name}
                             </span>
-                            <span class="label-tiny">${c.owner_email || 'Herói'}</span>
                         </label>
                     `).join('')}
                 </div>

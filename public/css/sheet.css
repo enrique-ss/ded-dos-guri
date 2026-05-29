@@ -1127,7 +1127,7 @@ body.is-master .read-only .skill-row {
         overflow: visible !important;
     }
 
-    /* Textareas de Alma e Personalidade no PDF - altura adaptativa */
+    /* Textareas de Alma e Personalidade no PDF - altura fixa para 500 caracteres */
     .pdf-personality-grid .rp-textarea {
         height: auto !important;
         min-height: auto !important;
@@ -1135,6 +1135,21 @@ body.is-master .read-only .skill-row {
         overflow: visible !important;
         white-space: pre-wrap !important;
         word-wrap: break-word !important;
+    }
+
+    /* Altura específica para cada campo */
+    #display-bg-pdf,
+    #display-align-pdf {
+        min-height: 40px !important;
+        height: 60px !important;
+    }
+
+    #rp-traits-pdf,
+    #rp-ideals-pdf,
+    #rp-bonds-pdf,
+    #rp-flaws-pdf {
+        min-height: 120px !important;
+        height: 150px !important;
     }
 
     /* Garantir que o grid de personalidade se expanda */
