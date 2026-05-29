@@ -813,7 +813,7 @@ body.is-master .read-only .skill-row {
 }
 
 @media print {
-    /* Esconde botões de ação e navegação que não devem aparecer no PDF */
+    /* Esconde botões e elementos de navegação */
     #theme-toggle,
     .theme-toggle-btn,
     .header-nav,
@@ -839,20 +839,25 @@ body.is-master .read-only .skill-row {
         display: none !important;
     }
 
-    /* Reset global de cores para tema claro e economizar tinta de impressora */
+    /* Esconde header na segunda página (history-view) */
+    #history-view .sheet-header {
+        display: none !important;
+    }
+
+    /* Fundo branco, texto preto - economia de tinta */
     [data-theme="dark"], [data-theme="light"], :root, body, html {
         background: #ffffff !important;
         color: #000000 !important;
         height: auto !important;
         overflow: visible !important;
-        font-size: 11pt !important;
+        font-size: 10pt !important;
     }
 
     body::before {
         display: none !important;
     }
 
-    /* Permite renderizar múltiplos tabs do personagem um abaixo do outro com quebra de página */
+    /* Layout de impressão */
     body.is-printing-all .full-screen-modal {
         display: none !important;
     }
@@ -871,7 +876,7 @@ body.is-master .read-only .skill-row {
 
     @page {
         size: A4 portrait;
-        margin: 1.2cm !important;
+        margin: 1cm !important;
     }
 
     .sheet-container {
@@ -879,7 +884,7 @@ body.is-master .read-only .skill-row {
         height: auto !important;
         max-width: 100% !important;
         padding: 0 !important;
-        margin: 0 auto !important; /* Centered! */
+        margin: 0 !important;
         overflow: visible !important;
         background: #ffffff !important;
         border: none !important;
@@ -888,8 +893,8 @@ body.is-master .read-only .skill-row {
 
     .sheet-body {
         display: grid !important;
-        grid-template-columns: 1fr 1.1fr !important; /* Elegant 2-column print layout */
-        gap: 15px !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
         overflow: visible !important;
         height: auto !important;
         padding: 0 !important;
@@ -897,125 +902,125 @@ body.is-master .read-only .skill-row {
         width: 100% !important;
     }
 
-    /* Wrap third column full-width below the first two columns to fit beautifully on paper */
     .sheet-body > .sheet-col:nth-child(3) {
         grid-column: span 2 !important;
     }
 
-    /* Layout for history and items in 2 columns */
     .sheet-body.history-grid {
         grid-template-columns: 1fr 1fr !important;
-        gap: 15px !important;
-        width: 100% !important;
-    }
-    
-    .sheet-body.items-grid-layout {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 15px !important;
+        gap: 10px !important;
         width: 100% !important;
     }
 
-    /* Span third card full-width in items/spells view */
+    .sheet-body.items-grid-layout {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
     .sheet-body.items-grid-layout > .premium-card:nth-child(3) {
         grid-column: span 2 !important;
     }
 
     .sheet-col {
-        gap: 15px !important;
+        gap: 10px !important;
         overflow: visible !important;
         width: 100% !important;
     }
 
-    /* Cartões e caixas estilizados para impressão em papel */
+    /* Design simples e limpo */
     .premium-card {
-        background: #f8fafc !important;
-        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        border: 1px solid #000000 !important;
         box-shadow: none !important;
         color: #000000 !important;
-        border-radius: 10px !important;
-        padding: 12px !important;
+        border-radius: 0 !important;
+        padding: 8px !important;
         page-break-inside: avoid !important;
     }
 
     .section-title {
-        border-bottom: 2px solid #cbd5e1 !important;
-        margin-bottom: 8px !important;
+        border-bottom: 2px solid #000000 !important;
+        margin-bottom: 5px !important;
+        padding-bottom: 3px !important;
     }
 
     .section-title label, .cinzel, h1, h2, h3 {
-        color: #d49a00 !important;
+        color: #000000 !important;
         text-shadow: none !important;
-        font-weight: 800 !important;
+        font-weight: 700 !important;
+        font-size: 11pt !important;
     }
 
-    /* Atributos em destaque claro */
+    /* Atributos - design simples */
     .attr-block {
         background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid #000000 !important;
         box-shadow: none !important;
         color: #000000 !important;
-        border-radius: 8px !important;
-        grid-template-columns: 42px 1fr 36px !important;
+        border-radius: 0 !important;
+        grid-template-columns: 40px 1fr 35px !important;
+        padding: 4px !important;
     }
 
     .attr-circle {
-        background: #f8fafc !important;
-        border: 2px solid #d49a00 !important;
+        background: #ffffff !important;
+        border: 2px solid #000000 !important;
         color: #000000 !important;
         box-shadow: none !important;
     }
 
     .attr-mod {
-        background: #d49a00 !important;
+        background: #000000 !important;
         color: #ffffff !important;
-        border-radius: 4px !important;
+        border-radius: 0 !important;
     }
 
     .attr-info label {
         color: #000000 !important;
     }
 
-    /* Listas de perícias e salvamentos */
+    /* Perícias e salvamentos */
     .skill-row {
         background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
+        border: 1px solid #000000 !important;
         color: #000000 !important;
-        border-radius: 6px !important;
-        padding: 4px 8px !important;
+        border-radius: 0 !important;
+        padding: 3px 6px !important;
     }
 
     .dot-check {
-        border-color: #d49a00 !important;
+        border-color: #000000 !important;
         background-color: #ffffff !important;
     }
 
     .dot-check.active {
-        background-color: #d49a00 !important;
+        background-color: #000000 !important;
     }
 
     .skill-val {
         color: #000000 !important;
-        font-weight: 800 !important;
+        font-weight: 700 !important;
     }
 
     .skill-name {
-        color: #334155 !important;
+        color: #000000 !important;
     }
 
-    /* Informações do cabeçalho */
+    /* Cabeçalho */
     .sheet-header {
-        border-bottom: 3px double #cbd5e1 !important;
-        padding-bottom: 12px !important;
-        margin-bottom: 15px !important;
+        border-bottom: 2px solid #000000 !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 10px !important;
         background: transparent !important;
         border-radius: 0 !important;
         border: none !important;
     }
 
     .char-portrait-container {
-        border-color: #d49a00 !important;
+        border-color: #000000 !important;
         box-shadow: none !important;
-        background: #f8fafc !important;
+        background: #ffffff !important;
     }
 
     .char-portrait {
@@ -1024,58 +1029,58 @@ body.is-master .read-only .skill-row {
 
     .char-name-input {
         color: #000000 !important;
-        border-bottom: 2px solid #cbd5e1 !important;
+        border-bottom: 1px solid #000000 !important;
         background: transparent !important;
-        font-weight: 900 !important;
-        font-size: 1.8rem !important;
+        font-weight: 700 !important;
+        font-size: 14pt !important;
     }
 
     .badge-role {
-        background: #d49a00 !important;
+        background: #000000 !important;
         color: #ffffff !important;
         border: none !important;
         box-shadow: none !important;
-        font-size: 0.65rem !important;
+        font-size: 8pt !important;
     }
 
     .badge-owner {
-        background: #e2e8f0 !important;
-        color: #334155 !important;
-        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #000000 !important;
     }
 
     /* Combate */
     .combat-stat-item {
         background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid #000000 !important;
         box-shadow: none !important;
     }
-    
+
     .combat-stat-item[style*="background: rgba(255, 62, 77"] {
-        background: #fef2f2 !important;
-        border: 1.5px solid #fca5a5 !important;
+        background: #ffffff !important;
+        border: 1px solid #000000 !important;
     }
 
     .stat-big, #hp-text {
         color: #000000 !important;
-        font-weight: 900 !important;
+        font-weight: 700 !important;
         text-shadow: none !important;
     }
 
-    /* Tabelas de Itens e Magias */
+    /* Tabelas */
     .premium-table-header {
-        border-bottom: 2px solid #94a3b8 !important;
-        background: #e2e8f0 !important;
+        border-bottom: 2px solid #000000 !important;
+        background: #ffffff !important;
         color: #000000 !important;
     }
 
     .premium-table-header span {
-        font-weight: 800 !important;
+        font-weight: 700 !important;
         color: #000000 !important;
     }
 
     .premium-table-row {
-        border-bottom: 1px solid #cbd5e1 !important;
+        border-bottom: 1px solid #000000 !important;
         background: #ffffff !important;
     }
 
@@ -1085,17 +1090,17 @@ body.is-master .read-only .skill-row {
 
     /* Condições */
     .status-badge.active, .status-toggle-item.active {
-        background: #f1f5f9 !important;
-        border: 1.5px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        border: 1px solid #000000 !important;
         color: #000000 !important;
         box-shadow: none !important;
         animation: none !important;
     }
 
-    /* Textareas (Histórico e Anotações) */
+    /* Textareas */
     .rp-textarea, .large-textarea {
         background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid #000000 !important;
         color: #000000 !important;
         resize: none !important;
         height: auto !important;

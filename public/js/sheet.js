@@ -300,7 +300,7 @@ window.removeAbility = (type, i) => {
 
 window.downloadPDF = function() {
     const prevView = currentView;
-    const viewsToPrint = ['sheet-view', 'items-view', 'habilidades-view', 'history-view'];
+    const viewsToPrint = ['sheet-view', 'history-view'];
 
     // 1. Mark body to trigger print stylesheet
     document.body.classList.add('is-printing-all');
@@ -316,19 +316,11 @@ window.downloadPDF = function() {
 
     // 3. Temporarily render each view to ensure it is fully filled with fresh details
     const origCurrentView = currentView;
-    
+
     currentView = 'sheet-view';
     renderHeader();
     renderSheet();
-    
-    currentView = 'items-view';
-    renderHeader();
-    renderItems();
-    
-    currentView = 'habilidades-view';
-    renderHeader();
-    renderHabilidades();
-    
+
     currentView = 'history-view';
     renderHeader();
     // Force history values mapping
@@ -337,7 +329,7 @@ window.downloadPDF = function() {
         const el = document.getElementById(id);
         if (el) el.value = state[f] || '';
     });
-    
+
     // Restore global view tracker
     currentView = origCurrentView;
 
@@ -356,7 +348,7 @@ window.downloadPDF = function() {
                 }
             }
         });
-        
+
         switchView(prevView);
     }, 250);
 };
