@@ -362,6 +362,44 @@ if (!supabaseEnabled) {
     io.emit('dbCharactersChanged');
     res.json({ success: true });
   });
+
+  app.put('/api/admin/characters/:id', requireOfflineAuth, (req, res) => {
+    const { state } = req.body || {};
+    if (!state || typeof state !== 'object') {
+      res.status(400).json({ error: 'Ficha invalida.' });
+      return;
+    }
+
+    const charId = req.params.id;
+    const now = new Date().toISOString();
+
+    // Verifica se o personagem existe
+    const existing = offlineDb
+      .prepare('SELECT user_id, owner_email FROM characters WHERE id = ?')
+      .get(charId);
+
+    if (!existing) {
+      res.status(404).json({ error: 'Personagem nao encontrado.' });
+      return;
+    }
+
+    // Atualiza o personagem mantendo o owner original
+    offlineDb.prepare(`
+      UPDATE characters SET
+        name = ?,
+        data = ?,
+        updated_at = ?
+      WHERE id = ?
+    `).run(
+      state.name || 'Heroi Sem Nome',
+      JSON.stringify(state),
+      now,
+      charId
+    );
+
+    io.emit('dbCharactersChanged');
+    res.json({ success: true });
+  });
 } else {
   app.get('/api/admin/users', async (req, res) => {
     if (!ensureSupabaseEnabled(res)) return;
@@ -444,7 +482,7 @@ if (!supabaseEnabled) {
     try {
       const { id } = req.params;
       const token = readAuthToken(req);
-      
+
       if (!token) {
         res.status(401).json({ error: 'Não autorizado' });
         return;
@@ -458,6 +496,48 @@ if (!supabaseEnabled) {
         .delete()
         .eq('id', id)
         .eq('user_id', userId);
+
+      if (error) throw error;
+      io.emit('dbCharactersChanged');
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/admin/characters/:id', async (req, res) => {
+    if (!ensureSupabaseEnabled(res)) return;
+    try {
+      const { state } = req.body || {};
+      if (!state || typeof state !== 'object') {
+        res.status(400).json({ error: 'Ficha invalida.' });
+        return;
+      }
+
+      const charId = req.params.id;
+      const now = new Date().toISOString();
+
+      // Verifica se o personagem existe
+      const { data: existing, error: fetchError } = await supabaseAdmin
+        .from('characters')
+        .select('user_id, owner_email')
+        .eq('id', charId)
+        .single();
+
+      if (fetchError || !existing) {
+        res.status(404).json({ error: 'Personagem nao encontrado.' });
+        return;
+      }
+
+      // Atualiza o personagem mantendo o owner original usando service role
+      const { error } = await supabaseAdmin
+        .from('characters')
+        .update({
+          name: state.name || 'Heroi Sem Nome',
+          data: state,
+          updated_at: now
+        })
+        .eq('id', charId);
 
       if (error) throw error;
       io.emit('dbCharactersChanged');

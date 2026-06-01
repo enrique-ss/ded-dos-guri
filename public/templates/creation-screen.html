@@ -85,12 +85,57 @@
 
                 <div class="wizard-nav">
                     <button class="btn-ghost" id="btn-back-3">Voltar</button>
-                    <button class="btn-primary" id="btn-step-5">Aparência e Alma</button>
+                    <button class="btn-primary" id="btn-step-5">Bônus de Raça</button>
                 </div>
             </div>
 
-            <!-- Passo 5 -->
+            <!-- Passo 5: Bônus de Raça -->
             <div id="step-5" class="wizard-step" style="flex: 1; overflow-y: auto; padding-bottom: 1rem;">
+                <h2 class="cinzel">Bônus de Atributos da Raça</h2>
+                <p class="subtitle" id="race-bonus-desc" style="color: var(--gold); font-weight: 700; margin-bottom: 2rem;">...</p>
+
+                <!-- Pool de pontos de bônus -->
+                <div id="race-bonus-pool"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2.5rem;">
+                    <!-- Chips gerados via JS -->
+                </div>
+
+                <!-- Slots de atributo para bônus -->
+                <div class="selection-grid" style="gap: 1.5rem; background: none; border: none; box-shadow: none;">
+                    <div class="attr-slot" data-attr="for">
+                        <label class="label-tiny">FOR</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="des">
+                        <label class="label-tiny">DES</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="con">
+                        <label class="label-tiny">CON</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="int">
+                        <label class="label-tiny">INT</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="sab">
+                        <label class="label-tiny">SAB</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                    <div class="attr-slot" data-attr="car">
+                        <label class="label-tiny">CAR</label>
+                        <div class="slot-display race-bonus-display">---</div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-ghost" id="btn-back-4">Voltar</button>
+                    <button class="btn-primary" id="btn-step-6">Aparência e Alma</button>
+                </div>
+            </div>
+
+            <!-- Passo 6 -->
+            <div id="step-6" class="wizard-step" style="flex: 1; overflow-y: auto; padding-bottom: 1rem;">
                 <h2 class="cinzel">Aparência e Alma</h2>
                 <div class="premium-card form-group" style="background: rgba(0,0,0,0.1); border: 1px solid var(--panel-border);">
                     <div class="detail-item">
@@ -143,7 +188,7 @@
                 </div>
 
                 <div class="wizard-nav">
-                    <button class="btn-ghost" id="btn-back-4">Voltar</button>
+                    <button class="btn-ghost" id="btn-back-5">Voltar</button>
                     <button class="btn-primary" id="btn-finish">DESPERTAR HERÓI</button>
                 </div>
             </div>

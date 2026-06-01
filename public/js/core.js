@@ -45,7 +45,8 @@ let wizardData = {
     bg: '', align: '', photo: '',
     personality: { traits: '', ideals: '', bonds: '', flaws: '' },
     attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
-    skills: []
+    skills: [],
+    raceAttrChoices: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }
 };
 let wizardSelection = null;
 
@@ -337,6 +338,9 @@ function saveState() {
             masterState.npcs[idx] = { ...state };
             saveMasterState();
         }
+    } else if (isMaster && masterEditingType === 'player' && state.isCreated) {
+        // Quando mestre edita jogador, salvar no banco de dados
+        saveStateToSupabase();
     }
 }
 
@@ -344,6 +348,21 @@ async function saveStateToSupabase() {
     if (!user || !state.isCreated) return;
 
     console.log('Salvando estado no Supabase. Foto presente:', !!state.photo, 'Tamanho da foto:', state.photo ? state.photo.length : 0);
+
+    // Se é o mestre editando um jogador, usa endpoint de admin
+    if (isMaster && masterEditingType === 'player' && state.id) {
+        try {
+            const endpoint = isOfflineMode ? `/api/admin/characters/${state.id}` : `/api/admin/characters/${state.id}`;
+            await apiRequest(endpoint, {
+                method: 'PUT',
+                body: JSON.stringify({ state })
+            });
+            console.log('Estado salvo com sucesso via admin endpoint. ID:', state.id);
+        } catch (error) {
+            console.error('Erro ao salvar via admin endpoint:', error);
+        }
+        return;
+    }
 
     if (isOfflineMode) {
         try {

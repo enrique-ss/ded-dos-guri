@@ -2,6 +2,7 @@ function buildGrids() {
     renderChoiceGrid('race-grid', RACES, wizardData.race, 'race');
     renderChoiceGrid('class-grid', CLASSES, wizardData.cls, 'cls');
     renderAttributeDrafter();
+    renderRaceBonusDrafter();
 }
 
 function renderChoiceGrid(containerId, data, selectedKey, type) {
@@ -32,10 +33,92 @@ function renderAttributeDrafter() {
 }
 
 window.selectFromPool = (v) => { wizardSelection = (wizardSelection === v ? null : v); renderAttributeDrafter(); };
-window.assignToSlot = (a) => { 
-    if (wizardSelection) { wizardData.attr[a] = wizardSelection; wizardSelection = null; } 
+window.assignToSlot = (a) => {
+    if (wizardSelection) { wizardData.attr[a] = wizardSelection; wizardSelection = null; }
     else { wizardData.attr[a] = 0; }
-    renderAttributeDrafter(); 
+    renderAttributeDrafter();
+};
+
+let raceBonusSelection = null;
+
+function renderRaceBonusDrafter() {
+    const race = RACES[wizardData.race];
+    if (!race || !race.attrMods) return;
+
+    const pool = document.getElementById('race-bonus-pool');
+    const desc = document.getElementById('race-bonus-desc');
+    if (!pool || !desc) return;
+
+    const attrMods = race.attrMods;
+
+    if (attrMods.type === 'fixed') {
+        desc.textContent = `Bônus fixos da raça ${race.name}: ${race.modsDesc}`;
+        pool.innerHTML = '<p class="muted-text txt-center" style="grid-column: 1/-1;">Esta raça possui bônus fixos. Clique em "Aparência e Alma" para continuar.</p>';
+
+        // Apply fixed mods to raceAttrChoices
+        Object.keys(wizardData.raceAttrChoices).forEach(attr => {
+            wizardData.raceAttrChoices[attr] = attrMods.mods[attr] || 0;
+        });
+    } else if (attrMods.type === 'flexible') {
+        const points = attrMods.points;
+        const value = attrMods.value;
+        const usedPoints = Object.values(wizardData.raceAttrChoices).reduce((sum, val) => sum + val, 0);
+        const remaining = points - usedPoints;
+
+        let descText = `Distribua ${points} pontos de +${value} em atributos à sua escolha.`;
+        if (attrMods.fixedMods) {
+            descText += ` (Bônus fixo: +${attrMods.fixedMods.car} em CAR para Meio-Elfo)`;
+        }
+        desc.textContent = descText;
+
+        // Generate pool chips
+        pool.innerHTML = '';
+        for (let i = 0; i < remaining; i++) {
+            pool.innerHTML += `
+                <div class="array-chip ${raceBonusSelection === i ? 'selected' : ''}"
+                     onclick="selectRaceBonus(${i})">+${value}</div>
+            `;
+        }
+
+        // Render slots
+        document.querySelectorAll('.attr-slot').forEach(slot => {
+            const attr = slot.dataset.attr;
+            const val = wizardData.raceAttrChoices[attr];
+            const display = slot.querySelector('.race-bonus-display');
+            if (display) {
+                display.textContent = val > 0 ? `+${val}` : '';
+            }
+            slot.className = `attr-slot ${val > 0 ? 'filled' : ''} ${raceBonusSelection !== null ? 'active-target' : ''}`;
+            slot.onclick = () => assignRaceBonusToSlot(attr);
+        });
+    }
+}
+
+window.selectRaceBonus = (index) => {
+    raceBonusSelection = (raceBonusSelection === index ? null : index);
+    renderRaceBonusDrafter();
+};
+
+window.assignRaceBonusToSlot = (attr) => {
+    const race = RACES[wizardData.race];
+    if (!race || !race.attrMods || race.attrMods.type !== 'flexible') return;
+
+    const attrMods = race.attrMods;
+    const value = attrMods.value;
+
+    // Check if this attribute has fixed mods (for Meio-Elfo)
+    if (attrMods.fixedMods && attrMods.fixedMods[attr]) {
+        alert(`Este atributo já possui um bônus fixo da raça!`);
+        return;
+    }
+
+    if (raceBonusSelection !== null) {
+        wizardData.raceAttrChoices[attr] += value;
+        raceBonusSelection = null;
+    } else if (wizardData.raceAttrChoices[attr] > 0) {
+        wizardData.raceAttrChoices[attr] -= value;
+    }
+    renderRaceBonusDrafter();
 };
 
 function goToStep(n) {
@@ -50,13 +133,22 @@ function goToStep(n) {
             if (wizardData.skills.length < limit) { alert(`Faltam perícias!`); return; }
         }
         if (wizardData.step === 4 && Object.values(wizardData.attr).some(v => v === 0)) { alert("Distribua todos os valores!"); return; }
+        if (wizardData.step === 5) {
+            const race = RACES[wizardData.race];
+            if (race && race.attrMods && race.attrMods.type === 'flexible') {
+                const points = race.attrMods.points;
+                const usedPoints = Object.values(wizardData.raceAttrChoices).reduce((sum, val) => sum + val, 0);
+                if (usedPoints < points) { alert(`Distribua todos os ${points} pontos de bônus de raça!`); return; }
+            }
+        }
     }
     // Removido: O logo deve ser sempre 'D&D dosGuri'
-    
+
     wizardData.step = n;
     if (n === 3) loadSkillChoices();
     if (n === 4) renderAttributeDrafter();
-    
+    if (n === 5) renderRaceBonusDrafter();
+
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     const step = document.getElementById('step-' + n);
     if (step) step.classList.add('active');
@@ -186,9 +278,28 @@ function finalizeWizard(name, bg, align, photo) {
     char.profs = [...wizardData.skills];
     char.bg = bg || '';
     char.align = align || '';
-    
+
     const r = RACES[char.race];
     const c = CLASSES[char.cls];
+
+    // Apply race attribute bonuses
+    if (r && r.attrMods) {
+        if (r.attrMods.type === 'fixed') {
+            Object.entries(r.attrMods.mods).forEach(([attr, bonus]) => {
+                char.attr[attr] += bonus;
+            });
+        } else if (r.attrMods.type === 'flexible') {
+            Object.entries(wizardData.raceAttrChoices).forEach(([attr, bonus]) => {
+                char.attr[attr] += bonus;
+            });
+            if (r.attrMods.fixedMods) {
+                Object.entries(r.attrMods.fixedMods).forEach(([attr, bonus]) => {
+                    char.attr[attr] += bonus;
+                });
+            }
+        }
+    }
+
     char.speed = r.speed;
     char.hp.max = c.hp + Math.floor((char.attr.con - 10) / 2);
     char.hp.current = char.hp.max;
@@ -339,6 +450,8 @@ function resetWizardUI() {
     }
     const photoInput = document.getElementById('create-photo');
     if (photoInput) photoInput.value = '';
+    wizardData.raceAttrChoices = { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 };
+    raceBonusSelection = null;
     goToStep(1);
 }
 
@@ -348,10 +461,11 @@ window.startNPCCreation = function(type = 'npc') {
     wizardData = {
         active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
         personality: { traits: '', ideals: '', bonds: '', flaws: '' },
-        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
+        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: [],
+        raceAttrChoices: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }
     };
     resetWizardUI();
-    
+
     // Atualiza subtítulo do Wizard
     // Removido: O logo deve ser sempre 'D&D dosGuri'
 
@@ -364,7 +478,8 @@ window.startPlayerCreationByMaster = function() {
     wizardData = {
         active: true, step: 1, name: '', race: '', cls: '', bg: '', align: '', photo: '',
         personality: { traits: '', ideals: '', bonds: '', flaws: '' },
-        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: []
+        attr: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }, skills: [],
+        raceAttrChoices: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 }
     };
     resetWizardUI();
     buildGrids(); switchView('creation-screen');

@@ -49,7 +49,7 @@ function renderHeader() {
                     </button>` : ''}
                     
                     <button class="nav-btn font-weight-bold pdf-btn-color" onclick="window.downloadPDF()">
-                        <span>📥 PDF</span>
+                        <span>PDF</span>
                     </button>
 
                     <button class="nav-btn muted-text" id="btn-back-to-role">
