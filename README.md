@@ -1,64 +1,30 @@
 # D&D dos Guri
 
-Sistema de gerenciamento de fichas de personagem para RPG de mesa, com sincronizacao em tempo real entre mestre e jogadores.
+Painel virtual para gerenciamento de sessões de RPG de mesa com foco em fichas de personagem interativas. Oferece atualização e sincronização em tempo real de estatísticas, atributos e itens entre o mestre e os jogadores usando WebSockets, além de salvar dados na nuvem via Supabase.
 
-## Tecnologias
+## Como rodar
 
-- Node.js + Express
-- Socket.io
-- Supabase
-
-## Estrutura do Projeto
-
-```text
-rpg/
-|-- src/
-|   |-- index.js
-|   `-- setup.js
-|-- public/
-|   |-- css/
-|   |-- js/
-|   |-- templates/
-|   `-- index.html
-|-- docs/
-|-- .env.example
-|-- setup.sql
-|-- package.json
-`-- README.md
-```
-
-## Como rodar localmente
-
-1. Configure as variaveis de ambiente
-   - Copie `.env.example` para `.env`
-   - Preencha `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY`
-
-2. Configure o banco no Supabase
-   - Execute o SQL do arquivo `setup.sql` no SQL Editor
-   - Isso cria as tabelas `characters` e `master_data`
-
-3. Instale as dependencias
+1. Copie `.env.example` para `.env` e preencha as chaves do Supabase.
+2. Execute a estrutura SQL do arquivo `setup.sql` no painel do Supabase.
+3. Instale as dependências:
    ```bash
    npm install
    ```
-
-4. Inicie a aplicacao
+4. Inicie o servidor:
    ```bash
    npm run dev
    ```
-
-   Ou, se preferir manter o comando antigo:
-   ```bash
-   npm run full
-   ```
-
-5. Acesse
-   - App: `http://localhost:3001`
-   - Area de mestre: senha `4444`
+5. Acesse `http://localhost:3001` no navegador.
 
 ## Scripts
 
-- `npm run dev`: inicia o servidor local
-- `npm run full`: mesmo comportamento do `dev`, mantido por compatibilidade
-- `npm run setup`: checa se o ambiente local esta pronto
-- `npm start`: inicia o servidor
+- `npm run dev`: Inicia o servidor local de desenvolvimento.
+- `npm run setup`: Verifica as configurações do ambiente.
+- `npm start`: Inicia o servidor em produção.
+
+## Stack
+
+- Node.js + Express
+- Socket.io
+- Supabase (PostgreSQL)
+- HTML, CSS e JavaScript puro
