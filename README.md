@@ -8,7 +8,7 @@ Painel virtual para RPG de mesa com edição e sincronização de fichas em temp
    ```bash
    npm install
    ```
-2. Crie o arquivo `.env` a partir do modelo:
+2. Crie o arquivo `.env` a partir do modelo (`APP_MODE=offline`):
    ```bash
    cp .env.example .env
    ```
@@ -21,7 +21,7 @@ Painel virtual para RPG de mesa com edição e sincronização de fichas em temp
 
 ## Scripts
 
-- `npm run setup`: Reseta o banco de dados e verifica a estrutura.
+- `npm run setup`: Reseta o banco de dados SQLite local.
 - `npm run dev`: Inicia a aplicação em modo de desenvolvimento.
 - `npm start`: Inicia o servidor em modo de produção.
 
@@ -30,3 +30,7 @@ Painel virtual para RPG de mesa com edição e sincronização de fichas em temp
 ### Tecnologias
 - **Backend:** Node.js, Express.js, Socket.io, Supabase (PostgreSQL).
 - **Frontend:** HTML5, CSS3, JavaScript puro.
+- **Banco de dados:** SQLite (`better-sqlite3`) e Supabase (PostgreSQL).
+
+### Documentação Adicional
+Consulte os arquivos [docs/DOCUMENTACAO_TECNICA.md](docs/DOCUMENTACAO_TECNICA.md) e [docs/DOCUMENTACAO_DIDATICA.md](docs/DOCUMENTACAO_DIDATICA.md) para obter detalhes de implantação e arquitetura.
